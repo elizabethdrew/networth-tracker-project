@@ -19,7 +19,7 @@
 	<description>Networth Tracker Microservice Application</description>
 
 	<modules>
-
+		<module>user-service</module>
 	</modules>
 
 	<properties>
@@ -69,6 +69,16 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.google.cloud.tools</groupId>
+				<artifactId>jib-maven-plugin</artifactId>
+				<version>3.4.0</version>
+				<configuration>
+					<to>
+						<image>networth/${project.artifactId}:${project.version}</image>
+					</to>
 				</configuration>
 			</plugin>
 		</plugins>
