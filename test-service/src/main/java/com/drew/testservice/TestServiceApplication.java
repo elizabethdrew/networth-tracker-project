@@ -1,13 +1,13 @@
-package com.drew.userservice;
+package com.drew.testservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class UserServiceApplication {
+public class TestServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(UserServiceApplication.class, args);
+		SpringApplication.run(TestServiceApplication.class, args);
 	}
 
 }

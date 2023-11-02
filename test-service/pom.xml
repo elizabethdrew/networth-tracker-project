@@ -9,7 +9,7 @@
 	</parent>
 
 	<groupId>com.drew</groupId>
-	<artifactId>user-service</artifactId>
+	<artifactId>test-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
 	<name>user-service</name>

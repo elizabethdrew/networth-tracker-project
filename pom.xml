@@ -19,7 +19,7 @@
 	<description>Networth Tracker Microservice Application</description>
 
 	<modules>
-		<module>user-service</module>
+		<module>test-service</module>
 	</modules>
 
 	<properties>
