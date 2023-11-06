@@ -5,8 +5,6 @@ spring:
     ansi:
       enabled: always
   datasource:
-    generate-unique-name: false
-    name: profileSystem
     url: jdbc:mysql://localhost:3306/userdb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: admin
     password: password
@@ -15,6 +13,11 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: none
+
+javax:
+  persistence:
+    jdbc:
+      driver: com.mysql.jdbc.Driver
 
 server:
   port: 8080

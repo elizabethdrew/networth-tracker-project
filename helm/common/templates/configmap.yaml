@@ -5,7 +5,7 @@ metadata:
   name: {{ .Values.global.configMapName }}
 data:
   SPRING_PROFILES_ACTIVE: {{ .Values.global.activeProfile }}
-  SPRING_DATASOURCE_URL: jdbc:mysql://{{ .Values.appName }}-mysql:3306/{{ .Values.appName }}db
+  SPRING_DATASOURCE_URL: jdbc:mysql://{{ .Values.appName }}-mysql:3306/{{ .Values.appName }}db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
   SPRING_DATASOURCE_USERNAME: {{ .Values.global.databaseUser }}
   SPRING_DATASOURCE_PASSWORD: {{ .Values.global.databasePassword }}
   MYSQL_ROOT_PASSWORD: root_{{ .Values.global.databasePassword }}

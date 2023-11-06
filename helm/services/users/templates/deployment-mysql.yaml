@@ -2,8 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.deploymentName }}-mysql
-  labels:
-    app: {{ .Values.appLabel }}
 spec:
   replicas: {{ .Values.mysql.replicas }}
   selector:
