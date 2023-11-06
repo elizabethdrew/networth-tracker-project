@@ -19,7 +19,7 @@
 	<description>Networth Tracker Microservice Application</description>
 
 	<modules>
-		<module>test-service</module>
+		<module>user-service</module>
 	</modules>
 
 	<properties>
@@ -28,6 +28,10 @@
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
@@ -47,8 +51,8 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-jpa</artifactId>
+			<groupId>jakarta.persistence</groupId>
+			<artifactId>jakarta.persistence-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.mysql</groupId>

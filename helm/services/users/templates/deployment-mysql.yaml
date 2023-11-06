@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deploymentName }}-mysql
+  labels:
+    app: {{ .Values.appLabel }}
+spec:
+  replicas: {{ .Values.mysql.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.deploymentName }}-mysql
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.deploymentName }}-mysql
+    spec:
+      containers:
+        - name: {{ .Values.deploymentName }}-mysql
+          image: {{ .Values.mysql.image }}
+          ports:
+            - name: mysql
+              containerPort: 3306
+          env:
+            - name: MYSQL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: { { .Values.global.configMapName } }
+                  key: MYSQL_DATABASE
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: { { .Values.global.configMapName } }
+                  key: MYSQL_ROOT_PASSWORD
+            - name: MYSQL_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: { { .Values.global.configMapName } }
+                  key: MYSQL_USER
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: { { .Values.global.configMapName } }
+                  key: MYSQL_PASSWORD

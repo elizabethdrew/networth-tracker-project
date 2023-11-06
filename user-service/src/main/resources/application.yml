@@ -1,0 +1,66 @@
+spring:
+  application:
+    name: user-service
+  output:
+    ansi:
+      enabled: always
+  datasource:
+    generate-unique-name: false
+    name: profileSystem
+    url: jdbc:mysql://localhost:3306/userdb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: admin
+    password: password
+  jpa:
+    defer-datasource-initialization: false
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+logging:
+  level:
+    com:
+      drew:
+        profile-service: DEBUG
+  pattern:
+    level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
+
+management:
+  health:
+    readiness-state:
+      enabled: true
+    liveness-state:
+      enabled: true
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    info:
+      enabled: true
+    shutdown:
+      enabled: true
+    health:
+      probes:
+        enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+  tracing:
+    sampling:
+      probability: 1.0
+
+info:
+  application:
+    name: ${spring.application.name}
+    description: Very cool Spring Boot application
+    version: '@project.version@'
+    spring-cloud-version: '@spring-cloud.version@'
+    spring-boot-version: '@project.parent.version@'

@@ -1,0 +1,15 @@
+{{- define "common.configmap" -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.global.configMapName }}
+data:
+  SPRING_PROFILES_ACTIVE: {{ .Values.global.activeProfile }}
+  SPRING_DATASOURCE_URL: jdbc:mysql://{{ .Values.appName }}-mysql:3306/{{ .Values.appName }}db
+  SPRING_DATASOURCE_USERNAME: {{ .Values.global.databaseUser }}
+  SPRING_DATASOURCE_PASSWORD: {{ .Values.global.databasePassword }}
+  MYSQL_ROOT_PASSWORD: root_{{ .Values.global.databasePassword }}
+  MYSQL_DATABASE: {{ .Values.appName }}db
+  MYSQL_USER: {{ .Values.global.databaseUser }}
+  MYSQL_PASSWORD: {{ .Values.global.databasePassword }}
+  {{- end -}}

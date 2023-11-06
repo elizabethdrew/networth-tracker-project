@@ -1,0 +1,34 @@
+deploymentName: users-deployment
+serviceName: users
+appLabel: users
+appName: users
+
+replicaCount: 1
+
+image:
+  repository: networth/user-service
+  tag: 0.0.1-SNAPSHOT
+
+containerPort: 8080
+
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080
+
+appname_enabled: true
+profile_enabled: true
+mysql_enabled: true
+config_enabled: true
+eureka_enabled: true
+resouceserver_enabled: false
+otel_enabled: true
+kafka_enabled: true
+
+
+mysql:
+  image: mysql:5.7
+  replicas: 1
+  service:
+    type: ClusterIP
+    port: 3306

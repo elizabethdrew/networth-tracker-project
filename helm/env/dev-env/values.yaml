@@ -1,0 +1,5 @@
+global:
+  configMapName: dev-configmap
+  activeProfile: default
+  databaseUser: admin
+  databasePassword: password
