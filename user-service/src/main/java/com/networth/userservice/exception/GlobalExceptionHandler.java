@@ -1,5 +1,8 @@
 package com.networth.userservice.exception;
 
+import com.networth.userservice.dto.ErrorResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -9,9 +12,33 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    // Logger to log information and warnings
+    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    private ResponseEntity<ErrorResponse> generateErrorResponse(HttpStatus status, Exception e) {
+        LOGGER.warn(String.valueOf(e));
+        ErrorResponse error = new ErrorResponse();
+        error.setCode(status.value());
+        error.setMessage(e.getMessage());
+        return new ResponseEntity<>(error, status);
+    }
+
+    private ResponseEntity<ErrorResponse> generateErrorResponse(HttpStatus status, String message, Exception e) {
+        LOGGER.warn(message, e);
+        ErrorResponse error = new ErrorResponse();
+        error.setCode(status.value());
+        error.setMessage(message);
+        return new ResponseEntity<>(error, status);
+    }
+
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Object> handleResourceNotFoundException(ResourceNotFoundException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException e) {
+        return generateErrorResponse(HttpStatus.NOT_FOUND, "Not Found", e);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException e) {
+        return generateErrorResponse(HttpStatus.NOT_FOUND, "User not found", e);
     }
 
 }

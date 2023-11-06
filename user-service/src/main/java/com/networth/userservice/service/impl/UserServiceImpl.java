@@ -3,6 +3,8 @@ package com.networth.userservice.service.impl;
 import com.networth.userservice.dto.UserInput;
 import com.networth.userservice.dto.UserOutput;
 import com.networth.userservice.entity.User;
+import com.networth.userservice.exception.InvalidInputException;
+import com.networth.userservice.exception.UserNotFoundException;
 import com.networth.userservice.mapper.UserMapper;
 import com.networth.userservice.repository.UserRepository;
 import com.networth.userservice.service.UserService;
@@ -36,10 +38,10 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public UserOutput getUser(Integer userId) {
+    public UserOutput getUser(Long userId) {
 
-        User user = userRepository.findByUserId(userId.longValue())
-                .orElseThrow(() -> new UserNotFoundException(userId));
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserNotFoundException("User Id not found: " + userId));
 
         // Add security to check user is only viewing own profile
 
@@ -53,12 +55,12 @@ public class UserServiceImpl implements UserService {
 
         // Check if username already exists
         if(userRepository.existsByUsername(userInput.getUsername())) {
-            throw new InvalidInputException("Username already in use.");
+            throw new InvalidInputException("Username already in use: " + userInput.getUsername());
         }
 
         // Check if email already exists
         if(userRepository.existsByEmail(userInput.getEmail())) {
-            throw new InvalidInputException("Email already in use.");
+            throw new InvalidInputException("Email already in use: " + userInput.getEmail());
         }
 
         // Validate Password
@@ -95,11 +97,11 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     public UserOutput updateUser(Integer userId, UserInput userInput)
-            throws UserNotFoundException, InsufficientPermissionException {
+            throws UserNotFoundException {
 
         // Retrieve the user with the specified ID from the repository
         User user = userRepository.findByUserId(userId.longValue())
-                .orElseThrow(() -> new UserNotFoundException(userId));
+                .orElseThrow(() -> new UserNotFoundException("User Id not found: " + userId));
 
         // Add security to check user is only editing own profile
 
@@ -127,7 +129,7 @@ public class UserServiceImpl implements UserService {
 
         // Retrieve the user with the specified ID from the repository
         User user = userRepository.findByUserId(userId.longValue())
-                .orElseThrow(() -> new UserNotFoundException(userId));
+                .orElseThrow(() -> new UserNotFoundException("User Id not found: " + userId));
 
         // Add security to check user is only editing own profile
 
