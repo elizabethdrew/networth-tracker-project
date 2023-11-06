@@ -27,7 +27,7 @@ kafka_enabled: true
 
 
 mysql:
-  image: mysql:5.7
+  image: mysql:8.0
   replicas: 1
   service:
     type: ClusterIP

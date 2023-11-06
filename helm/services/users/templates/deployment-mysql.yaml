@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.deploymentName }}-mysql
+  name: {{ .Values.serviceName }}-mysql
 spec:
   replicas: {{ .Values.mysql.replicas }}
   selector:
     matchLabels:
-      app: {{ .Values.deploymentName }}-mysql
+      app: {{ .Values.serviceName }}-mysql
   template:
     metadata:
       labels:
-        app: {{ .Values.deploymentName }}-mysql
+        app: {{ .Values.serviceName }}-mysql
     spec:
       containers:
-        - name: {{ .Values.deploymentName }}-mysql
+        - name: {{ .Values.serviceName }}-mysql
           image: {{ .Values.mysql.image }}
           ports:
             - name: mysql
