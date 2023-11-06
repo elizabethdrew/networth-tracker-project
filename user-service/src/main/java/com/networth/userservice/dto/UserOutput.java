@@ -7,8 +7,8 @@ import java.time.LocalDate;
 @Data
 public class UserOutput {
 
-    private Long Id;
-    private String Username;
+    private Long userId;
+    private String username;
     private String email;
     private LocalDate dateOfBirth;
     private TaxRate taxRate;
