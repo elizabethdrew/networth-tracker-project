@@ -37,17 +37,17 @@ spec:
           - name: SPRING_DATASOURCE_URL
             valueFrom:
               configMapKeyRef:
-                name: { { .Values.global.configMapName } }
+                name: {{ .Values.global.configMapName }}
                 key: SPRING_DATASOURCE_URL
           - name: SPRING_DATASOURCE_USERNAME
             valueFrom:
               configMapKeyRef:
-                name: { { .Values.global.configMapName } }
+                name: {{ .Values.global.configMapName }}
                 key: SPRING_DATASOURCE_USERNAME
           - name: SPRING_DATASOURCE_PASSWORD
             valueFrom:
               configMapKeyRef:
-                name: { { .Values.global.configMapName } }
+                name: {{ .Values.global.configMapName }}
                 key: SPRING_DATASOURCE_PASSWORD
           {{- end }}
 

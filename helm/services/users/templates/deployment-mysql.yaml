@@ -24,20 +24,20 @@ spec:
             - name: MYSQL_DATABASE
               valueFrom:
                 configMapKeyRef:
-                  name: { { .Values.global.configMapName } }
+                  name: {{ .Values.global.configMapName }}
                   key: MYSQL_DATABASE
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:
                 configMapKeyRef:
-                  name: { { .Values.global.configMapName } }
+                  name: {{ .Values.global.configMapName }}
                   key: MYSQL_ROOT_PASSWORD
             - name: MYSQL_USER
               valueFrom:
                 configMapKeyRef:
-                  name: { { .Values.global.configMapName } }
+                  name: {{ .Values.global.configMapName }}
                   key: MYSQL_USER
             - name: MYSQL_PASSWORD
               valueFrom:
                 configMapKeyRef:
-                  name: { { .Values.global.configMapName } }
+                  name: {{ .Values.global.configMapName }}
                   key: MYSQL_PASSWORD
