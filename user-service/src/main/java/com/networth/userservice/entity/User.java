@@ -1,5 +1,6 @@
 package com.networth.userservice.entity;
 
+import com.networth.userservice.dto.TaxRate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,6 +12,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -30,9 +32,8 @@ public class User {
     @Column( name = "password")
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    @Column ( name = "user_status")
-    private UserStatus userStatus;
+    @Column ( name = "active_user")
+    private Boolean activeUser = true;
 
     @Enumerated(EnumType.STRING)
     @Column ( name = "tax_rate")
@@ -42,21 +43,9 @@ public class User {
     private LocalDate dateOfBirth;
 
     @Column ( name = "date_open")
-    private LocalDate dateOpened;
+    private LocalDateTime dateOpened;
 
     @Column (name = "date_updated")
-    private LocalDate dateUpdated;
-
-    enum TaxRate {
-        BASIC,
-        HIGHER,
-        ADDITIONAL
-    };
-
-    enum UserStatus {
-        ACTIVE,
-        CLOSED
-    }
-
+    private LocalDateTime dateUpdated;
 
 }

@@ -1,10 +1,12 @@
 package com.networth.userservice.controller;
 
-import com.networth.userservice.entity.User;
+import com.networth.userservice.dto.UserInput;
+import com.networth.userservice.dto.UserOutput;
 import com.networth.userservice.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,8 +33,9 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "User created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid Request")
     })
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        return ResponseEntity.ok(userService.createUser(user));
+    public ResponseEntity<UserOutput> createUser(@RequestBody UserInput userInput) {
+        UserOutput userOutput = userService.createUser(userInput);
+        return new ResponseEntity<>(userOutput, HttpStatus.CREATED);
     }
 
     @GetMapping("/{userId}")
@@ -42,8 +45,9 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Invalid id supplied"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    public ResponseEntity<User> getUser(@PathVariable Long userId) {
-        return ResponseEntity.ok(userService.getUser(userId));
+    public ResponseEntity<UserOutput> getUser(@PathVariable Long userId) {
+        UserOutput userOutput = userService.getUser(userId);
+        return ResponseEntity.ok(userOutput);
     }
 
     @PutMapping("/{userId}")
@@ -53,8 +57,9 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Invalid id supplied"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    public ResponseEntity<User> updateUser(@PathVariable Long userId, @RequestBody User updatedUser) {
-        return ResponseEntity.ok(userService.updateUser(userId, updatedUser));
+    public ResponseEntity<UserOutput> updateUser(@PathVariable Long userId, @RequestBody UserInput userInput) {
+        UserOutput userOutput = userService.updateUser(userId, userInput);
+        return ResponseEntity.ok(userOutput);
     }
 
     @DeleteMapping("/{userId}")
