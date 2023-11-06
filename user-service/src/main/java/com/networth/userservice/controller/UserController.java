@@ -25,7 +25,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/signup")
+    @PostMapping
     @Operation(summary = "Create a new user user")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "User created successfully"),
