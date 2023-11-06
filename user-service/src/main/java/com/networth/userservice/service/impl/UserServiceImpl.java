@@ -96,11 +96,11 @@ public class UserServiceImpl implements UserService {
 
 
     @Transactional
-    public UserOutput updateUser(Integer userId, UserInput userInput)
+    public UserOutput updateUser(Long userId, UserInput userInput)
             throws UserNotFoundException {
 
         // Retrieve the user with the specified ID from the repository
-        User user = userRepository.findByUserId(userId.longValue())
+        User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new UserNotFoundException("User Id not found: " + userId));
 
         // Add security to check user is only editing own profile
@@ -125,10 +125,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional
-    public void deleteUser(Integer userId) {
+    public void deleteUser(Long userId) {
 
         // Retrieve the user with the specified ID from the repository
-        User user = userRepository.findByUserId(userId.longValue())
+        User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new UserNotFoundException("User Id not found: " + userId));
 
         // Add security to check user is only editing own profile
