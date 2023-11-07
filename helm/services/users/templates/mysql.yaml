@@ -13,6 +13,14 @@ spec:
     protocol: TCP
     port: {{ .Values.mysql.service.port }}
 ---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: retain-storage
+provisioner: docker.io/hostpath
+reclaimPolicy: Retain
+volumeBindingMode: Immediate
+---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -67,6 +75,7 @@ spec:
   - metadata:
       name: {{ .Values.serviceName }}-mysql-pvc
     spec:
+      storageClassName: retain-storage
       accessModes:
       - ReadWriteOnce
       resources:
