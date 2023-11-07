@@ -33,6 +33,7 @@ kafka_enabled: true
 mysql:
   databaseUser: admin
   databasePassword: password
+  replicas: 1
   image: mysql:8.0
   service:
     type: ClusterIP

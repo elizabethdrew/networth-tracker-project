@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.serviceName }}-mysql
+spec:
+  selector:
+    app: {{ .Values.serviceName }}-mysql
+  ports:
+      - name: mysql
+        port: {{ .Values.mysql.service.port }}
+        targetPort: 3306
+  type: {{ .Values.mysql.service.type }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.serviceName }}-mysql-pvc
+spec:
+  accessModes: {{ .Values.mysql.primary.persistence.accessModes }}
+  resources:
+    requests:
+      storage: {{ .Values.mysql.primary.persistence.size }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.serviceName }}-mysql
+spec:
+  replicas: {{ .Values.mysql.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.appLabel }}-mysql
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appLabel }}-mysql
+    spec:
+      containers:
+      - name: {{ .Values.serviceName }}-mysql
+        image: {{ .Values.mysql.image }}
+        env:
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Values.global.configMapName }}
+              key: MYSQL_DATABASE
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Values.global.configMapName }}
+              key: MYSQL_ROOT_PASSWORD
+        - name: MYSQL_USER
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Values.global.configMapName }}
+              key: MYSQL_USER
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Values.global.configMapName }}
+              key: MYSQL_PASSWORD
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: {{ .Values.serviceName }}-mysql-pvc
