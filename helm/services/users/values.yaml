@@ -1,3 +1,7 @@
+global:
+  configMapName: common-configmap
+  activeProfile: default
+
 deploymentName: users-deployment
 serviceName: users
 appLabel: users
@@ -27,14 +31,17 @@ kafka_enabled: true
 
 
 mysql:
+  databaseUser: admin
+  databasePassword: password
   image: mysql:8.0
   replicas: 1
   service:
     type: ClusterIP
     port: 3306
-
-global:
-  configMapName: dev-configmap
-  activeProfile: default
-  databaseUser: admin
-  databasePassword: password
+  primary:
+    persistence:
+      enabled: true
+      storageClass: "standard"
+      accessModes:
+        - ReadWriteOnce
+      size: 8Gi

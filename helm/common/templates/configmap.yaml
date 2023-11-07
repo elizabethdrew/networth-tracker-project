@@ -6,10 +6,10 @@ metadata:
 data:
   SPRING_PROFILES_ACTIVE: {{ .Values.global.activeProfile }}
   SPRING_DATASOURCE_URL: jdbc:mysql://{{ .Values.serviceName }}-mysql:3306/{{ .Values.serviceName }}db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-  SPRING_DATASOURCE_USERNAME: {{ .Values.global.databaseUser }}
-  SPRING_DATASOURCE_PASSWORD: {{ .Values.global.databasePassword }}
-  MYSQL_ROOT_PASSWORD: root_{{ .Values.global.databasePassword }}
+  SPRING_DATASOURCE_USERNAME: {{ .Values.mysql.databaseUser }}
+  SPRING_DATASOURCE_PASSWORD: {{ .Values.mysql.databasePassword }}
+  MYSQL_ROOT_PASSWORD: root_{{ .Values.mysql.databasePassword }}
   MYSQL_DATABASE: {{ .Values.serviceName }}db
-  MYSQL_USER: {{ .Values.global.databaseUser }}
-  MYSQL_PASSWORD: {{ .Values.global.databasePassword }}
+  MYSQL_USER: {{ .Values.mysql.databaseUser }}
+  MYSQL_PASSWORD: {{ .Values.mysql.databasePassword }}
   {{- end -}}
