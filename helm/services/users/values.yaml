@@ -38,6 +38,7 @@ mysql:
   service:
     type: ClusterIP
     port: 3306
+    protocol: TCP
   primary:
     persistence:
       enabled: true
