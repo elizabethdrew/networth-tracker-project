@@ -18,6 +18,9 @@ spec:
       containers:
         - name: {{ .Values.appLabel }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          volumeMounts:
+            - mountPath: "/var/{{ .Values.deploymentName }}"
+              name: {{ .Values.serviceName }}-storage
           ports:
             - containerPort: {{ .Values.containerPort }}
               protocol: TCP
@@ -50,5 +53,11 @@ spec:
                 name: {{ .Values.global.configMapName }}
                 key: SPRING_DATASOURCE_PASSWORD
           {{- end }}
+      {{- if .Values.mysql_enabled }}
+      volumes:
+        - name: {{ .Values.serviceName }}-storage
+          persistentVolumeClaim:
+            claimName: {{ .Values.serviceName }}-mysql-pv-claim
+      {{- end }}
 
   {{- end -}}

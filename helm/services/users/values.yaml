@@ -25,7 +25,7 @@ profile_enabled: true
 mysql_enabled: true
 config_enabled: true
 eureka_enabled: true
-resouceserver_enabled: false
+resourceserver_enabled: false
 otel_enabled: true
 kafka_enabled: true
 
@@ -34,14 +34,11 @@ mysql:
   databaseUser: admin
   databasePassword: password
   image: mysql:8.0
-  replicas: 1
   service:
     type: ClusterIP
     port: 3306
   primary:
     persistence:
       enabled: true
-      storageClass: "standard"
-      accessModes:
-        - ReadWriteOnce
+      accessModes: ["ReadWriteOnce"]
       size: 8Gi

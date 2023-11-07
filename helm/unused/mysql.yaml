@@ -1,0 +1,87 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.serviceName }}-mysql
+  labels:
+    app: {{ .Values.serviceName }}
+spec:
+  ports:
+    - name: mysql
+      port: {{ .Values.mysql.service.port }}
+      targetPort: mysql
+  selector:
+    app: {{ .Values.serviceName }}
+    tier: mysql
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.serviceName }}-mysql-pv-claim
+  labels:
+    app: {{ .Values.serviceName }}
+spec:
+  accessModes:
+    {{- toYaml .Values.mysql.primary.persistence.accessModes | nindent 4 }}
+  resources:
+    requests:
+      storage: {{ .Values.mysql.primary.persistence.size }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.serviceName }}-mysql
+  labels:
+    app: {{ .Values.serviceName }}
+spec:
+  serviceName: "{{ .Values.serviceName }}-mysql"
+  replicas: {{ .Values.mysql.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.serviceName }}
+      tier: mysql
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.serviceName }}
+        tier: mysql
+    spec:
+      containers:
+        - name: mysql
+          image: {{ .Values.mysql.image }}
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.global.configMapName }}
+                  key: MYSQL_ROOT_PASSWORD
+            - name: MYSQL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.global.configMapName }}
+                  key: MYSQL_DATABASE
+            - name: MYSQL_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.global.configMapName }}
+                  key: MYSQL_USER
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.global.configMapName }}
+                  key: MYSQL_PASSWORD
+          ports:
+            - containerPort: {{ .Values.mysql.service.port }}
+              name: mysql
+          volumeMounts:
+            - name: mysql-persistent-storage
+              mountPath: /var/lib/mysql
+    volumeClaimTemplates:
+      - metadata:
+          name: mysql-persistent-storage
+        spec:
+          accessModes:
+            {{- toYaml .Values.mysql.primary.persistence.accessModes | nindent 4 }}
+          resources:
+            requests:
+              storage: {{ .Values.mysql.primary.persistence.size }}
+          storageClassName: {{ .Values.mysql.primary.persistence.storageClass }}
