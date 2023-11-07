@@ -8,11 +8,14 @@ spring:
     url: jdbc:mysql://users_db:3306/userdb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: admin
     password: password
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.yml
+    enabled: true
   jpa:
     defer-datasource-initialization: false
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
 
 javax:
   persistence:
