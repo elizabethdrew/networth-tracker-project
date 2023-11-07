@@ -60,6 +60,9 @@ spec:
         volumeMounts:
         - name: {{ .Values.serviceName }}-mysql-pvc
           mountPath: /var/lib/mysql
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Delete
   volumeClaimTemplates:
   - metadata:
       name: {{ .Values.serviceName }}-mysql-pvc
