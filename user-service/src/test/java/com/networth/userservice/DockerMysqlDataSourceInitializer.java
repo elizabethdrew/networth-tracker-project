@@ -17,7 +17,9 @@ public class DockerMysqlDataSourceInitializer implements ApplicationContextIniti
                 "spring.datasource.url=" + GlobalTestContainer.container.getJdbcUrl(),
                 "spring.datasource.username=" + GlobalTestContainer.container.getUsername(),
                 "spring.datasource.password=" + GlobalTestContainer.container.getPassword(),
-                "server.port=8081"
+                "server.port=8081",
+                "spring.liquibase.change-log=classpath:/db/changelog/db.changelog-master.yml",
+                "spring.liquibase.contexts=default,test"
         );
 
         System.out.println("spring.datasource.url=" + GlobalTestContainer.container.getJdbcUrl());

@@ -1,7 +1,8 @@
 databaseChangeLog:
   - changeSet:
-      id: insert-test-user
-      author: test
+      id: test_001_seed_user
+      author: elizabeth_drew
+      context: test
       changes:
         - insert:
             tableName: user

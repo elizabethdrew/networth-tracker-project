@@ -2,6 +2,7 @@ databaseChangeLog:
   - changeSet:
       id: 1
       author: elizabethdrew
+      context: default
       changes:
         - createTable:
             tableName: user

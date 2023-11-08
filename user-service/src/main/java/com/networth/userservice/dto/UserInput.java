@@ -1,5 +1,6 @@
 package com.networth.userservice.dto;
 
+import jakarta.validation.constraints.Email;
 import lombok.Data;
 
 import java.time.LocalDate;

@@ -8,6 +8,7 @@ import com.networth.userservice.exception.UserNotFoundException;
 import com.networth.userservice.mapper.UserMapper;
 import com.networth.userservice.repository.UserRepository;
 import com.networth.userservice.service.UserService;
+import com.networth.userservice.util.HelperUtils;
 import jakarta.transaction.Transactional;
 import org.passay.CharacterRule;
 import org.passay.EnglishCharacterData;
@@ -28,11 +29,14 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
+    private final HelperUtils helperUtils;
+
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, BCryptPasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, HelperUtils helperUtils, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.helperUtils = helperUtils;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -62,7 +66,7 @@ public class UserServiceImpl implements UserService {
         }
 
         // Validate Password
-        validatePassword(userInput.getPassword());
+        helperUtils.validatePassword(userInput.getPassword());
 
         // Create New User
         User user = userMapper.toUser(userInput);
@@ -72,24 +76,6 @@ public class UserServiceImpl implements UserService {
         User savedUser = userRepository.save(user);
 
         return userMapper.toUserOutput(savedUser);
-    }
-
-    private void validatePassword(String password) {
-        // Define rules
-        List<Rule> rules = new ArrayList<>();
-        rules.add(new LengthRule(8, 100)); // password length between 8 and 100
-        rules.add(new CharacterRule(EnglishCharacterData.UpperCase, 1)); // at least 1 uppercase character
-        rules.add(new CharacterRule(EnglishCharacterData.LowerCase, 1)); // at least 1 lowercase character
-        rules.add(new CharacterRule(EnglishCharacterData.Digit, 1)); // at least 1 digit
-        rules.add(new CharacterRule(EnglishCharacterData.Special, 1)); // at least 1 special character
-
-        PasswordValidator validator = new PasswordValidator(rules);
-        RuleResult result = validator.validate(new PasswordData(password));
-
-        if (!result.isValid()) {
-            String message = String.join(", ", validator.getMessages(result));
-            throw new InvalidInputException("Invalid password: " + message);
-        }
     }
 
 

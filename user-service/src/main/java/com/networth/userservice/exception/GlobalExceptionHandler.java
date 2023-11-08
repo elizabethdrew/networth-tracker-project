@@ -41,4 +41,9 @@ public class GlobalExceptionHandler {
         return generateErrorResponse(HttpStatus.NOT_FOUND, "User not found", e);
     }
 
+    @ExceptionHandler(InvalidInputException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidInputException(InvalidInputException e) {
+        return generateErrorResponse(HttpStatus.BAD_REQUEST, "InvalidInput", e);
+    }
+
 }
