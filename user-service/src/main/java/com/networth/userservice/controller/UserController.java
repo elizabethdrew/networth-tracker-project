@@ -28,10 +28,13 @@ public class UserController {
     }
 
     @PostMapping
-    @Operation(summary = "Create a new user user")
+    @Operation(summary = "Create a new user")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "User created successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid Request")
+            @ApiResponse(responseCode = "201", description = "User created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid Request"),
+            @ApiResponse(responseCode = "403", description = "Insufficient Permissions"),
+            @ApiResponse(responseCode = "409", description = "Already Exists"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
     public ResponseEntity<UserOutput> createUser(@RequestBody UserInput userInput) {
         UserOutput userOutput = userService.createUser(userInput);
