@@ -46,7 +46,9 @@ public class UserController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Found the user"),
             @ApiResponse(responseCode = "400", description = "Invalid id supplied"),
-            @ApiResponse(responseCode = "404", description = "User not found")
+            @ApiResponse(responseCode = "403", description = "Insufficient Permissions"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
     public ResponseEntity<UserOutput> getUser(@PathVariable Long userId) {
         UserOutput userOutput = userService.getUser(userId);
@@ -58,7 +60,9 @@ public class UserController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Updated the user"),
             @ApiResponse(responseCode = "400", description = "Invalid id supplied"),
-            @ApiResponse(responseCode = "404", description = "User not found")
+            @ApiResponse(responseCode = "403", description = "Insufficient Permissions"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
     public ResponseEntity<UserOutput> updateUser(@PathVariable Long userId, @RequestBody UserInput userInput) {
         UserOutput userOutput = userService.updateUser(userId, userInput);
@@ -68,12 +72,14 @@ public class UserController {
     @DeleteMapping("/{userId}")
     @Operation(summary = "Delete a user by id")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Deleted the user"),
+            @ApiResponse(responseCode = "204", description = "Deleted the user"),
             @ApiResponse(responseCode = "400", description = "Invalid id supplied"),
-            @ApiResponse(responseCode = "404", description = "User not found")
+            @ApiResponse(responseCode = "403", description = "Insufficient Permissions"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }
