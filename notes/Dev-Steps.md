@@ -10,7 +10,6 @@
    + kubectl port-forward service/test-service 8080:8080
 4. Basic Service HTTP methods setup
 5. Mysql Database Setup
-   + How do I persist the data?
-   + Add Liquibase
 6. Basic Security Config added
+7. Setup TestContainers for Integration Tests
 
