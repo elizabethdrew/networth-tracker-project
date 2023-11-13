@@ -20,7 +20,7 @@
 
 	<modules>
 		<module>user-service</module>
-		<module>config-server</module>
+		<module>configserver</module>
 	</modules>
 
 	<properties>
