@@ -2,38 +2,38 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.deploymentName }}
+  name: {{ .Values.app.deploymentName }}
   labels:
-    app: {{ .Values.appLabel }}
+    app: {{ .Values.app.label }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.app.replicaCount }}
   selector:
     matchLabels:
-      app: {{ .Values.appLabel }}
+      app: {{ .Values.app.label }}
   template:
     metadata:
       labels:
-        app: {{ .Values.appLabel }}
+        app: {{ .Values.app.label }}
     spec:
       containers:
-        - name: {{ .Values.appLabel }}
+        - name: {{ .Values.app.label }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           ports:
-            - containerPort: {{ .Values.containerPort }}
+            - containerPort: {{ .Values.service.containerPort }}
               protocol: TCP
           env:
-          {{- if .Values.appname_enabled }}
+          {{- if .Values.app.enabledFeatures.name }}
           - name: SPRING_APPLICATION_NAME
             value: {{ .Values.appName }}
           {{- end }}
-          {{- if .Values.profile_enabled }}
+          {{- if .Values.app.enabledFeatures.profile }}
           - name: SPRING_PROFILES_ACTIVE
             valueFrom:
               configMapKeyRef:
                 name: {{ .Values.global.configMapName }}
                 key: SPRING_PROFILES_ACTIVE
           {{- end }}
-          {{- if .Values.mysql_enabled }}
+          {{- if .Values.app.enabledFeatures.mysql }}
           - name: SPRING_DATASOURCE_URL
             valueFrom:
               configMapKeyRef:

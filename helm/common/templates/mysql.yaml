@@ -2,39 +2,39 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.serviceName }}-mysql
+  name: {{ .Values.app.serviceName }}-mysql
   labels:
-    app: {{ .Values.appLabel }}-mysql
+    app: {{ .Values.app.label }}-mysql
 spec:
   type: {{ .Values.mysql.service.type }}
   selector:
-    app: {{ .Values.appLabel }}-mysql
+    app: {{ .Values.app.label }}-mysql
   ports:
-  - name: {{ .Values.appLabel }}-mysql
+  - name: {{ .Values.app.label }}-mysql
     protocol: {{ .Values.mysql.service.protocol }}
     port: {{ .Values.mysql.service.port }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Values.serviceName }}-mysql
+  name: {{ .Values.app.serviceName }}-mysql
 spec:
   replicas: {{ .Values.mysql.replicas }}
-  serviceName: {{ .Values.serviceName }}-mysql
+  serviceName: {{ .Values.app.serviceName }}-mysql
   selector:
     matchLabels:
-      app: {{ .Values.appLabel }}-mysql
+      app: {{ .Values.app.label }}-mysql
   template:
     metadata:
       labels:
-        app: {{ .Values.appLabel }}-mysql
+        app: {{ .Values.app.label }}-mysql
     spec:
       terminationGracePeriodSeconds: 10
       containers:
-      - name: {{ .Values.serviceName }}-mysql
+      - name: {{ .Values.app.serviceName }}-mysql
         image: {{ .Values.mysql.image }}
         ports:
-        - name: {{ .Values.appLabel }}-mysql
+        - name: {{ .Values.app.label }}-mysql
           protocol: {{ .Values.mysql.service.protocol }}
           containerPort: {{ .Values.mysql.service.port }}
         env:
@@ -59,14 +59,14 @@ spec:
               name: {{ .Values.global.configMapName }}
               key: MYSQL_PASSWORD
         volumeMounts:
-        - name: {{ .Values.serviceName }}-mysql-pvc
+        - name: {{ .Values.app.serviceName }}-mysql-pvc
           mountPath: /var/lib/mysql
   persistentVolumeClaimRetentionPolicy:
     whenDeleted: Retain
     whenScaled: Delete
   volumeClaimTemplates:
   - metadata:
-      name: {{ .Values.serviceName }}-mysql-pvc
+      name: {{ .Values.app.serviceName }}-mysql-pvc
     spec:
       storageClassName: retain-storage
       accessModes:
