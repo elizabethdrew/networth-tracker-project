@@ -1,4 +1,4 @@
-# Development Steps
+# Development Steps For Service
 
 1. Create the parent SpringBoot Application
 2. Create the child SpringBoot Application
@@ -12,4 +12,7 @@
 5. Mysql Database Setup
 6. Basic Security Config added
 7. Setup TestContainers for Integration Tests
+8. Add ConfigClient to POM
+9. Add Configs to config server for service
+10. Add Config Server url to service application.yml
 
