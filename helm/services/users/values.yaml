@@ -1,12 +1,12 @@
 global:
-  configMapName: common-configmap
-  activeProfile: default
+  appConfig: {}
 
 app:
   name: users
   label: users
   deploymentName: users-deployment
   serviceName: users
+  configMapName: users-configmap
   replicaCount: 1
   enabledFeatures:
     name: true
@@ -24,9 +24,9 @@ image:
 
 service:
   type: ClusterIP
-  port: 8080
-  targetPort: 8080
-  containerPort: 8080
+  port: 8081
+  targetPort: 8081
+  containerPort: 8081
 
 mysql:
   databaseUser: admin

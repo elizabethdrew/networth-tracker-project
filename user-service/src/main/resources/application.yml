@@ -1,6 +1,10 @@
 spring:
   application:
     name: user-service
+  profiles:
+    active: "prod"
+  config:
+    import: "optional:configserver:http://localhost:8071/"
   output:
     ansi:
       enabled: always
@@ -24,7 +28,7 @@ javax:
       driver: com.mysql.jdbc.Driver
 
 server:
-  port: 8080
+  port: 8081
   servlet:
     context-path: /
 
@@ -67,7 +71,6 @@ management:
 info:
   application:
     name: ${spring.application.name}
-    description: Very cool Spring Boot application
     version: '@project.version@'
     spring-cloud-version: '@spring-cloud.version@'
     spring-boot-version: '@project.parent.version@'

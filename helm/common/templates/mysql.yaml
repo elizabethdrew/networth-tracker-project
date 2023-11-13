@@ -41,22 +41,22 @@ spec:
         - name: MYSQL_DATABASE
           valueFrom:
             configMapKeyRef:
-              name: {{ .Values.global.configMapName }}
+              name: {{ .Values.app.configMapName }}
               key: MYSQL_DATABASE
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
             configMapKeyRef:
-              name: {{ .Values.global.configMapName }}
+              name: {{ .Values.app.configMapName }}
               key: MYSQL_ROOT_PASSWORD
         - name: MYSQL_USER
           valueFrom:
             configMapKeyRef:
-              name: {{ .Values.global.configMapName }}
+              name: {{ .Values.app.configMapName }}
               key: MYSQL_USER
         - name: MYSQL_PASSWORD
           valueFrom:
             configMapKeyRef:
-              name: {{ .Values.global.configMapName }}
+              name: {{ .Values.app.configMapName }}
               key: MYSQL_PASSWORD
         volumeMounts:
         - name: {{ .Values.app.serviceName }}-mysql-pvc
@@ -68,7 +68,7 @@ spec:
   - metadata:
       name: {{ .Values.app.serviceName }}-mysql-pvc
     spec:
-      storageClassName: retain-storage
+      storageClassName: {{ .Values.app.serviceName }}-retain-storage
       accessModes:
       - ReadWriteOnce
       resources:

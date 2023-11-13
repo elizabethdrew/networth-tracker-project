@@ -2,9 +2,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.global.configMapName }}
+  name: {{ .Values.app.configMapName }}
 data:
-  SPRING_PROFILES_ACTIVE: {{ .Values.global.activeProfile }}
+  SPRING_PROFILES_ACTIVE: {{ .Values.global.appConfig.activeProfile }}
+  {{- if .Values.app.enabledFeatures.mysql }}
   SPRING_DATASOURCE_URL: jdbc:mysql://{{ .Values.app.serviceName }}-mysql:3306/{{ .Values.app.serviceName }}db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
   SPRING_DATASOURCE_USERNAME: {{ .Values.mysql.databaseUser }}
   SPRING_DATASOURCE_PASSWORD: {{ .Values.mysql.databasePassword }}
@@ -12,4 +13,8 @@ data:
   MYSQL_DATABASE: {{ .Values.app.serviceName }}db
   MYSQL_USER: {{ .Values.mysql.databaseUser }}
   MYSQL_PASSWORD: {{ .Values.mysql.databasePassword }}
+  {{- end }}
+  {{- if .Values.app.enabledFeatures.config }}
+  SPRING_CONFIG_IMPORT: {{ .Values.app.configServerURL }}
+  {{- end }}
   {{- end -}}

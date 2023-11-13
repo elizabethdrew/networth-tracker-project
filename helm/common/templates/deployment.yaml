@@ -26,28 +26,35 @@ spec:
           - name: SPRING_APPLICATION_NAME
             value: {{ .Values.appName }}
           {{- end }}
+          {{- if .Values.app.enabledFeatures.config }}
+          - name: SPRING_CONFIG_IMPORT
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.app.configMapName }}
+                key: SPRING_CONFIG_IMPORT
+          {{- end }}
           {{- if .Values.app.enabledFeatures.profile }}
           - name: SPRING_PROFILES_ACTIVE
             valueFrom:
               configMapKeyRef:
-                name: {{ .Values.global.configMapName }}
+                name: {{ .Values.app.configMapName }}
                 key: SPRING_PROFILES_ACTIVE
           {{- end }}
           {{- if .Values.app.enabledFeatures.mysql }}
           - name: SPRING_DATASOURCE_URL
             valueFrom:
               configMapKeyRef:
-                name: {{ .Values.global.configMapName }}
+                name: {{ .Values.app.configMapName }}
                 key: SPRING_DATASOURCE_URL
           - name: SPRING_DATASOURCE_USERNAME
             valueFrom:
               configMapKeyRef:
-                name: {{ .Values.global.configMapName }}
+                name: {{ .Values.app.configMapName }}
                 key: SPRING_DATASOURCE_USERNAME
           - name: SPRING_DATASOURCE_PASSWORD
             valueFrom:
               configMapKeyRef:
-                name: {{ .Values.global.configMapName }}
+                name: {{ .Values.app.configMapName }}
                 key: SPRING_DATASOURCE_PASSWORD
           {{- end }}
 

@@ -1,1 +1,4 @@
-
+global:
+  appConfig:
+    activeProfile: default
+    configServerURL: optional:configserver:http://configserver:8071/
