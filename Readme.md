@@ -31,6 +31,10 @@ Please see [Versions.md](/notes/Versions.md) for detailed changelog.
 + Spring Config Server
 + Spring Cloud Eureka Server
 
+## Helpful Dashboards
++ Eureka Dashboard: Available at port 8761
++ Config Server: Available at port 8071 - example: localhost:8761/user-service/default
+
 ## Getting Started
 ### Prerequisites
 
@@ -122,4 +126,5 @@ mvn spring-boot:build-image -Dmaven.test.skip=true
 ```
 docker-compose up --build -d
 ```
+
 
