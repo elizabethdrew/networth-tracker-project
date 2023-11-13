@@ -11,7 +11,7 @@ Please see [Versions.md](/notes/Versions.md) for detailed changelog.
 ## Service Structure
 + User Service - Handles user account functionality
 + Config Server - Provides centralised configuration properties for other services
-+ Eureka Server - Service registration, discovery, and load balancing
++ Eureka Server - Service registration, discovery, and load balancing (For Use With Docker Compose)
 
 ## Built With
 + Spring Boot
@@ -32,7 +32,7 @@ Please see [Versions.md](/notes/Versions.md) for detailed changelog.
 + Spring Cloud Eureka Server
 
 ## Helpful Dashboards
-+ Eureka Dashboard: Available at port 8761
++ Eureka Dashboard: Available at port 8761 (When running via Docker Compose)
 + Config Server: Available at port 8071 - example: localhost:8761/user-service/default
 
 ## Getting Started
@@ -127,4 +127,8 @@ mvn spring-boot:build-image -Dmaven.test.skip=true
 docker-compose up --build -d
 ```
 
+---
+## Kubernetes Discovery Server
 
+To install Kubernetes Discovery Server into your K8 cluster please use the following command: 
+kubectl apply -f kubernetes/kubernetes-discoveryserver.yml

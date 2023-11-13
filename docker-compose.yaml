@@ -67,7 +67,7 @@ services:
         max_attempts: 3
         window: 120s
     environment:
-      SPRING_PROFILES_ACTIVE: default
+      SPRING_PROFILES_ACTIVE: docker
       SPRING_APPLICATION_NAME: user-service
       SPRING_DATASOURCE_URL: jdbc:mysql://users_db:3306/usersdb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: admin

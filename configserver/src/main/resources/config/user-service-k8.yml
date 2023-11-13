@@ -1,0 +1,14 @@
+info:
+  application:
+    description: User Service For Networth Application - K8 Environment
+
+spring:
+  cloud:
+    discovery:
+      client:
+        health-indicator:
+          enabled: false
+    kubernetes:
+      discovery:
+        discovery-server-url: "http://localhost:8761"
+        all-namespaces: true

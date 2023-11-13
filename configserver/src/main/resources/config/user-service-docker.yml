@@ -1,0 +1,12 @@
+info:
+  application:
+    description: User Service For Networth Application - Docker Environment
+
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://eurekaserver:8761/eureka/
+  instance:
+    hostname: localhost
