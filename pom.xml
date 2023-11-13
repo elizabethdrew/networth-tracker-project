@@ -21,6 +21,7 @@
 	<modules>
 		<module>user-service</module>
 		<module>configserver</module>
+		<module>eurekaserver</module>
 	</modules>
 
 	<properties>
