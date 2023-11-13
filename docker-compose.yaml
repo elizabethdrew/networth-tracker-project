@@ -58,7 +58,7 @@ services:
       retries: 20
       start_period: 10s
     depends_on:
-      - config-server
+      - configserver
       - users_db
     deploy:
       restart_policy:

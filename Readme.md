@@ -11,6 +11,7 @@ Please see [Versions.md](/notes/Versions.md) for detailed changelog.
 ## Service Structure
 + User Service - Handles user account functionality
 + Config Server - Provides centralised configuration properties for other services
++ Eureka Server - Service registration, discovery, and load balancing
 
 ## Built With
 + Spring Boot
@@ -28,6 +29,7 @@ Please see [Versions.md](/notes/Versions.md) for detailed changelog.
 + Actuator
 + Jib
 + Spring Config Server
++ Spring Cloud Eureka Server
 
 ## Getting Started
 ### Prerequisites
