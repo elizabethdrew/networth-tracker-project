@@ -32,6 +32,15 @@ server:
   servlet:
     context-path: /
 
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://eurekaserver:8761/eureka/
+  instance:
+    hostname: localhost
+
 logging:
   level:
     com:

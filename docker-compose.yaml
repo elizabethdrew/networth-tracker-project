@@ -5,6 +5,32 @@ networks:
 
 services:
 
+  eurekaserver:
+    image: networth/eurekaserver:0.0.1-SNAPSHOT
+    ports:
+      - "8761:8761"
+    networks:
+      - networth
+    healthcheck:
+      test: "curl --fail --silent localhost:8761/actuator/health/readiness | grep UP || exit 1"
+      interval: 20s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    depends_on:
+      - configserver
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 15s
+        max_attempts: 3
+        window: 120s
+    environment:
+      EUREKA_INSTANCE_HOSTNAME: eurekaserver
+      SPRING_PROFILES_ACTIVE: default
+      SPRING_APPLICATION_NAME: eurekaserver
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8071/
+
   configserver:
     image: networth/configserver:0.0.1-SNAPSHOT
     ports:
@@ -32,6 +58,7 @@ services:
       retries: 20
       start_period: 10s
     depends_on:
+      - config-server
       - users_db
     deploy:
       restart_policy:
@@ -46,6 +73,7 @@ services:
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: password
       SPRING_CONFIG_IMPORT: optional:configserver:http://configserver:8071/
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8761/eureka/
 
   users_db:
     image: mysql:8.0
