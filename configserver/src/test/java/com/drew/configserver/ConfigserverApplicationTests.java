@@ -1,10 +1,10 @@
-package com.drew.networth;
+package com.drew.configserver;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ConfigServerApplicationTests {
+class ConfigserverApplicationTests {
 
 	@Test
 	void contextLoads() {
