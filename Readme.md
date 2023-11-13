@@ -4,7 +4,7 @@ The Networth Tracker project is a microservice application designed to provide u
 
 ## Version Information
 
-Current Version: v1.0.0
+Current Version: v1.1.0
 
 Please see [Versions.md](/notes/Versions.md) for detailed changelog.
 
