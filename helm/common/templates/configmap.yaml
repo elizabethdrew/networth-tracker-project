@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.app.serviceName }}-configmap
+  name: {{ .Values.app.configMapName }}
 data:
   SPRING_PROFILES_ACTIVE: {{ .Values.global.appConfig.activeProfile }}
   {{- if .Values.app.enabledFeatures.mysql }}
