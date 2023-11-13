@@ -1,5 +1,12 @@
 # Versions
 
+## v1.1.0
+**Date: 13/11/2023**
+
+Config Server has been added.
++ Usable via Docker and Helm
++ User Service configurations have been tidied
+
 ## v1.0.0
 **Date: 09/11/2023**
 
