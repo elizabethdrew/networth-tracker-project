@@ -10,6 +10,7 @@ Please see [Versions.md](/notes/Versions.md) for detailed changelog.
 
 ## Service Structure
 + User Service - Handles user account functionality
++ Config Server - Provides centralised configuration properties for other services
 
 ## Built With
 + Spring Boot
@@ -26,6 +27,7 @@ Please see [Versions.md](/notes/Versions.md) for detailed changelog.
 + TestContainers
 + Actuator
 + Jib
++ Spring Config Server
 
 ## Getting Started
 ### Prerequisites
