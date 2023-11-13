@@ -1,6 +1,10 @@
 spring:
   application:
     name: user-service
+  profiles:
+    active: "prod"
+  config:
+    import: "optional:configserver:http://localhost:8071/"
   output:
     ansi:
       enabled: always
@@ -67,7 +71,6 @@ management:
 info:
   application:
     name: ${spring.application.name}
-    description: User Service For Networth Application
     version: '@project.version@'
     spring-cloud-version: '@spring-cloud.version@'
     spring-boot-version: '@project.parent.version@'
