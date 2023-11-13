@@ -31,6 +31,6 @@ info:
   application:
     name: ${spring.application.name}
     description: Config Server For Networth Application
-    version: '@project.version@'
-    spring-cloud-version: '@spring-cloud.version@'
+    version: '0.0.1-SNAPSHOT'
+    spring-cloud-version: '2022.0.4'
     spring-boot-version: '@project.parent.version@'
