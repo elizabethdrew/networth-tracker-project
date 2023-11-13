@@ -1,0 +1,37 @@
+databaseChangeLog:
+  - changeSet:
+      id: test_001_seed_user
+      author: elizabeth_drew
+      context: test
+      changes:
+        - insert:
+            tableName: user
+            columns:
+              - column:
+                  name: user_id
+                  value: "1"
+              - column:
+                  name: username
+                  value: "johndoe"
+              - column:
+                  name: email
+                  value: "johndoe@example.co.uk"
+              - column:
+                  name: password
+                  value: "Password123!"
+              - column:
+                  name: active_user
+                  valueBoolean: true
+              - column:
+                  name: tax_rate
+                  value: "BASIC"
+              - column:
+                  name: date_birth
+                  value: "1990-01-01"
+              - column:
+                  name: date_open
+                  value: "2023-06-06 12:00:00"
+              - column:
+                  name: date_updated
+                  type: "2023-10-06 12:00:00"
+      runAlways: true

@@ -1,0 +1,52 @@
+version: '3.8'
+
+networks:
+  networth:
+
+services:
+
+  user-service:
+    image: networth/user-service:0.0.1-SNAPSHOT
+    ports:
+      - "8080:8080"
+    networks:
+      - networth
+    healthcheck:
+      test: "curl --fail --silent localhost:8761/actuator/health/readiness | grep UP || exit 1"
+      interval: 20s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    depends_on:
+      - users_db
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+        max_attempts: 3
+        window: 120s
+    environment:
+      SPRING_PROFILES_ACTIVE: default
+      SPRING_APPLICATION_NAME: user-service
+      SPRING_DATASOURCE_URL: jdbc:mysql://users_db:3306/usersdb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: password
+
+  users_db:
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=usersdb
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=password
+    ports:
+      - "3306:3306"
+    networks:
+      - networth
+    volumes:
+      - db_users:/var/lib/mysql
+
+
+
+volumes:
+  db_users:

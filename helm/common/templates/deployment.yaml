@@ -1,0 +1,54 @@
+{{- define "common.deployment" -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.app.deploymentName }}
+  labels:
+    app: {{ .Values.app.label }}
+spec:
+  replicas: {{ .Values.app.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.app.label }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.app.label }}
+    spec:
+      containers:
+        - name: {{ .Values.app.label }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.service.containerPort }}
+              protocol: TCP
+          env:
+          {{- if .Values.app.enabledFeatures.name }}
+          - name: SPRING_APPLICATION_NAME
+            value: {{ .Values.appName }}
+          {{- end }}
+          {{- if .Values.app.enabledFeatures.profile }}
+          - name: SPRING_PROFILES_ACTIVE
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.global.configMapName }}
+                key: SPRING_PROFILES_ACTIVE
+          {{- end }}
+          {{- if .Values.app.enabledFeatures.mysql }}
+          - name: SPRING_DATASOURCE_URL
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.global.configMapName }}
+                key: SPRING_DATASOURCE_URL
+          - name: SPRING_DATASOURCE_USERNAME
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.global.configMapName }}
+                key: SPRING_DATASOURCE_USERNAME
+          - name: SPRING_DATASOURCE_PASSWORD
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.global.configMapName }}
+                key: SPRING_DATASOURCE_PASSWORD
+          {{- end }}
+
+  {{- end -}}
