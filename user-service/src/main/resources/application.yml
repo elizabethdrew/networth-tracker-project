@@ -21,6 +21,10 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: none
+  cloud:
+    kubernetes:
+      discovery:
+        all-namespaces: true
 
 javax:
   persistence:
