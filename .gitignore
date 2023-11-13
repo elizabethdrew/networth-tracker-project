@@ -1,2 +1,2 @@
 /.idea/
-helm/services/users/charts/common-0.1.0.tgz
+helm/services/.*/charts/common-0.1.0.tgz

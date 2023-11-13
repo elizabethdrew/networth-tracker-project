@@ -1,12 +1,12 @@
 global:
-  configMapName: common-configmap
-  activeProfile: default
+  appConfig: {}
 
 app:
   name: users
   label: users
   deploymentName: users-deployment
   serviceName: users
+  configMapName: users-configmap
   replicaCount: 1
   enabledFeatures:
     name: true
