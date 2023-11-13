@@ -16,3 +16,7 @@
 9. Add Configs to config server for service
 10. Add Config Server url to service application.yml
 
+
+
+### Config Server Notes:
+Currently my configs are on the classpath, however later down the line I want to explore housing these configurations on GitLab instead.
