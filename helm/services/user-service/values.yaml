@@ -2,18 +2,22 @@ global:
   appConfig: {}
 
 app:
-  name: users
+  name: user-service
   label: users
   deploymentName: users-deployment
-  serviceName: users
+  serviceName: user-service
   configMapName: users-configmap
+  activeProfile: k8
+  configURI: http://configserver:8071
+  configServerURL: optional:configserver:http://configserver:8071/
+  discoveryServerURL: http://spring-cloud-kubernetes-discoveryserver:80/
   replicaCount: 1
   enabledFeatures:
     name: true
     profile: true
     mysql: true
     config: true
-    eureka: true
+    discovery: true
     resourceServer: false
     otel: true
     kafka: true

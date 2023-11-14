@@ -4,7 +4,9 @@ kind: ConfigMap
 metadata:
   name: {{ .Values.app.configMapName }}
 data:
-  SPRING_PROFILES_ACTIVE: {{ .Values.global.appConfig.activeProfile }}
+  {{- if .Values.app.enabledFeatures.profile }}
+  SPRING_PROFILES_ACTIVE: {{ .Values.app.activeProfile }}
+  {{- end }}
   {{- if .Values.app.enabledFeatures.mysql }}
   SPRING_DATASOURCE_URL: jdbc:mysql://{{ .Values.app.serviceName }}-mysql:3306/{{ .Values.app.serviceName }}db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
   SPRING_DATASOURCE_USERNAME: {{ .Values.mysql.databaseUser }}
@@ -16,5 +18,9 @@ data:
   {{- end }}
   {{- if .Values.app.enabledFeatures.config }}
   SPRING_CONFIG_IMPORT: {{ .Values.app.configServerURL }}
+  SPRING_CLOUD_CONFIG_URI: {{ .Values.app.configURI }}
+  {{- end }}
+  {{- if .Values.app.enabledFeatures.discovery }}
+  SPRING_CLOUD_KUBERNETES_DISCOVERY_DISCOVERY_SERVER_URL: {{ .Values.app.discoveryServerURL }}
   {{- end }}
   {{- end -}}

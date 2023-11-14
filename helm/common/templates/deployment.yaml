@@ -32,6 +32,11 @@ spec:
               configMapKeyRef:
                 name: {{ .Values.app.configMapName }}
                 key: SPRING_CONFIG_IMPORT
+          - name: SPRING_CLOUD_CONFIG_URI
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.app.configMapName }}
+                key: SPRING_CLOUD_CONFIG_URI
           {{- end }}
           {{- if .Values.app.enabledFeatures.profile }}
           - name: SPRING_PROFILES_ACTIVE
@@ -57,5 +62,11 @@ spec:
                 name: {{ .Values.app.configMapName }}
                 key: SPRING_DATASOURCE_PASSWORD
           {{- end }}
-
+          {{- if .Values.app.enabledFeatures.discovery }}
+          - name: SPRING_CLOUD_KUBERNETES_DISCOVERY_DISCOVERY_SERVER_URL
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.app.configMapName }}
+                key: SPRING_CLOUD_KUBERNETES_DISCOVERY_DISCOVERY_SERVER_URL
+          {{- end }}
   {{- end -}}

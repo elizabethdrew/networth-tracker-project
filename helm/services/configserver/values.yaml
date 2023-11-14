@@ -7,12 +7,14 @@ app:
   deploymentName: configserver-deployment
   serviceName: configserver
   configMapName: configserver-configmap
+  discoveryServerURL: http://spring-cloud-kubernetes-discoveryserver:80/
   replicaCount: 1
   enabledFeatures:
     name: true
     profile: false
     mysql: false
     config: false
+    discovery: true
     eureka: false
     resourceServer: false
     otel: true
@@ -23,7 +25,7 @@ image:
   tag: 0.0.1-SNAPSHOT
 
 service:
-  type: ClusterIP
+  type: NodePort
   port: 8071
   targetPort: 8071
   containerPort: 8071

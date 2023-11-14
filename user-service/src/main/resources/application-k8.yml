@@ -1,0 +1,3 @@
+spring:
+    kubernetes:
+        all-namespaces: true
