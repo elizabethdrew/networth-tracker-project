@@ -24,7 +24,7 @@ spec:
           env:
           {{- if .Values.app.enabledFeatures.name }}
           - name: SPRING_APPLICATION_NAME
-            value: {{ .Values.appName }}
+            value: {{ .Values.app.name }}
           {{- end }}
           {{- if .Values.app.enabledFeatures.config }}
           - name: SPRING_CONFIG_IMPORT
