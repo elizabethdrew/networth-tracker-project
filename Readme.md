@@ -4,14 +4,17 @@ The Networth Tracker project is a microservice application designed to provide u
 
 ## Version Information
 
-Current Version: v1.1.0
+Current Version: v1.2.0
 
 Please see [Versions.md](/notes/Versions.md) for detailed changelog.
 
 ## Service Structure
 + User Service - Handles user account functionality
 + Config Server - Provides centralised configuration properties for other services
-+ Eureka Server - Service registration, discovery, and load balancing (For Use With Docker Compose)
++ Discovery Server
+  + Eureka Server - Service registration, discovery, and load balancing (For Use With Docker Compose)
+  + Kubernetes Discovery Server - Service registration, discovery, and load balancing (For Use With Kubernetes)
+  
 
 ## Built With
 + Spring Boot
