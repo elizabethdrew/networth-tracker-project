@@ -1,3 +1,12 @@
 spring:
     kubernetes:
         all-namespaces: true
+    cloud:
+        discovery:
+            client:
+                health-indicator:
+                    enabled: false
+
+eureka:
+    client:
+        enabled: false
