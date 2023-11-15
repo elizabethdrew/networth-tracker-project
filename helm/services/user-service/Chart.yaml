@@ -10,5 +10,5 @@ dependencies:
     version: 0.1.0
     repository: file://../../common
     import-values:
-      - child: global.appConfig
-        parent: global.appConfig
+      - child: global
+        parent: global

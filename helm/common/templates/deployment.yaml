@@ -81,11 +81,30 @@ spec:
                 name: {{ .Values.app.configMapName }}
                 key: SPRING_CLOUD_CONFIG_SERVER_GIT_PASSWORD
           {{- end }}
-          {{- if .Values.settings.enabledFeatures.gatewayServer }}
+          {{- if .Values.settings.enabledFeatures.securityServer }}
           - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI
             valueFrom:
               configMapKeyRef:
                 name: {{ .Values.app.configMapName }}
                 key: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI
+          {{- end }}
+          {{- if .Values.settings.enabledFeatures.otel }}
+          - name: JAVA_TOOL_OPTIONS
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.global.configMapName }}
+                key: JAVA_TOOL_OPTIONS
+          - name: OTEL_EXPORTER_OTLP_ENDPOINT
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.global.configMapName }}
+                key: OTEL_EXPORTER_OTLP_ENDPOINT
+          - name: OTEL_METRICS_EXPORTER
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.global.configMapName }}
+                key: OTEL_METRICS_EXPORTER
+          - name: OTEL_SERVICE_NAME
+            value: {{ .Values.appName }}
           {{- end }}
   {{- end -}}

@@ -1,5 +1,4 @@
-global:
-  appConfig: {}
+global: {}
 
 app:
   name: gatewayserver
@@ -11,12 +10,6 @@ app:
   activeProfile: k8
 
 settings:
-  config:
-    uri: http://configserver:8071
-    serverURL: optional:configserver:http://configserver:8071/
-  discoveryServerURL: http://spring-cloud-kubernetes-discoveryserver:80/
-  keycloak:
-    url: http://keycloak.default.svc.cluster.local:80/realms/master/protocol/openid-connect/certs
   enabledFeatures:
     name: true
     profile: true
@@ -24,7 +17,9 @@ settings:
     configClient: true
     configServer: false
     discovery: true
-    gatewayServer: true
+    securityServer: true
+    otel: true
+    kafka: false
 
 image:
   repository: networth/gatewayserver

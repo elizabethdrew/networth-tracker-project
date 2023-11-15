@@ -1,5 +1,4 @@
-global:
-  appConfig: {}
+global: {}
 
 app:
   name: user-service
@@ -8,13 +7,9 @@ app:
   serviceName: user-service
   configMapName: users-configmap
   activeProfile: k8
+  replicaCount: 1
 
 settings:
-  config:
-    uri: http://configserver:8071
-    serverURL: optional:configserver:http://configserver:8071/
-  discoveryServerURL: http://spring-cloud-kubernetes-discoveryserver:80/
-  replicaCount: 1
   enabledFeatures:
     name: true
     profile: true
@@ -22,7 +17,7 @@ settings:
     configClient: true
     configServer: false
     discovery: true
-    resourceServer: false
+    securityServer: false
     otel: true
     kafka: true
 

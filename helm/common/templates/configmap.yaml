@@ -17,17 +17,22 @@ data:
   MYSQL_PASSWORD: {{ .Values.mysql.databasePassword }}
   {{- end }}
   {{- if .Values.settings.enabledFeatures.configClient }}
-  SPRING_CONFIG_IMPORT: {{ .Values.settings.config.serverURL }}
-  SPRING_CLOUD_CONFIG_URI: {{ .Values.settings.config.uri }}
+  SPRING_CONFIG_IMPORT: {{ .Values.global.config.serverURL }}
+  SPRING_CLOUD_CONFIG_URI: {{ .Values.global.config.uri }}
   {{- end }}
   {{- if .Values.settings.enabledFeatures.configServer }}
   SPRING_CLOUD_CONFIG_SERVER_GIT_USERNAME: {{ .Values.configServer.username }}
   SPRING_CLOUD_CONFIG_SERVER_GIT_PASSWORD: {{ .Values.configServer.password }}
   {{- end }}
   {{- if .Values.settings.enabledFeatures.discovery }}
-  SPRING.CLOUD.KUBERNETES.DISCOVERY.DISCOVERY-SERVER-URL: {{ .Values.settings.discoveryServerURL }}
+  SPRING.CLOUD.KUBERNETES.DISCOVERY.DISCOVERY-SERVER-URL: {{ .Values.global.discovery.serverURL }}
   {{- end }}
-  {{- if .Values.settings.enabledFeatures.gatewayServer }}
-  SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI: {{ .Values.settings.keycloak.url }}
+  {{- if .Values.settings.enabledFeatures.securityServer }}
+  SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI: {{ .Values.global.keycloak.url }}
+  {{- end }}
+  {{- if .Values.settings.enabledFeatures.otel }}
+  JAVA_TOOL_OPTIONS: { { .Values.global.otel.openTelemetryJavaAgent } }
+  OTEL_EXPORTER_OTLP_ENDPOINT: { { .Values.global.otel.exporterEndPoint } }
+  OTEL_METRICS_EXPORTER: { { .Values.global.otel.metricsExporter } }
   {{- end }}
   {{- end -}}

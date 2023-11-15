@@ -1,5 +1,4 @@
-global:
-  appConfig: {}
+global: {}
 
 app:
   name: configserver
@@ -17,7 +16,7 @@ settings:
     configClient: false
     configServer: true
     discovery: false
-    resourceServer: false
+    securityServer: false
     otel: true
     kafka: false
 

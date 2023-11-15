@@ -88,6 +88,16 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.opentelemetry.javaagent</groupId>
+			<artifactId>opentelemetry-javaagent</artifactId>
+			<version>1.31.0</version>
+			<scope>runtime</scope>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
@@ -96,6 +106,13 @@
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-dependencies</artifactId>
 				<version>${spring-cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-tracing-bom</artifactId>
+				<version>${micrometer-tracing.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
