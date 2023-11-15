@@ -1,13 +1,15 @@
 spring:
   application:
     name: "configserver"
-  profiles:
-    active: native
   cloud:
     config:
       server:
-        native:
-          search-locations: "classpath:/config"
+        git:
+          uri: https://gitlab.com/wcdio_backendprojects/networth-tracker-configurations
+          clone-on-start: true
+          default-label: main
+          username: elizabeth.drew
+          password: glpat-aDw3wMCYyt5DVy8qaLU_
 
 server:
   port: 8071

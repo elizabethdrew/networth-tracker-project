@@ -12,18 +12,23 @@ app:
     name: true
     profile: false
     mysql: false
-    config: false
+    configClient: false
+    configServer: true
     discovery: false
     resourceServer: false
     otel: true
     kafka: false
+
+configServer:
+  username: elizabeth.drew
+  password: glpat-aDw3wMCYyt5DVy8qaLU_
 
 image:
   repository: networth/configserver
   tag: 0.0.1-SNAPSHOT
 
 service:
-  type: NodePort
+  type: ClusterIP
   port: 8071
   targetPort: 8071
   containerPort: 8071

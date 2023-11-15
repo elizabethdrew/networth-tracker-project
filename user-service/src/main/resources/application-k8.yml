@@ -4,6 +4,7 @@ spring:
     cloud:
         kubernetes:
             discovery:
+                discovery-server-url: http://spring-cloud-kubernetes-discoveryserver:80/
                 enabled: true
             reload:
                 enabled: true
