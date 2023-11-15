@@ -7,8 +7,7 @@ spring:
     gateway:
       discovery:
         locator:
-          enabled: false
-          lowerCaseServiceId: true
+          enabled: true
       routes:
         - id: user-service
           uri: http://user-service:8081
@@ -22,7 +21,7 @@ logging:
   level:
     com:
       drew:
-        user-service: DEBUG
+        gatewayserver: DEBUG
   pattern:
     level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
 
@@ -47,6 +46,8 @@ management:
       exposure:
         include: "*"
   endpoint:
+    gateway:
+      enabled: true
     info:
       enabled: true
     shutdown:
