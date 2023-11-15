@@ -1156,59 +1156,35 @@ prometheus:
       key: ""
     internal:
       jobList: [
-        { "job_name": "account-service",
+        { "job_name": "user-service",
           "metrics_path": "/actuator/prometheus",
           "static_configs": [
             {
-                "targets": [ "account-service:8081" ]
+                "targets": [ "user-service:8081" ]
             }
           ]
         },
-        { "job_name": "profile-service",
+        { "job_name": "gatewayserver",
           "metrics_path": "/actuator/prometheus",
           "static_configs": [
             {
-              "targets": [ "profile-service:8080" ]
+              "targets": [ "api-gateway:8080" ]
             }
           ]
         },
-        { "job_name": "balance-service",
+        { "job_name": "eurekaserver",
           "metrics_path": "/actuator/prometheus",
           "static_configs": [
             {
-              "targets": [ "balance-service:8082" ]
+              "targets": [ "eurekaserver:8761" ]
             }
           ]
         },
-        { "job_name": "isa-service",
+        { "job_name": "configserver",
           "metrics_path": "/actuator/prometheus",
           "static_configs": [
             {
-              "targets": [ "isa-service:8083" ]
-            }
-          ]
-        },
-        { "job_name": "api-gateway",
-          "metrics_path": "/actuator/prometheus",
-          "static_configs": [
-            {
-              "targets": [ "api-gateway:8765" ]
-            }
-          ]
-        },
-        { "job_name": "discovery-service",
-          "metrics_path": "/actuator/prometheus",
-          "static_configs": [
-            {
-              "targets": [ "discovery-service:8761" ]
-            }
-          ]
-        },
-        { "job_name": "config-server",
-          "metrics_path": "/actuator/prometheus",
-          "static_configs": [
-            {
-              "targets": [ "account-service:8071" ]
+              "targets": [ "configserver:8071" ]
             }
           ]
         } ]
