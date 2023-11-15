@@ -11,10 +11,6 @@ spring:
       timeout: 1s
   cloud:
     gateway:
-      discovery:
-        locator:
-          enabled: true
-          lowerCaseServiceId: true
         httpClient:
           connect-timeout: 1000
           response-timeout: 10s
