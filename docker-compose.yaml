@@ -41,6 +41,7 @@ services:
       - "8080"
     depends_on:
       - eurekaserver
+      - configserver
     healthcheck:
       test: "curl --fail --silent localhost:8761/actuator/health/readiness | grep UP || exit 1"
       interval: 20s
