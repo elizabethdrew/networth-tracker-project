@@ -13,7 +13,7 @@ spring:
     oauth2:
       resource-server:
         jwt:
-          jwk-set-uri: http://keycloak:8080/realms/networth/protocol/openid-connect/certs
+          jwk-set-uri: http://keycloak:7080/realms/networth/protocol/openid-connect/certs
           issuer-uri: http://localhost:7080/realms/networth
   cloud:
     gateway:
