@@ -1,4 +1,5 @@
 /.idea/
 helm/services/user-service/charts/common-0.1.0.tgz
 helm/services/configserver/charts/common-0.1.0.tgz
-/.data/.*
+.data/
+/networth.iml
