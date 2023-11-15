@@ -8,6 +8,7 @@ spring:
       discovery:
         locator:
           enabled: true
+          lowerCaseServiceId: true
       routes:
         - id: user-service
           uri: http://user-service:8081
