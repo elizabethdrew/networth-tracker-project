@@ -31,6 +31,33 @@ services:
       SPRING_APPLICATION_NAME: eurekaserver
       SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8071/
 
+  gatewayserver:
+    image: networth/gatewayserver:0.0.1-SNAPSHOT
+    ports:
+      - "8080:8080"
+    networks:
+      - networth
+    expose:
+      - "8080"
+    depends_on:
+      - eurekaserver
+    healthcheck:
+      test: "curl --fail --silent localhost:8761/actuator/health/readiness | grep UP || exit 1"
+      interval: 20s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 15s
+        max_attempts: 3
+        window: 120s
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_APPLICATION_NAME: gatewayserver
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8761/eureka/
+
   configserver:
     image: networth/configserver:0.0.1-SNAPSHOT
     ports:
@@ -46,7 +73,6 @@ services:
     environment:
       SPRING_CLOUD_CONFIG_SERVER_GIT_USERNAME: elizabeth.drew
       SPRING_CLOUD_CONFIG_SERVER_GIT_PASSWORD: glpat-aDw3wMCYyt5DVy8qaLU_
-
 
   user-service:
     image: networth/user-service:0.0.1-SNAPSHOT

@@ -15,6 +15,9 @@ spring:
           predicates:
             - Path=/api/v1/users/**
 
+server:
+  port: 8080
+
 logging:
   level:
     com:
