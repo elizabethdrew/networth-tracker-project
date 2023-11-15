@@ -3,18 +3,18 @@ spring:
     name: gatewayserver
   config:
     import: "optional:configserver:http://configserver:8071/"
+  security:
+    oauth2:
+      resource-server:
+        jwt:
+          jwk-set-uri: http://keycloak:8080/realms/networth/protocol/openid-connect/certs
+          issuer-uri: http://localhost:7080/realms/networth
   data:
     redis:
       connect-timeout: 2s
       host: localhost
       port: 6379
       timeout: 1s
-  security:
-    oauth2:
-      resource-server:
-        jwt:
-          jwk-set-uri: http://keycloak:7080/realms/networth/protocol/openid-connect/certs
-          issuer-uri: http://localhost:7080/realms/networth
   cloud:
     gateway:
       httpClient:
