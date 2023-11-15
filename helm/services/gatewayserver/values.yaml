@@ -1,0 +1,37 @@
+global:
+  appConfig: {}
+
+app:
+  name: gatewayserver
+  label: gatewayserver
+  deploymentName: gatewayserver-deployment
+  serviceName: gatewayserver
+  configMapName: gatewayserver-configmap
+  replicaCount: 1
+  activeProfile: k8
+
+settings:
+  config:
+    uri: http://configserver:8071
+    serverURL: optional:configserver:http://configserver:8071/
+  discoveryServerURL: http://spring-cloud-kubernetes-discoveryserver:80/
+  keycloak:
+    url: http://keycloak.default.svc.cluster.local:80/realms/master/protocol/openid-connect/certs
+  enabledFeatures:
+    name: true
+    profile: true
+    mysql: false
+    configClient: true
+    configServer: false
+    discovery: true
+    gatewayServer: true
+
+image:
+  repository: networth/gatewayserver
+  tag: 0.0.1-SNAPSHOT
+
+service:
+  type: LoadBalancer
+  port: 8080
+  targetPort: 8080
+  containerPort: 8080

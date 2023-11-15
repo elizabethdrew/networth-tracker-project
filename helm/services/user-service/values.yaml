@@ -8,6 +8,8 @@ app:
   serviceName: user-service
   configMapName: users-configmap
   activeProfile: k8
+
+settings:
   config:
     uri: http://configserver:8071
     serverURL: optional:configserver:http://configserver:8071/

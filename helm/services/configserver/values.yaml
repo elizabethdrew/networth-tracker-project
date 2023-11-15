@@ -8,6 +8,8 @@ app:
   serviceName: configserver
   configMapName: configserver-configmap
   replicaCount: 1
+
+settings:
   enabledFeatures:
     name: true
     profile: false

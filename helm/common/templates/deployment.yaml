@@ -22,11 +22,11 @@ spec:
             - containerPort: {{ .Values.service.containerPort }}
               protocol: TCP
           env:
-          {{- if .Values.app.enabledFeatures.name }}
+          {{- if .Values.settings.enabledFeatures.name }}
           - name: SPRING_APPLICATION_NAME
             value: {{ .Values.app.name }}
           {{- end }}
-          {{- if .Values.app.enabledFeatures.configClient }}
+          {{- if .Values.settings.enabledFeatures.configClient }}
           - name: SPRING_CONFIG_IMPORT
             valueFrom:
               configMapKeyRef:
@@ -38,14 +38,14 @@ spec:
                 name: {{ .Values.app.configMapName }}
                 key: SPRING_CLOUD_CONFIG_URI
           {{- end }}
-          {{- if .Values.app.enabledFeatures.profile }}
+          {{- if .Values.settings.enabledFeatures.profile }}
           - name: SPRING_PROFILES_ACTIVE
             valueFrom:
               configMapKeyRef:
                 name: {{ .Values.app.configMapName }}
                 key: SPRING_PROFILES_ACTIVE
           {{- end }}
-          {{- if .Values.app.enabledFeatures.mysql }}
+          {{- if .Values.settings.enabledFeatures.mysql }}
           - name: SPRING_DATASOURCE_URL
             valueFrom:
               configMapKeyRef:
@@ -62,14 +62,14 @@ spec:
                 name: {{ .Values.app.configMapName }}
                 key: SPRING_DATASOURCE_PASSWORD
           {{- end }}
-          {{- if .Values.app.enabledFeatures.discovery }}
+          {{- if .Values.settings.enabledFeatures.discovery }}
           - name: SPRING.CLOUD.KUBERNETES.DISCOVERY.DISCOVERY-SERVER-URL
             valueFrom:
               configMapKeyRef:
                 name: {{ .Values.app.configMapName }}
                 key: SPRING.CLOUD.KUBERNETES.DISCOVERY.DISCOVERY-SERVER-URL
           {{- end }}
-          {{- if .Values.app.enabledFeatures.configServer }}
+          {{- if .Values.settings.enabledFeatures.configServer }}
           - name: SPRING_CLOUD_CONFIG_SERVER_GIT_USERNAME
             valueFrom:
               configMapKeyRef:
@@ -80,5 +80,12 @@ spec:
               configMapKeyRef:
                 name: {{ .Values.app.configMapName }}
                 key: SPRING_CLOUD_CONFIG_SERVER_GIT_PASSWORD
+          {{- end }}
+          {{- if .Values.settings.enabledFeatures.gatewayServer }}
+          - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.app.configMapName }}
+                key: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI
           {{- end }}
   {{- end -}}

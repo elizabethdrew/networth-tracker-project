@@ -4,10 +4,10 @@ kind: ConfigMap
 metadata:
   name: {{ .Values.app.configMapName }}
 data:
-  {{- if .Values.app.enabledFeatures.profile }}
+  {{- if .Values.settings.enabledFeatures.profile }}
   SPRING_PROFILES_ACTIVE: {{ .Values.app.activeProfile }}
   {{- end }}
-  {{- if .Values.app.enabledFeatures.mysql }}
+  {{- if .Values.settings.enabledFeatures.mysql }}
   SPRING_DATASOURCE_URL: jdbc:mysql://{{ .Values.app.serviceName }}-mysql:3306/{{ .Values.app.serviceName }}db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
   SPRING_DATASOURCE_USERNAME: {{ .Values.mysql.databaseUser }}
   SPRING_DATASOURCE_PASSWORD: {{ .Values.mysql.databasePassword }}
@@ -16,15 +16,18 @@ data:
   MYSQL_USER: {{ .Values.mysql.databaseUser }}
   MYSQL_PASSWORD: {{ .Values.mysql.databasePassword }}
   {{- end }}
-  {{- if .Values.app.enabledFeatures.configClient }}
-  SPRING_CONFIG_IMPORT: {{ .Values.app.config.serverURL }}
-  SPRING_CLOUD_CONFIG_URI: {{ .Values.app.config.uri }}
+  {{- if .Values.settings.enabledFeatures.configClient }}
+  SPRING_CONFIG_IMPORT: {{ .Values.settings.config.serverURL }}
+  SPRING_CLOUD_CONFIG_URI: {{ .Values.settings.config.uri }}
   {{- end }}
-  {{- if .Values.app.enabledFeatures.configServer }}
+  {{- if .Values.settings.enabledFeatures.configServer }}
   SPRING_CLOUD_CONFIG_SERVER_GIT_USERNAME: {{ .Values.configServer.username }}
   SPRING_CLOUD_CONFIG_SERVER_GIT_PASSWORD: {{ .Values.configServer.password }}
   {{- end }}
-  {{- if .Values.app.enabledFeatures.discovery }}
-  SPRING.CLOUD.KUBERNETES.DISCOVERY.DISCOVERY-SERVER-URL: {{ .Values.app.discoveryServerURL }}
+  {{- if .Values.settings.enabledFeatures.discovery }}
+  SPRING.CLOUD.KUBERNETES.DISCOVERY.DISCOVERY-SERVER-URL: {{ .Values.settings.discoveryServerURL }}
+  {{- end }}
+  {{- if .Values.settings.enabledFeatures.gatewayServer }}
+  SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI: {{ .Values.settings.keycloak.url }}
   {{- end }}
   {{- end -}}
