@@ -160,7 +160,7 @@ services:
     command:
       - start-dev --import-realm
     volumes:
-      - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
+      - ./helm/tools/keycloak/realm/realm-export.json:/opt/keycloak/data/import/realm-export.json
 
   keycloak_db:
     image: postgres:latest
