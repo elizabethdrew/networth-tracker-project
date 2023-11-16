@@ -1,0 +1,25 @@
+releases:
+  - name: keycloak
+    namespace: default
+    chart: ./tools/keycloak
+    version: 17.1.1
+    values:
+      - ./tools/keycloak/values.yaml
+  - name: configserver
+    namespace: default
+    chart: ./services/configserver
+    version: 0.1.0
+    values:
+      - ./services/configserver/values.yaml
+  - name: gatewayserver
+    namespace: default
+    chart: ./services/gatewayserver
+    version: 17.1.1
+    values:
+      - ./services/gatewayserver/values.yaml
+  - name: user-service
+    namespace: default
+    chart: ./services/user-service
+    version: 17.1.1
+    values:
+      - ./services/user-service/values.yaml

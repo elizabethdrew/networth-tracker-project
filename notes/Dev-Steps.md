@@ -16,6 +16,8 @@
 9. Add Configs to config server for service
 10. Add Config Server url to service application.yml
 11. FEIGN: Use Feign to connect with other services (not yet implemented - feign client has different settings for eureka and k8 discovery - add url)
+12. Update prometheuse.yaml
+13. Update Gateway routes
 
 + Kubernetes Discovery Server needs adding to Gateway Server (when built - s253 course) - could have issue with uri?
 

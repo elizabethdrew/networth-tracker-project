@@ -1,4 +1,14 @@
 global:
-  appConfig:
-    activeProfile: default
-    configServerURL: optional:configserver:http://configserver:8071/
+  config:
+    uri: http://configserver:8071
+    serverURL: optional:configserver:http://configserver:8071/
+  otel:
+    openTelemetryJavaAgent: "-javaagent:/app/libs/opentelemetry-javaagent-1.31.0.jar"
+    exporterEndPoint: http://tempo-grafana-tempo-distributor:4317
+    metricsExporter: none
+  kafka:
+    brokerURL: kafka-controller-0.kafka-controller-headless.default.svc.cluster.local:9092
+  discovery:
+    serverURL: http://spring-cloud-kubernetes-discoveryserver:80/
+  keycloak:
+    serverURL: http://keycloak.default.svc.cluster.local:80/realms/master/protocol/openid-connect/certs

@@ -1,5 +1,4 @@
-global:
-  appConfig: {}
+global: {}
 
 app:
   name: configserver
@@ -8,6 +7,8 @@ app:
   serviceName: configserver
   configMapName: configserver-configmap
   replicaCount: 1
+
+settings:
   enabledFeatures:
     name: true
     profile: false
@@ -15,7 +16,7 @@ app:
     configClient: false
     configServer: true
     discovery: false
-    resourceServer: false
+    securityServer: false
     otel: true
     kafka: false
 

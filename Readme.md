@@ -135,3 +135,12 @@ docker-compose up --build -d
 
 To install Kubernetes Discovery Server into your K8 cluster please use the following command: 
 kubectl apply -f kubernetes/kubernetes-discoveryserver.yml
+
+---
+## Kubernetes Keycloak Realm
+
+To create a config map based on the realm-export.json file run the following command:
+```
+kubectl create configmap keycloak-realm --from-file=./helm/keycloak/realm/realm-export.json
+```
+

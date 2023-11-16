@@ -1,0 +1,25 @@
+releases:
+  - name: grafana
+    namespace: default
+    chart: ./tools/grafana
+    version: 9.4.1
+    values:
+      - ./tools/grafana/values.yaml
+  - name: loki
+    namespace: default
+    chart: ./tools/grafana-loki
+    version: 2.11.12
+    values:
+      - ./tools/grafana-loki/values.yaml
+  - name: tempo
+    namespace: default
+    chart: ./tools/grafana-tempo
+    version: 2.4.13
+    values:
+      - ./tools/grafana-tempo/values.yaml
+  - name: prometheus
+    namespace: default
+    chart: ./tools/kube-prometheus
+    version: 8.21.6
+    values:
+      - ./tools/kube-prometheus/values.yaml
