@@ -2,42 +2,72 @@
 
 The Networth Tracker project is a microservice application designed to provide users with a way to keep track of their financial net worth. Users will be able to track the balances of their asset and liability accounts, giving them a top level view of their current financial health. It will also provide a way to track ISA contributions across accounts, as well as taxable savings interest based on their personal tax rate.
 
+---
 ## Version Information
 
 Current Version: v1.2.0
 
 Please see [Versions.md](/notes/Versions.md) for detailed changelog.
 
+---
 ## Service Structure
+**Funtion Services**
 + User Service - Handles user account functionality
+
+**Core Services**
 + Config Server - Provides centralised configuration properties for other services
++ Gateway Server - Entry point to the application, providing a single point of access to external clients.
 + Discovery Server
   + Eureka Server - Service registration, discovery, and load balancing (For Use With Docker Compose)
   + Kubernetes Discovery Server - Service registration, discovery, and load balancing (For Use With Kubernetes)
++ Keycloak Server - Open-source identity and access management system that provides single sign-on capabilities and security features.
+
+**Monitoring & Observability Services**
++ 
   
+---
+## Built With
 
 ## Built With
-+ Spring Boot
-+ Spring Webflux
-+ Spring Security
-+ MySQL
-+ Spring Data JPA
-+ Hibernate
-+ Lombok
-+ Jakarta
-+ MapStruct
-+ OpenAPI
-+ Liquibase
-+ TestContainers
-+ Actuator
-+ Jib
-+ Spring Config Server
-+ Spring Cloud Eureka Server
 
+The Networth Tracker is powered by a robust stack of technologies, ensuring a scalable, efficient, and secure user experience.
+
+### Frameworks and Libraries
+- [Spring Boot](<https://spring.io/projects/spring-boot>): Simplifies the bootstrapping and development of new Spring applications.
+- [Spring Webflux](<https://docs.spring.io/spring-framework/docs/current/reference/html/web-reactive.html>): Reactive-stack web framework to build asynchronous non-blocking applications.
+- [Spring Security](<https://spring.io/projects/spring-security>): Provides authentication and authorization support.
+- [Spring Data JPA](<https://spring.io/projects/spring-data-jpa>): Simplifies data access for Java Persistence API.
+- [Hibernate](<https://hibernate.org/orm/documentation/5.4/>): Object-relational mapping tool for Java.
+- [Lombok](<https://projectlombok.org/>): Java library that automatically plugs into your editor and build tools, spicing up your java.
+- [MapStruct](<https://mapstruct.org/>): Code generator that simplifies the implementation of mappings between Java bean types.
+- [OpenAPI](<https://swagger.io/specification/>): Defines a standard, language-agnostic interface to RESTful APIs.
+
+### Database
+- [MySQL](<https://www.mysql.com/>): Open-source relational database management system.
+
+### Tools and Utilities
+- [Liquibase](<https://www.liquibase.org/>): Source control for your database.
+- [TestContainers](<https://www.testcontainers.org/>): Java library that supports JUnit tests with lightweight, throwaway instances of common databases.
+- [Actuator](<https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html>): Features to help you monitor and manage your application.
+- [Jib](<https://github.com/GoogleContainerTools/jib>): Containerize your Java applications for Docker and Kubernetes without a Dockerfile.
+
+### Configuration and Discovery
+- [Spring Config Server](<https://cloud.spring.io/spring-cloud-config/reference/html/>): Centralized external configuration management backed by a version control system.
+- [Spring Cloud Eureka Server](<https://cloud.spring.io/spring-cloud-netflix/reference/html/>): REST based service for locating services for the purpose of load balancing and failover of middle-tier servers.
+- [Kubernetes Discovery Server](<https://kubernetes.io/docs/concepts/services-networking/service-discovery/>): Provides service discovery within a Kubernetes cluster.
+
+### Monitoring and Logging
+- [Grafana](<https://grafana.com/>): Analytics and interactive visualization web application.
+- [Loki](<https://grafana.com/oss/loki/>): Horizontally-scalable, highly-available, multi-tenant log aggregation system.
+- [Promtail](<https://grafana.com/docs/loki/latest/clients/promtail/>): Logs collector for Loki.
+- [Prometheus](<https://prometheus.io/>): Open-source monitoring system with a dimensional data model.
+
+---
 ## Helpful Dashboards
 + Eureka Dashboard: Available at port 8761 (When running via Docker Compose)
 + Config Server: Available at port 8071 - example: localhost:8761/user-service/default
 
+---
 ## Getting Started
 ### Prerequisites
 
@@ -134,7 +164,9 @@ docker-compose up --build -d
 ## Kubernetes Discovery Server
 
 To install Kubernetes Discovery Server into your K8 cluster please use the following command: 
+```
 kubectl apply -f kubernetes/kubernetes-discoveryserver.yml
+```
 
 ---
 ## Kubernetes Keycloak Realm
