@@ -28,11 +28,11 @@ data:
   SPRING.CLOUD.KUBERNETES.DISCOVERY.DISCOVERY-SERVER-URL: {{ .Values.global.discovery.serverURL }}
   {{- end }}
   {{- if .Values.settings.enabledFeatures.securityServer }}
-  SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI: {{ .Values.global.keycloak.url }}
+  SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI: {{ .Values.global.keycloak.serverURL }}
   {{- end }}
   {{- if .Values.settings.enabledFeatures.otel }}
-  JAVA_TOOL_OPTIONS: { { .Values.global.otel.openTelemetryJavaAgent } }
-  OTEL_EXPORTER_OTLP_ENDPOINT: { { .Values.global.otel.exporterEndPoint } }
-  OTEL_METRICS_EXPORTER: { { .Values.global.otel.metricsExporter } }
+  JAVA_TOOL_OPTIONS: {{ .Values.global.otel.openTelemetryJavaAgent }}
+  OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.global.otel.exporterEndPoint }}
+  OTEL_METRICS_EXPORTER: {{ .Values.global.otel.metricsExporter }}
   {{- end }}
   {{- end -}}

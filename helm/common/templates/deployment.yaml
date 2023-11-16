@@ -92,17 +92,17 @@ spec:
           - name: JAVA_TOOL_OPTIONS
             valueFrom:
               configMapKeyRef:
-                name: {{ .Values.global.configMapName }}
+                name: {{ .Values.app.configMapName }}
                 key: JAVA_TOOL_OPTIONS
           - name: OTEL_EXPORTER_OTLP_ENDPOINT
             valueFrom:
               configMapKeyRef:
-                name: {{ .Values.global.configMapName }}
+                name: {{ .Values.app.configMapName }}
                 key: OTEL_EXPORTER_OTLP_ENDPOINT
           - name: OTEL_METRICS_EXPORTER
             valueFrom:
               configMapKeyRef:
-                name: {{ .Values.global.configMapName }}
+                name: {{ .Values.app.configMapName }}
                 key: OTEL_METRICS_EXPORTER
           - name: OTEL_SERVICE_NAME
             value: {{ .Values.appName }}

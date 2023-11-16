@@ -10,5 +10,5 @@ global:
     brokerURL: kafka-controller-0.kafka-controller-headless.default.svc.cluster.local:9092
   discovery:
     serverURL: http://spring-cloud-kubernetes-discoveryserver:80/
-  keyCloak:
+  keycloak:
     serverURL: http://keycloak.default.svc.cluster.local:80/realms/master/protocol/openid-connect/certs
