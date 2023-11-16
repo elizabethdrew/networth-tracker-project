@@ -1,0 +1,17 @@
+spring:
+    kubernetes:
+        all-namespaces: true
+    cloud:
+        kubernetes:
+            discovery:
+                enabled: true
+            reload:
+                enabled: true
+        discovery:
+            client:
+                health-indicator:
+                    enabled: false
+
+eureka:
+    client:
+        enabled: false

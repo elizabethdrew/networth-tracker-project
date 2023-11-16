@@ -4,13 +4,17 @@ The Networth Tracker project is a microservice application designed to provide u
 
 ## Version Information
 
-Current Version: v1.1.0
+Current Version: v1.2.0
 
 Please see [Versions.md](/notes/Versions.md) for detailed changelog.
 
 ## Service Structure
 + User Service - Handles user account functionality
 + Config Server - Provides centralised configuration properties for other services
++ Discovery Server
+  + Eureka Server - Service registration, discovery, and load balancing (For Use With Docker Compose)
+  + Kubernetes Discovery Server - Service registration, discovery, and load balancing (For Use With Kubernetes)
+  
 
 ## Built With
 + Spring Boot
@@ -28,6 +32,11 @@ Please see [Versions.md](/notes/Versions.md) for detailed changelog.
 + Actuator
 + Jib
 + Spring Config Server
++ Spring Cloud Eureka Server
+
+## Helpful Dashboards
++ Eureka Dashboard: Available at port 8761 (When running via Docker Compose)
++ Config Server: Available at port 8071 - example: localhost:8761/user-service/default
 
 ## Getting Started
 ### Prerequisites
@@ -121,3 +130,8 @@ mvn spring-boot:build-image -Dmaven.test.skip=true
 docker-compose up --build -d
 ```
 
+---
+## Kubernetes Discovery Server
+
+To install Kubernetes Discovery Server into your K8 cluster please use the following command: 
+kubectl apply -f kubernetes/kubernetes-discoveryserver.yml

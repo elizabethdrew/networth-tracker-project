@@ -1,5 +1,12 @@
 # Versions
 
+## v1.2.0
+**Date: 14/11/2023**
+
+Discovery Server Added
++ When loaded from Docker Compose, the microservices use Eureka as the Discovery server. This has been implemented using spring profiles.
++ When loaded in Kubernetes, the microservices use Kubernetes Discovery Server instead.
+
 ## v1.1.0
 **Date: 13/11/2023**
 

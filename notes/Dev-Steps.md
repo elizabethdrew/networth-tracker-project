@@ -15,8 +15,9 @@
 8. Add ConfigClient to POM
 9. Add Configs to config server for service
 10. Add Config Server url to service application.yml
+11. FEIGN: Use Feign to connect with other services (not yet implemented - feign client has different settings for eureka and k8 discovery - add url)
 
-
++ Kubernetes Discovery Server needs adding to Gateway Server (when built - s253 course) - could have issue with uri?
 
 ### Config Server Notes:
 Currently my configs are on the classpath, however later down the line I want to explore housing these configurations on GitLab instead.

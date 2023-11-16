@@ -13,7 +13,7 @@ app:
     profile: false
     mysql: false
     config: false
-    eureka: false
+    discovery: false
     resourceServer: false
     otel: true
     kafka: false
@@ -23,7 +23,7 @@ image:
   tag: 0.0.1-SNAPSHOT
 
 service:
-  type: ClusterIP
+  type: NodePort
   port: 8071
   targetPort: 8071
   containerPort: 8071
