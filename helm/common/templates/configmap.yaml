@@ -16,11 +16,15 @@ data:
   MYSQL_USER: {{ .Values.mysql.databaseUser }}
   MYSQL_PASSWORD: {{ .Values.mysql.databasePassword }}
   {{- end }}
-  {{- if .Values.app.enabledFeatures.config }}
-  SPRING_CONFIG_IMPORT: {{ .Values.app.configServerURL }}
-  SPRING_CLOUD_CONFIG_URI: {{ .Values.app.configURI }}
+  {{- if .Values.app.enabledFeatures.configClient }}
+  SPRING_CONFIG_IMPORT: {{ .Values.app.config.serverURL }}
+  SPRING_CLOUD_CONFIG_URI: {{ .Values.app.config.uri }}
+  {{- end }}
+  {{- if .Values.app.enabledFeatures.configServer }}
+  SPRING_CLOUD_CONFIG_SERVER_GIT_USERNAME: {{ .Values.configServer.username }}
+  SPRING_CLOUD_CONFIG_SERVER_GIT_PASSWORD: {{ .Values.configServer.password }}
   {{- end }}
   {{- if .Values.app.enabledFeatures.discovery }}
-  SPRING_CLOUD_KUBERNETES_DISCOVERY_DISCOVERY_SERVER_URL: {{ .Values.app.discoveryServerURL }}
+  SPRING.CLOUD.KUBERNETES.DISCOVERY.DISCOVERY-SERVER-URL: {{ .Values.app.discoveryServerURL }}
   {{- end }}
   {{- end -}}

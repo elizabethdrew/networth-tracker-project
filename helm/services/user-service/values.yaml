@@ -8,15 +8,17 @@ app:
   serviceName: user-service
   configMapName: users-configmap
   activeProfile: k8
-  configURI: http://configserver:8071
-  configServerURL: optional:configserver:http://configserver:8071/
+  config:
+    uri: http://configserver:8071
+    serverURL: optional:configserver:http://configserver:8071/
   discoveryServerURL: http://spring-cloud-kubernetes-discoveryserver:80/
   replicaCount: 1
   enabledFeatures:
     name: true
     profile: true
     mysql: true
-    config: true
+    configClient: true
+    configServer: false
     discovery: true
     resourceServer: false
     otel: true

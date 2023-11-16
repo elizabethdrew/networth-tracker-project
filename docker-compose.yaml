@@ -43,6 +43,9 @@ services:
       timeout: 5s
       retries: 20
       start_period: 10s
+    environment:
+      SPRING_CLOUD_CONFIG_SERVER_GIT_USERNAME: elizabeth.drew
+      SPRING_CLOUD_CONFIG_SERVER_GIT_PASSWORD: glpat-aDw3wMCYyt5DVy8qaLU_
 
 
   user-service:
