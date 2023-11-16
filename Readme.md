@@ -64,115 +64,170 @@ The Networth Tracker is powered by a robust stack of technologies, ensuring a sc
 
 ---
 ## Helpful Dashboards
-+ Eureka Dashboard: Available at port 8761 (When running via Docker Compose)
-+ Config Server: Available at port 8071 - example: localhost:8761/user-service/default
+
+Dashboards provide a visual interface to monitor the services and infrastructure of your application. Here's how to access the dashboards for the Networth Tracker:
+
+### Service Discovery
+
+- **Eureka Dashboard**: Monitors service registration and discovery.
+  - **URL**: [<http://localhost:8761>](<http://localhost:8761>) (when running via Docker Compose)
+  - **Port**: 8761
+
+### Configuration Management
+
+- **Spring Config Server**: Centralized configuration management for all services.
+  - **Example URL**: [<http://localhost:8071/user-service/default>](<http://localhost:8071/user-service/default>) (replace `user-service` with the actual service name)
+  - **Port**: 8071
+
+### Observability and Monitoring
+
+- **Grafana**: Provides beautiful analytics and monitoring. Visualize metrics, logs, and traces from different sources like Prometheus and Loki.
+  - **URL**: Typically available at [<http://localhost:3000>](<http://localhost:3000>) after deployment.
+  - **Default Port**: 3000
+
+- **Prometheus**: Monitoring system and time series database that works with Grafana for visualizing data.
+  - **URL**: [<http://localhost:9090>](<http://localhost:9090>) (if running locally)
+  - **Port**: 9090
+
+### Logging
+
+- **Loki**: A horizontally-scalable, highly-available, multi-tenant log aggregation system.
+  - **Note**: Loki is used with Grafana for log aggregation. Access logs in the Grafana dashboard by selecting the Loki data source.
+
+### Application Diagnostics
+
+- **Spring Boot Actuator**: Gain insight into the internals of your application, such as health, metrics, info, and more.
+  - **Health Endpoint**: Check the health of your application by accessing [http://localhost:8080/actuator/health](http://localhost:8080/actuator/health). This will provide a basic health check.
+  - **Metrics Endpoint**: View detailed metrics by visiting [http://localhost:8080/actuator/metrics](http://localhost:8080/actuator/metrics). This endpoint exposes various metrics information that can be further queried to dive into specific metrics.
 
 ---
 ## Getting Started
+
+This section guides you through the prerequisites and steps needed to get the Networth Tracker application up and running on your local machine.
+
 ### Prerequisites
 
-You should have Java, Maven, Docker and Kubernetes installed on your machine. Follow the steps below to install them:
+To run the Networth Tracker, ensure you have the following software installed:
 
-- [Java 17](https://www.oracle.com/java/technologies/downloads/)
-- [Maven](https://maven.apache.org/download.cgi)
-- [Docker](https://www.docker.com/products/docker-desktop)
-- [Docker Compose](https://docs.docker.com/compose/install/)
+- **Java 17**: [Download Java](<https://www.oracle.com/java/technologies/downloads/>) - Required to run the Java applications.
+- **Maven**: [Download Maven](<https://maven.apache.org/download.cgi>) - Used for project dependency management and build automation.
+- **Docker**: [Download Docker](<https://www.docker.com/products/docker-desktop>) - Creates isolated containers for each microservice.
+- **Docker Compose**: [Install Docker Compose](<https://docs.docker.com/compose/install/>) - Manages multi-container Docker applications.
+- **Kubernetes**: Orchestration tool for managing containerized applications. Docker Desktop includes a standalone Kubernetes server. Enable it in the Docker Desktop settings.
+- **Helm**: A package manager for Kubernetes. [Install Helm](<https://helm.sh/docs/intro/install/>).
+- **Helmfile**: A declarative spec for deploying helm charts. [Install Helmfile](<https://github.com/roboll/helmfile#installation>).
 
-### **Installing Java and Maven**
+### Installation Guide
 
-### Using SDKMAN!
+#### Java and Maven Installation
 
-SDKMAN! is a tool for managing parallel versions of multiple Software Development Kits on Unix based systems. It provides a convenient Command Line Interface (CLI) and API for installing, switching, removing and listing Candidates.
+##### Using SDKMAN! (Recommended for Unix-like platforms, including Linux and macOS)
 
-To install SDKMAN!, open a new terminal and enter:
+SDKMAN! is a version manager for Java and JVM-based applications, which simplifies the installation and management of multiple SDKs on Unix systems.
 
+1. Install SDKMAN! with the following command:
 ```
-curl -s "https://get.sdkman.io" | bash
+curl -s "<https://get.sdkman.io>" | bash
 ```
-
-Then, open a new terminal or enter:
-
+2. Initialize SDKMAN!:
 ```
 source "$HOME/.sdkman/bin/sdkman-init.sh"
 ```
-
-Now, you can install Java and Maven using SDKMAN!:
-
+3. Install Java and Maven using SDKMAN!:
 ```
 sdk install java
 sdk install maven
 ```
 
-### **Manually**
-### Installing Java
+### Manual Installation (For Windows, or if you prefer not to use SDKMAN!)
 
-Download and install Java 17 from the [official website](https://www.oracle.com/java/technologies/downloads/).
-
-### Installing Maven
-
-### For Windows and Linux:
-
-Download and install Maven from the [official website](https://maven.apache.org/download.cgi).
-
-### For macOS:
-
-If you have Homebrew installed, you can install Maven by running:
-
-```
-brew install maven
-
-```
-
-If you do not have Homebrew installed, you can install it by running:
-
+- **Java**: Follow the instructions on the [Java download page](https://www.oracle.com/java/technologies/downloads/).
+- **Maven**:
+  - **Windows/Linux**: Download from the [Maven official website](https://maven.apache.org/download.cgi).
+  - **macOS**: If Homebrew is installed, you can use `brew install maven`. If not, install Homebrew first with the command below, then install Maven:
 ```
 /bin/bash -c "$(curl -fsSL <https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh>)"
 brew install maven
-
 ```
 
-### Installing Docker
+### Docker and Docker Compose Installation
 
-Follow the instructions on the [official website](https://docs.docker.com/get-docker/) to install Docker and Docker Compose.
+Follow the instructions on the [Docker website](https://docs.docker.com/get-docker/) to install Docker. Docker Compose is included in Docker Desktop for Mac and Windows.
 
-### Installing Kubernetes
-If you are using Docker Desktop, you can enable Kubernetes via the settings page.
+### Kubernetes Installation
 
-## Running the Application
+For local development, Docker Desktop includes a standalone Kubernetes server that runs on your development machine. Enable it in the Docker Desktop preferences.
 
-1. First, clone the project repository:
+### Helm Installation
 
+Helm helps you manage Kubernetes applications — Helm Charts help you define, install, and upgrade even the most complex Kubernetes applications.
+
+**macOS** (using Homebrew):
 ```
-git clone https://gitlab.com/elizabethdrew/networth
+brew install helm
 ```
+### Helmfile Installation
 
-2. Navigate to the project root directory.
+Helmfile is a tool for templating and deploying Helm Chart definitions and can be installed as follows:
 
-3. Build the project with seed data (UPDATE NEEDED: HOW TO BUILD EACH SERVICE)
-
+**macOS/Linux**:
 ```
-mvn spring-boot:build-image -Dmaven.test.skip=true 
+brew install helmfile
 ```
-
-4. You can then run the Docker compose configuration (UPDATE NEEDED - ADD HELM OPTION)
-
-```
-docker-compose up --build -d
-```
-
 ---
-## Kubernetes Discovery Server
+### Running the Application
 
-To install Kubernetes Discovery Server into your K8 cluster please use the following command: 
+After installing the prerequisites, you can run the application as follows:
+
+1. Clone the project repository:
+```
+git clone <https://gitlab.com/wcdio_backendprojects/networth>
+```
+2. Clone the project configurations repository:
+```
+git clone <https://gitlab.com/wcdio_backendprojects/networth-tracker-configurations>
+```
+3. Change into the project directory:
+```
+cd networth
+```
+
+4. Build the project with Maven:
+```
+mvn clean install
+```
+
+5. Build the Docker images for each service (if your project is containerized):
+```
+mvn compile jib:dockerBuild
+```
+
+6. Start the application using Docker Compose:
+```
+docker-compose up -d
+```
+Alternatively, deploy the application using Helm in a Kubernetes cluster (make sure Helm and Helmfile are installed):
+```
+helmfile -f ./helm/helmfile.services.yaml apply
+helmfile -f ./helm/helmfile.observe.yaml apply
+```
+---
+
+## Kubernetes Discovery Server Setup
+
+The Kubernetes Discovery Server is used for service discovery within your Kubernetes (K8s) cluster, facilitating communication and load balancing between your microservices.
+
+To integrate the Discovery Server with your Kubernetes cluster, you'll deploy it using the provided YAML configuration file. Ensure that your `kubectl` context is set to the target cluster where you wish to deploy the services.
+
+1. Apply the Discovery Server configuration with the following command:
 ```
 kubectl apply -f kubernetes/kubernetes-discoveryserver.yml
 ```
-
 ---
-## Kubernetes Keycloak Realm
 
-To create a config map based on the realm-export.json file run the following command:
-```
-kubectl create configmap keycloak-realm --from-file=./helm/keycloak/realm/realm-export.json
-```
+## Configuring Keycloak Realm in Kubernetes
 
+Keycloak uses realms to create isolated groups of users and applications. To set up a Keycloak realm in your Kubernetes environment:
+
+1. First, ensure you have the `realm-export.json` file that contains the exported realm data. This file should be located in the `./helm/keycloak/realm/` directory relative to your current working directory.
+2. Once Keycloak is running in your Kubernetes cluster, sign into the Keycloak Dashboard. You will then be able to add the new realm by uploading the realm-export.json file.
