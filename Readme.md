@@ -2,16 +2,17 @@
 
 The Networth Tracker project is a microservice application designed to provide users with a way to keep track of their financial net worth. Users will be able to track the balances of their asset and liability accounts, giving them a top level view of their current financial health. It will also provide a way to track ISA contributions across accounts, as well as taxable savings interest based on their personal tax rate.
 
----
+
 ## Version Information
 
-Current Version: v1.2.0
+Current Version: v1.3.0
 
 Please see [Versions.md](/notes/Versions.md) for detailed changelog.
 
----
+
 ## Service Structure
-**Funtion Services**
+
+**Function Services**
 + User Service - Handles user account functionality
 
 **Core Services**
@@ -25,8 +26,6 @@ Please see [Versions.md](/notes/Versions.md) for detailed changelog.
 **Monitoring & Observability Services**
 + 
   
----
-## Built With
 
 ## Built With
 
@@ -62,7 +61,7 @@ The Networth Tracker is powered by a robust stack of technologies, ensuring a sc
 - [Promtail](<https://grafana.com/docs/loki/latest/clients/promtail/>): Logs collector for Loki.
 - [Prometheus](<https://prometheus.io/>): Open-source monitoring system with a dimensional data model.
 
----
+
 ## Helpful Dashboards
 
 Dashboards provide a visual interface to monitor the services and infrastructure of your application. Here's how to access the dashboards for the Networth Tracker:
@@ -100,7 +99,7 @@ Dashboards provide a visual interface to monitor the services and infrastructure
   - **Health Endpoint**: Check the health of your application by accessing [http://localhost:8080/actuator/health](http://localhost:8080/actuator/health). This will provide a basic health check.
   - **Metrics Endpoint**: View detailed metrics by visiting [http://localhost:8080/actuator/metrics](http://localhost:8080/actuator/metrics). This endpoint exposes various metrics information that can be further queried to dive into specific metrics.
 
----
+
 ## Getting Started
 
 This section guides you through the prerequisites and steps needed to get the Networth Tracker application up and running on your local machine.
@@ -211,7 +210,7 @@ Alternatively, deploy the application using Helm in a Kubernetes cluster (make s
 helmfile -f ./helm/helmfile.services.yaml apply
 helmfile -f ./helm/helmfile.observe.yaml apply
 ```
----
+
 
 ## Kubernetes Discovery Server Setup
 
@@ -223,7 +222,7 @@ To integrate the Discovery Server with your Kubernetes cluster, you'll deploy it
 ```
 kubectl apply -f kubernetes/kubernetes-discoveryserver.yml
 ```
----
+
 
 ## Configuring Keycloak Realm in Kubernetes
 
