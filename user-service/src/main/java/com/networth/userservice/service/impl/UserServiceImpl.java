@@ -1,6 +1,6 @@
 package com.networth.userservice.service.impl;
 
-import com.networth.userservice.dto.UserInput;
+import com.networth.userservice.dto.RegisterDto;
 import com.networth.userservice.dto.UserOutput;
 import com.networth.userservice.entity.User;
 import com.networth.userservice.exception.InvalidInputException;
@@ -10,19 +10,9 @@ import com.networth.userservice.repository.UserRepository;
 import com.networth.userservice.service.UserService;
 import com.networth.userservice.util.HelperUtils;
 import jakarta.transaction.Transactional;
-import org.passay.CharacterRule;
-import org.passay.EnglishCharacterData;
-import org.passay.LengthRule;
-import org.passay.PasswordData;
-import org.passay.PasswordValidator;
-import org.passay.Rule;
-import org.passay.RuleResult;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -31,13 +21,11 @@ public class UserServiceImpl implements UserService {
 
     private final HelperUtils helperUtils;
 
-    private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, HelperUtils helperUtils, BCryptPasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, HelperUtils helperUtils) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.helperUtils = helperUtils;
-        this.passwordEncoder = passwordEncoder;
     }
 
     public UserOutput getUser(Long userId) {
@@ -53,26 +41,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional
-    public UserOutput createUser(UserInput userInput) {
+    public UserOutput registerUser(RegisterDto registerDto) {
 
         // Check if username already exists
-        if(userRepository.existsByUsername(userInput.getUsername())) {
-            throw new InvalidInputException("Username already in use: " + userInput.getUsername());
+        if(userRepository.existsByUsername(registerDto.getUsername())) {
+            throw new InvalidInputException("Username already in use: " + registerDto.getUsername());
         }
 
         // Check if email already exists
-        if(userRepository.existsByEmail(userInput.getEmail())) {
-            throw new InvalidInputException("Email already in use: " + userInput.getEmail());
+        if(userRepository.existsByEmail(registerDto.getEmail())) {
+            throw new InvalidInputException("Email already in use: " + registerDto.getEmail());
         }
 
         // Validate Password
-        helperUtils.validatePassword(userInput.getPassword());
+        helperUtils.validatePassword(registerDto.getPassword());
 
         // Create New User
-        User user = userMapper.toUser(userInput);
-        user.setPassword(passwordEncoder.encode(userInput.getPassword()));
+        User user = new User();
+        user.setUsername(registerDto.getUsername());
+        user.setEmail(registerDto.getEmail());
         user.setDateOpened(LocalDateTime.now());
         user.setActiveUser(true);
+        user.setKeycloakId("keycloakid");
         User savedUser = userRepository.save(user);
 
         return userMapper.toUserOutput(savedUser);
@@ -80,7 +70,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Transactional
-    public UserOutput updateUser(Long userId, UserInput userInput)
+    public UserOutput updateUser(Long userId, RegisterDto registerDto)
             throws UserNotFoundException {
 
         // Retrieve the user with the specified ID from the repository
@@ -90,19 +80,19 @@ public class UserServiceImpl implements UserService {
         // Add security to check user is only editing own profile
 
         // Create updated user
-        User updatedUser = userMapper.toUser(userInput);
+        User updatedUser = userMapper.toUser(registerDto);
         updatedUser.setUserId(user.getUserId());
         updatedUser.setDateOpened(user.getDateOpened());
         updatedUser.setDateOpened(user.getDateOpened());
 
-        // Check if new password is provided
-        if(userInput.getPassword() != null) {
-            // Encrypt new password
-            String encryptedPassword = passwordEncoder.encode(userInput.getPassword());
-            updatedUser.setPassword(encryptedPassword);
-        } else {
-            updatedUser.setPassword(user.getPassword());
-        }
+//        // Check if new password is provided
+//        if(registerDto.getPassword() != null) {
+//            // Encrypt new password
+//            String encryptedPassword = passwordEncoder.encode(registerDto.getPassword());
+//            updatedUser.setPassword(encryptedPassword);
+//        } else {
+//            updatedUser.setPassword(user.getPassword());
+//        }
 
         User savedUser = userRepository.save(updatedUser);
         return userMapper.toUserOutput(savedUser);

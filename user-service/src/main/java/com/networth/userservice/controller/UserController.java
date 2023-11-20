@@ -1,6 +1,6 @@
 package com.networth.userservice.controller;
 
-import com.networth.userservice.dto.UserInput;
+import com.networth.userservice.dto.RegisterDto;
 import com.networth.userservice.dto.UserOutput;
 import com.networth.userservice.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,8 +36,8 @@ public class UserController {
             @ApiResponse(responseCode = "409", description = "Already Exists"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    public ResponseEntity<UserOutput> createUser(@RequestBody UserInput userInput) {
-        UserOutput userOutput = userService.createUser(userInput);
+    public ResponseEntity<UserOutput> createUser(@RequestBody RegisterDto registerDto) {
+        UserOutput userOutput = userService.registerUser(registerDto);
         return new ResponseEntity<>(userOutput, HttpStatus.CREATED);
     }
 
@@ -64,8 +64,8 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    public ResponseEntity<UserOutput> updateUser(@PathVariable Long userId, @RequestBody UserInput userInput) {
-        UserOutput userOutput = userService.updateUser(userId, userInput);
+    public ResponseEntity<UserOutput> updateUser(@PathVariable Long userId, @RequestBody RegisterDto registerDto) {
+        UserOutput userOutput = userService.updateUser(userId, registerDto);
         return ResponseEntity.ok(userOutput);
     }
 

@@ -1,11 +1,11 @@
 package com.networth.userservice.service;
 
-import com.networth.userservice.dto.UserInput;
+import com.networth.userservice.dto.RegisterDto;
 import com.networth.userservice.dto.UserOutput;
 
 public interface UserService {
-    UserOutput createUser(UserInput userInput);
+    UserOutput registerUser(RegisterDto registerDto);
     UserOutput getUser(Long userId);
-    UserOutput updateUser(Long userId, UserInput userInput);
+    UserOutput updateUser(Long userId, RegisterDto registerDto);
     void deleteUser(Long userId);
 }

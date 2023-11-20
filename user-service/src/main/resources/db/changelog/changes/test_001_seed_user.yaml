@@ -17,9 +17,6 @@ databaseChangeLog:
                   name: email
                   value: "johndoe@example.co.uk"
               - column:
-                  name: password
-                  value: "Password123!"
-              - column:
                   name: active_user
                   valueBoolean: true
               - column:
