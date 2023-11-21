@@ -40,13 +40,9 @@ public class UserController {
             @ApiResponse(responseCode = "409", description = "Already Exists"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    public Mono<ResponseEntity<Object>> registerUser(@RequestBody RegisterDto registerDto) {
-        return userService.registerUser(registerDto)
-                .map(userOutput -> ResponseEntity.status(HttpStatus.CREATED).body(userOutput))
-                .onErrorResume(InvalidInputException.class, e -> Mono.just(ResponseEntity.badRequest().build()))
-                .onErrorResume(InsufficientPermissionException.class, e -> Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build()))
-                .onErrorResume(DuplicateException.class, e -> Mono.just(ResponseEntity.status(HttpStatus.CONFLICT).build()))
-                .onErrorResume(e -> Mono.just(ResponseEntity.internalServerError().build()));
+    public ResponseEntity<UserOutput> registerUser(@RequestBody RegisterDto registerDto) {
+        UserOutput userOutput = userService.registerUser(registerDto);
+        return ResponseEntity.ok(userOutput);
     }
 
 

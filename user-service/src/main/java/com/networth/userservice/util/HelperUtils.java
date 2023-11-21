@@ -1,6 +1,7 @@
 package com.networth.userservice.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networth.userservice.config.properties.KeycloakProperties;
 import com.networth.userservice.exception.InvalidInputException;
 import com.networth.userservice.exception.KeycloakException;
@@ -12,11 +13,17 @@ import org.passay.PasswordData;
 import org.passay.PasswordValidator;
 import org.passay.Rule;
 import org.passay.RuleResult;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,11 +31,11 @@ import java.util.List;
 @Slf4j
 public class HelperUtils {
 
-    private final WebClient webClient;
+    private final RestTemplate restTemplate;
     private final KeycloakProperties keycloakProperties;
 
-    public HelperUtils(WebClient webClient, KeycloakProperties keycloakProperties) {
-        this.webClient = webClient;
+    public HelperUtils(RestTemplate restTemplate, KeycloakProperties keycloakProperties) {
+        this.restTemplate = restTemplate;
         this.keycloakProperties = keycloakProperties;
     }
 
@@ -55,32 +62,48 @@ public class HelperUtils {
     }
 
     // Get Keycloak Admin Access Token
-    public Mono<String> getAdminAccessToken() {
-
+    public String getAdminAccessToken() {
         log.info("Keycloak Admin Access Flow Started");
 
-        return webClient.post()
-                .uri(keycloakProperties.getBaseUri() + "/realms/" + keycloakProperties.getAdmin().getRealm() + "/protocol/openid-connect/token")
-                .body(BodyInserters.fromFormData("client_id", keycloakProperties.getAdmin().getClientId())
-                        .with("grant_type", "password")
-                        .with("username", keycloakProperties.getAdmin().getUsername())
-                        .with("password", keycloakProperties.getAdmin().getPassword()))
-                .retrieve()
-                .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(), clientResponse -> {
-                    return clientResponse.bodyToMono(String.class)
-                            .flatMap(errorBody -> {
-                                log.error("Error response from Keycloak: Status Code: {}, Body: {}", clientResponse.statusCode(), errorBody);
-                                return Mono.error(new KeycloakException("Error response from Keycloak: Status Code: " +
-                                        clientResponse.statusCode() + ", Body: " + errorBody));
-                            });
-                })
-                .bodyToMono(JsonNode.class)
-                .doOnNext(jsonNode -> log.info("Received access token from Keycloak"))
-                .map(jsonNode -> {
-                    String accessToken = jsonNode.get("access_token").asText();
-                    log.info("Extracted access token");
-                    return accessToken;
-                })
-                .doOnError(e -> log.error("Failed to retrieve access token", e));
+        // Create the request body
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("client_id", keycloakProperties.getAdmin().getClientId());
+        formData.add("grant_type", "password");
+        formData.add("username", keycloakProperties.getAdmin().getUsername());
+        formData.add("password", keycloakProperties.getAdmin().getPassword());
+
+        // Set the headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        // Create the HttpEntity
+        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(formData, headers);
+
+        try {
+            // Execute the POST request
+            ResponseEntity<String> response = restTemplate.postForEntity(
+                    keycloakProperties.getBaseUri() + "/realms/" + keycloakProperties.getAdmin().getRealm() + "/protocol/openid-connect/token",
+                    entity,
+                    String.class);
+
+            // Check for error response
+            if (response.getStatusCode().is4xxClientError() || response.getStatusCode().is5xxServerError()) {
+                log.error("Error response from Keycloak: Status Code: {}, Body: {}", response.getStatusCode(), response.getBody());
+                throw new KeycloakException("Error response from Keycloak: Status Code: " +
+                        response.getStatusCode() + ", Body: " + response.getBody());
+            }
+
+            // Parse the access token from the response
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(response.getBody());
+            String accessToken = jsonNode.get("access_token").asText();
+            log.info("Extracted access token");
+
+            return accessToken;
+        } catch (RestClientException | IOException e) {
+            log.error("Failed to retrieve access token", e);
+            throw new RuntimeException("Failed to retrieve access token", e);
+        }
     }
+
 }

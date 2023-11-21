@@ -13,13 +13,13 @@ import com.networth.userservice.service.UserService;
 import com.networth.userservice.util.HelperUtils;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
+import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.time.LocalDateTime;
@@ -33,16 +33,15 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final HelperUtils helperUtils;
-    private final WebClient webClient;
     private final KeycloakProperties keycloakProperties;
+    private final RestTemplate restTemplate;
 
-    @Autowired
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, HelperUtils helperUtils, WebClient webClient, KeycloakProperties keycloakProperties) {
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, HelperUtils helperUtils, KeycloakProperties keycloakProperties, RestTemplate restTemplate) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.helperUtils = helperUtils;
-        this.webClient = webClient;
         this.keycloakProperties = keycloakProperties;
+        this.restTemplate = restTemplate;
     }
 
     public UserOutput getUser(Long userId) {
@@ -58,20 +57,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional
-    public Mono<Object> registerUser(RegisterDto registerDto) {
+    public UserOutput registerUser(RegisterDto registerDto) {
 
         log.info("Register User Flow Started");
 
         // Check if username already exists
         if (userRepository.existsByUsername(registerDto.getUsername())) {
-            return Mono.error(new InvalidInputException("Username already in use: " + registerDto.getUsername()));
+            throw new InvalidInputException("Username already in use: " + registerDto.getUsername());
         }
 
         log.info("Username Passed Checks");
 
         // Check if email already exists
         if (userRepository.existsByEmail(registerDto.getEmail())) {
-            return Mono.error(new InvalidInputException("Email already in use: " + registerDto.getEmail()));
+            throw new InvalidInputException("Email already in use: " + registerDto.getEmail());
         }
 
         log.info("Email Passed Checks");
@@ -82,80 +81,82 @@ public class UserServiceImpl implements UserService {
         log.info("Password Passed Checks");
 
         // Get Admin Access Token
-        return helperUtils.getAdminAccessToken().flatMap(accessToken -> {
+        String accessToken = helperUtils.getAdminAccessToken();
 
-            log.info("Creating User Representation");
+        log.info("Creating User Representation");
 
-            // Create User Representation
-            Map<String, Object> userRepresentation = new HashMap<>();
-            userRepresentation.put("username", registerDto.getUsername());
-            userRepresentation.put("email", registerDto.getEmail());
-            userRepresentation.put("enabled", true);
+        // Create User Representation
+        Map<String, Object> userRepresentation = new HashMap<>();
+        userRepresentation.put("username", registerDto.getUsername());
+        userRepresentation.put("email", registerDto.getEmail());
+        userRepresentation.put("enabled", true);
 
-            log.info("Creating User Password Credential");
+        log.info("Creating User Password Credential");
 
-            // Set up Password
-            Map<String, Object> passwordCredential = new HashMap<>();
-            passwordCredential.put("type", "PASSWORD");
-            passwordCredential.put("value", registerDto.getPassword());
-            passwordCredential.put("temporary", false);
+        // Set up Password
+        Map<String, Object> passwordCredential = new HashMap<>();
+        passwordCredential.put("type", "PASSWORD");
+        passwordCredential.put("value", registerDto.getPassword());
+        passwordCredential.put("temporary", false);
 
-            userRepresentation.put("credentials", Collections.singletonList(passwordCredential));
+        userRepresentation.put("credentials", Collections.singletonList(passwordCredential));
 
-            log.info("Adding User To Keycloak");
+        log.info("Adding User To Keycloak");
 
-            // Create User in Keycloak
-            return webClient.post()
-                    .uri(keycloakProperties.getBaseUri()+ "/admin/realms/networth/users")
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .bodyValue(userRepresentation)
-                    .retrieve()
-                    .toBodilessEntity()
-                    .flatMap(response -> {
-                        if (response.getStatusCode() != HttpStatus.CREATED) {
-                            log.error("Error response from Keycloak: Status Code: {}, Body: {}", response.getStatusCode(), response);
-                            return Mono.error(new KeycloakException("Unable to create user in Keycloak. Status: " + response.getStatusCode()));
-                        }
+        // Create User in Keycloak using RestTemplate
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(accessToken);
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(userRepresentation, headers);
 
-                        // Extract Keycloak user ID from the Location header
-                        log.info("Extracting Keycloak User Id");
-                        URI location = response.getHeaders().getLocation();
-                        if (location == null) {
-                            return Mono.error(new KeycloakException("Location header is missing in the response from Keycloak."));
-                        }
-                        String path = location.getPath();
-                        if (path == null || path.isEmpty()) {
-                            return Mono.error(new KeycloakException("Location header path is missing or empty."));
-                        }
-                        String[] segments = path.split("/");
-                        if (segments.length < 2) {
-                            return Mono.error(new KeycloakException("Location header path does not contain the user ID."));
-                        }
+        ResponseEntity<Void> response = restTemplate.postForEntity(
+                keycloakProperties.getBaseUri() + "/admin/realms/networth/users",
+                entity,
+                Void.class
+        );
 
-                        String keycloakUserId = segments[segments.length - 1];
+        if (response.getStatusCode() != HttpStatus.CREATED) {
+            log.error("Error response from Keycloak: Status Code: {}, Body: {}", response.getStatusCode(), response);
+            throw new KeycloakException("Unable to create user in Keycloak. Status: " + response.getStatusCode());
+        }
 
-                        if(keycloakUserId == null) {
-                            log.error("Keycloak User Id is Null");
-                            return Mono.error(new KeycloakException("Keycloak User Id is Null"));
-                        }
+        log.info("Extracting Keycloak User Id");
+        URI location = response.getHeaders().getLocation();
+        if (location == null) {
+            throw new KeycloakException("Location header is missing in the response from Keycloak.");
+        }
+        String path = location.getPath();
+        if (path == null || path.isEmpty()) {
+            throw new KeycloakException("Location header path is missing or empty.");
+        }
+        String[] segments = path.split("/");
+        if (segments.length < 2) {
+            throw new KeycloakException("Location header path does not contain the user ID.");
+        }
 
-                        // Create New User
-                        log.info("Creating User");
-                        User user = new User();
-                        user.setUsername(registerDto.getUsername());
-                        user.setEmail(registerDto.getEmail());
-                        user.setDateOpened(LocalDateTime.now());
-                        user.setActiveUser(true);
-                        user.setKeycloakId(keycloakUserId);
+        String keycloakUserId = segments[segments.length - 1];
 
-                        // Save user to the repository
-                        log.info("Saving User");
-                        return Mono.just(userRepository.save(user))
-                                .map(userMapper::toUserOutput);
-                    });
-        });
+        if (keycloakUserId == null) {
+            log.error("Keycloak User Id is Null");
+            throw new KeycloakException("Keycloak User Id is Null");
+        }
+
+        // Create New User
+        log.info("Creating User");
+        User user = new User();
+        user.setUsername(registerDto.getUsername());
+        user.setEmail(registerDto.getEmail());
+        user.setDateOpened(LocalDateTime.now());
+        user.setActiveUser(true);
+        user.setKeycloakId(keycloakUserId);
+
+        // Save user to the repository
+        log.info("Saving User");
+        user = userRepository.save(user);
+
+        return userMapper.toUserOutput(user);
     }
+
 
 
 

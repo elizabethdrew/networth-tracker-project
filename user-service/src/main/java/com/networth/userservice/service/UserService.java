@@ -5,7 +5,7 @@ import com.networth.userservice.dto.UserOutput;
 import reactor.core.publisher.Mono;
 
 public interface UserService {
-    Mono<Object> registerUser(RegisterDto registerDto);
+    UserOutput registerUser(RegisterDto registerDto);
     UserOutput getUser(Long userId);
 
 //    UserOutput updateUser(Long userId, RegisterDto registerDto);
