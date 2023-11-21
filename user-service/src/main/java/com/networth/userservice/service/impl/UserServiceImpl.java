@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
@@ -117,9 +118,22 @@ public class UserServiceImpl implements UserService {
                             return Mono.error(new KeycloakException("Unable to create user in Keycloak. Status: " + response.getStatusCode()));
                         }
 
-                        // Extract Keycloak user ID
+                        // Extract Keycloak user ID from the Location header
                         log.info("Extracting Keycloak User Id");
-                        String keycloakUserId = response.getHeaders().getLocation().getPath().split("/")[1];
+                        URI location = response.getHeaders().getLocation();
+                        if (location == null) {
+                            return Mono.error(new KeycloakException("Location header is missing in the response from Keycloak."));
+                        }
+                        String path = location.getPath();
+                        if (path == null || path.isEmpty()) {
+                            return Mono.error(new KeycloakException("Location header path is missing or empty."));
+                        }
+                        String[] segments = path.split("/");
+                        if (segments.length < 2) {
+                            return Mono.error(new KeycloakException("Location header path does not contain the user ID."));
+                        }
+
+                        String keycloakUserId = segments[segments.length - 1];
 
                         if(keycloakUserId == null) {
                             log.error("Keycloak User Id is Null");
