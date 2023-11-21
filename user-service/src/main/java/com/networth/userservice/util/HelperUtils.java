@@ -67,10 +67,10 @@ public class HelperUtils {
 
         // Create the request body
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-        formData.add("client_id", keycloakProperties.getAdmin().getClientId());
+        formData.add("client_id", keycloakProperties.getKeyAdmin().getClientId());
         formData.add("grant_type", "password");
-        formData.add("username", keycloakProperties.getAdmin().getUsername());
-        formData.add("password", keycloakProperties.getAdmin().getPassword());
+        formData.add("username", keycloakProperties.getKeyAdmin().getUsername());
+        formData.add("password", keycloakProperties.getKeyAdmin().getPassword());
 
         // Set the headers
         HttpHeaders headers = new HttpHeaders();
@@ -82,7 +82,7 @@ public class HelperUtils {
         try {
             // Execute the POST request
             ResponseEntity<String> response = restTemplate.postForEntity(
-                    keycloakProperties.getBaseUri() + "/realms/" + keycloakProperties.getAdmin().getRealm() + "/protocol/openid-connect/token",
+                    keycloakProperties.getBaseUri() + "/realms/" + keycloakProperties.getKeyAdmin().getRealm() + "/protocol/openid-connect/token",
                     entity,
                     String.class);
 
