@@ -11,14 +11,25 @@ import org.springframework.context.annotation.Configuration;
 @Setter
 public class KeycloakProperties {
     private String baseUri;
-    private Admin admin = new Admin();
+    private KeyAdmin keyAdmin = new KeyAdmin();
+    private KeyUser keyUser = new KeyUser();
 
     @Getter
     @Setter
-    public static class Admin {
+    public static class KeyAdmin {
         private String realm;
         private String clientId;
         private String username;
         private String password;
     }
+
+    @Getter
+    @Setter
+    public static class KeyUser {
+        private String realm;
+        private String clientId;
+        private String clientSecret;
+    }
+
+
 }
