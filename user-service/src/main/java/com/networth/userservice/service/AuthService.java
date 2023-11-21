@@ -6,4 +6,6 @@ import com.networth.userservice.dto.LoginResponse;
 public interface AuthService {
     LoginResponse userLogin(LoginDto loginDto);
 
+    void userLogout(String refreshToken);
+
 }

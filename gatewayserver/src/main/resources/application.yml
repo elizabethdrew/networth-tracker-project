@@ -8,7 +8,7 @@ spring:
       resource-server:
         jwt:
           jwk-set-uri: http://keycloak:8080/realms/networth/protocol/openid-connect/certs
-          issuer-uri: http://localhost:7080/realms/networth
+          issuer-uri: http://keycloak:8080/realms/networth
   data:
     redis:
       connect-timeout: 2s

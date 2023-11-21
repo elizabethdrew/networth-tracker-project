@@ -42,7 +42,6 @@ public class AuthServiceImpl implements AuthService {
         this.keycloakProperties = keycloakProperties;
     }
 
-    @Transactional
     public LoginResponse userLogin(LoginDto loginDto) {
 
         log.info("User Login Started");
@@ -110,6 +109,38 @@ public class AuthServiceImpl implements AuthService {
         } catch (IOException e) {
             log.error("Error mapping Keycloak response to TokenResponse", e);
             throw new RuntimeException("Error mapping Keycloak response to TokenResponse", e);
+        }
+    }
+
+    public void userLogout(String refreshToken) {
+
+        // Create the logout request for Keycloak
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("client_id", keycloakProperties.getKeyUser().getClientId());
+        formData.add("client_secret", keycloakProperties.getKeyUser().getClientSecret());
+        formData.add("refresh_token", refreshToken);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(formData, headers);
+
+        try {
+            // Send the logout request to Keycloak
+            ResponseEntity<Void> response = restTemplate.postForEntity(
+                    keycloakProperties.getBaseUri() + "/realms/" + keycloakProperties.getKeyUser().getRealm() + "/protocol/openid-connect/logout",
+                    request,
+                    Void.class);
+
+            if (response.getStatusCode().isError()) {
+                log.error("Error logging out from Keycloak: Status Code: {}, Body: {}", response.getStatusCode(), response.getBody());
+                throw new KeycloakException("Error logging out from Keycloak: Status Code: " + response.getStatusCode());
+            }
+
+            log.info("User logged out successfully");
+        } catch (RestClientException e) {
+            log.error("Logout request to Keycloak failed", e);
+            throw new RuntimeException("Logout request to Keycloak failed", e);
         }
     }
 }
