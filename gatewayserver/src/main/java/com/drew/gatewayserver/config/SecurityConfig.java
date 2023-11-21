@@ -16,6 +16,7 @@ public class SecurityConfig {
         http.authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/actuator/**").permitAll()
                         .pathMatchers(HttpMethod.POST, "/api/v1/users").permitAll() // Allow User Registration
+                        .pathMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll() // Allow User Login
                         .anyExchange().authenticated()
                 )
                 .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()));
