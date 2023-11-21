@@ -20,6 +20,13 @@ spring:
     hibernate:
       ddl-auto: none
 
+keycloak:
+  base-uri: http://keycloak:8080
+  admin:
+    realm: master
+    client-id: admin-cli
+    username: admin
+    password: admin
 
 javax:
   persistence:
