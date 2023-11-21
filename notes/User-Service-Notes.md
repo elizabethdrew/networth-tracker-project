@@ -1,21 +1,19 @@
-# User Service Notes
-
 ## User Registration Flow
 
 ### Overview
-The user service is responsible for creating new user accounts. It interacts with Keycloak to create the user within Keycloak at the same time.
+The user service is tasked with the creation of new user accounts. It works in tandem with Keycloak to simultaneously create the user within Keycloak's system.
 
 ### Keycloak Integration
-This function uses Keycloak's admin API to register users. This involves obtaining an admin access token and creating a user in the Keycloak realm.
+To register users, the service leverages the administrative API provided by Keycloak. This process requires an admin access token followed by the user's creation within Keycloak's realm.
 
-### WebClient
-`WebClient` is a non-blocking, reactive client for performing HTTP requests with Spring WebFlux. It's used to communicate with Keycloak's admin API asynchronously.
+### RestTemplate
+`RestTemplate` is a synchronous client for performing HTTP requests and is used for communication with Keycloak's admin API in a synchronous manner.
 
 #### Usage
-To make a POST request with `WebClient`, you build a request with the desired URI, headers, and body. You then call `retrieve()` to execute the request and process the response reactively.
+A POST request is made using `RestTemplate` by setting up an `HttpEntity` with headers and the request body. The `exchange` method or any suitable method like `postForEntity` is then used to execute the request and obtain a response.
 
 #### Error Handling
-When the response indicates an error (4xx or 5xx status codes), we handle it by logging the error and throwing a `KeycloakException`.
+Errors, signified by 4xx or 5xx status codes, are handled synchronously. The service logs the error details and throws a `KeycloakException` if it encounters issues during the user registration process.
 
 #### Configuration
-`WebClient` configurations, such as Keycloak's URI and credentials, are externalized in `application.yaml` for easier management and to support different environments.
+The configurations for `RestTemplate`, including Keycloak's URI and credentials, are specified in the `application.yaml`. This ensures easy management and adaptability across different deployment environments.
