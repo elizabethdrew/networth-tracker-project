@@ -1,16 +1,23 @@
 package com.networth.userservice.feign;
 
 import com.networth.userservice.dto.KeycloakAccessDto;
-import com.networth.userservice.dto.LogoutDto;
 import com.networth.userservice.dto.TokenResponse;
+import com.networth.userservice.dto.UserRepresentationDto;
+import feign.HeaderMap;
 import feign.Headers;
 import feign.Param;
 import feign.RequestLine;
 import feign.Response;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.Map;
+
 public interface KeycloakClient {
+
+    @RequestLine("POST /admin/realms/networth/users")
+    @Headers("Content-Type: application/json")
+    Response createKeycloakUser(@HeaderMap Map<String, Object> headers,
+                                UserRepresentationDto formData);
 
     @RequestLine("POST /realms/master/protocol/openid-connect/token")
     @Headers("Content-Type: application/x-www-form-urlencoded")

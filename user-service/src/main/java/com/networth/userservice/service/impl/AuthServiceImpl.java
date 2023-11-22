@@ -20,9 +20,7 @@ import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 @Slf4j
@@ -30,13 +28,11 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final HelperUtils helperUtils;
-    private final RestTemplate restTemplate;
     private final KeycloakProperties keycloakProperties;
 
-    public AuthServiceImpl(UserRepository userRepository, HelperUtils helperUtils, RestTemplate restTemplate, KeycloakProperties keycloakProperties) {
+    public AuthServiceImpl(UserRepository userRepository, HelperUtils helperUtils, KeycloakProperties keycloakProperties) {
         this.userRepository = userRepository;
         this.helperUtils = helperUtils;
-        this.restTemplate = restTemplate;
         this.keycloakProperties = keycloakProperties;
     }
 
