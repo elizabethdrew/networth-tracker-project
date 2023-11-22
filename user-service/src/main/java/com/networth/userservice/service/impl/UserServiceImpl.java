@@ -1,7 +1,6 @@
 package com.networth.userservice.service.impl;
 
 import com.networth.userservice.config.properties.KeycloakProperties;
-import com.networth.userservice.dto.KeycloakAccessDto;
 import com.networth.userservice.dto.PasswordCredentialDto;
 import com.networth.userservice.dto.RegisterDto;
 import com.networth.userservice.dto.UserOutput;
@@ -17,16 +16,10 @@ import com.networth.userservice.service.UserService;
 import com.networth.userservice.util.HelperUtils;
 import feign.Feign;
 import feign.Response;
-import feign.form.FormEncoder;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
