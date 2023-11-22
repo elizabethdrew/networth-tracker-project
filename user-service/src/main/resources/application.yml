@@ -22,6 +22,7 @@ spring:
 
 keycloak:
   base-uri: http://keycloak:8080
+  logout-redirect-url: http://localhost:8080/contactSupport
   keyAdmin:
     realm: master
     client-id: admin-cli

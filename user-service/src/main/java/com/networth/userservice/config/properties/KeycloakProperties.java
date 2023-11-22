@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @Setter
 public class KeycloakProperties {
     private String baseUri;
+    private String logoutRedirectUrl;
     private KeyAdmin keyAdmin = new KeyAdmin();
     private KeyUser keyUser = new KeyUser();
 

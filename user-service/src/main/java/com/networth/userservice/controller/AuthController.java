@@ -2,6 +2,7 @@ package com.networth.userservice.controller;
 
 import com.networth.userservice.dto.LoginDto;
 import com.networth.userservice.dto.LoginResponse;
+import com.networth.userservice.dto.LogoutDto;
 import com.networth.userservice.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -51,12 +52,8 @@ public class AuthController {
             @ApiResponse(responseCode = "403", description = "Insufficient Permissions"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    public ResponseEntity<?> userLogout(@RequestBody Map<String, String> logoutRequest) {
-        String refreshToken = logoutRequest.get("refresh_token");
-        if (refreshToken == null || refreshToken.trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("Refresh Token is required");
-        }
-        authService.userLogout(refreshToken);
+    public ResponseEntity<?> userLogout(LogoutDto logoutDto) {
+        authService.userLogout(logoutDto);
         return ResponseEntity.ok().body("User logged out successfully");
     }
 
