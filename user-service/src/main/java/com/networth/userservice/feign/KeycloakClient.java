@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-@FeignClient(name = "keycloak", url = "${keycloak.base-uri}")
+@FeignClient(name = "keycloak", url = "${keycloak.base-uri}", configuration = FeignConfig.class)
 public interface KeycloakClient {
 
     @PutMapping("/admin/realms/{realm}/users/{id}/reset-password")
