@@ -1,10 +1,14 @@
 package com.networth.userservice.util;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networth.userservice.config.properties.KeycloakProperties;
+import com.networth.userservice.dto.AdminAccessDto;
+import com.networth.userservice.dto.TokenResponse;
 import com.networth.userservice.exception.InvalidInputException;
-import com.networth.userservice.exception.KeycloakException;
+import com.networth.userservice.feign.KeycloakAdminClient;
+import feign.Feign;
+import feign.form.FormEncoder;
+import feign.jackson.JacksonDecoder;
+import feign.jackson.JacksonEncoder;
 import lombok.extern.slf4j.Slf4j;
 import org.passay.CharacterRule;
 import org.passay.EnglishCharacterData;
@@ -13,17 +17,12 @@ import org.passay.PasswordData;
 import org.passay.PasswordValidator;
 import org.passay.Rule;
 import org.passay.RuleResult;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,11 +30,8 @@ import java.util.List;
 @Slf4j
 public class HelperUtils {
 
-    private final RestTemplate restTemplate;
     private final KeycloakProperties keycloakProperties;
-
-    public HelperUtils(RestTemplate restTemplate, KeycloakProperties keycloakProperties) {
-        this.restTemplate = restTemplate;
+    public HelperUtils(KeycloakProperties keycloakProperties) {
         this.keycloakProperties = keycloakProperties;
     }
 
@@ -65,45 +61,30 @@ public class HelperUtils {
     public String getAdminAccessToken() {
         log.info("Keycloak Admin Access Flow Started");
 
-        // Create the request body
-        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-        formData.add("client_id", keycloakProperties.getKeyAdmin().getClientId());
-        formData.add("grant_type", "password");
-        formData.add("username", keycloakProperties.getKeyAdmin().getUsername());
-        formData.add("password", keycloakProperties.getKeyAdmin().getPassword());
+        KeycloakAdminClient keycloakAdminClient = Feign.builder()
+                .encoder(new FormEncoder(new JacksonEncoder()))
+                .decoder(new JacksonDecoder())
+                .target(KeycloakAdminClient.class, keycloakProperties.getBaseUri());
 
-        // Set the headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        // Create the request form data
+        AdminAccessDto formData = new AdminAccessDto();
+        formData.setClient_id(keycloakProperties.getKeyAdmin().getClientId());
+        formData.setGrant_type("password");
+        formData.setUsername(keycloakProperties.getKeyAdmin().getUsername());
+        formData.setPassword(keycloakProperties.getKeyAdmin().getPassword());
 
-        // Create the HttpEntity
-        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(formData, headers);
+        log.info(String.valueOf(formData));
 
         try {
-            // Execute the POST request
-            ResponseEntity<String> response = restTemplate.postForEntity(
-                    keycloakProperties.getBaseUri() + "/realms/" + keycloakProperties.getKeyAdmin().getRealm() + "/protocol/openid-connect/token",
-                    entity,
-                    String.class);
+            TokenResponse tokenResponse = keycloakAdminClient.getAdminAccessToken(formData);
 
-            // Check for error response
-            if (response.getStatusCode().is4xxClientError() || response.getStatusCode().is5xxServerError()) {
-                log.error("Error response from Keycloak: Status Code: {}, Body: {}", response.getStatusCode(), response.getBody());
-                throw new KeycloakException("Error response from Keycloak: Status Code: " +
-                        response.getStatusCode() + ", Body: " + response.getBody());
-            }
-
-            // Parse the access token from the response
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(response.getBody());
-            String accessToken = jsonNode.get("access_token").asText();
             log.info("Extracted access token");
-
-            return accessToken;
-        } catch (RestClientException | IOException e) {
+            return tokenResponse.getAccessToken();
+        } catch (Exception e) {
             log.error("Failed to retrieve access token", e);
             throw new RuntimeException("Failed to retrieve access token", e);
         }
     }
+
 
 }

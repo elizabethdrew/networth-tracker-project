@@ -1,12 +1,16 @@
 package com.networth.userservice.feign;
+
+import feign.codec.Encoder;
+import feign.form.spring.SpringFormEncoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import feign.Logger;
 
 @Configuration
 public class FeignConfig {
+
     @Bean
-    Logger.Level feignLoggerLevel() {
-        return Logger.Level.FULL;
-    }
+    public Encoder feignFormEncoder() {
+        return new SpringFormEncoder();
+   }
+
 }

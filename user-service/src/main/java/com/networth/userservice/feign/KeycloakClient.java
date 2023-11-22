@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 public interface KeycloakClient {
 
     @PutMapping("/admin/realms/{realm}/users/{id}/reset-password")
-    void resetUserPassword(
+    void updateUserPassword(
             @PathVariable("realm") String realm,
             @PathVariable("id") String keycloakId,
             @RequestBody PasswordRepresentation passwordRepresentation,

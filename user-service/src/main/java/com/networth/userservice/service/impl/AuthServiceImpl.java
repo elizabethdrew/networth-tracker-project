@@ -4,16 +4,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networth.userservice.config.properties.KeycloakProperties;
 import com.networth.userservice.dto.LoginDto;
 import com.networth.userservice.dto.LoginResponse;
+import com.networth.userservice.dto.PasswordRepresentation;
+import com.networth.userservice.dto.PasswordUpdateDto;
 import com.networth.userservice.dto.TokenResponse;
 import com.networth.userservice.entity.User;
 import com.networth.userservice.exception.KeycloakException;
 import com.networth.userservice.exception.UserNotFoundException;
+import com.networth.userservice.feign.KeycloakClient;
 import com.networth.userservice.repository.UserRepository;
 import com.networth.userservice.service.AuthService;
 import com.networth.userservice.util.HelperUtils;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -21,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -29,6 +34,9 @@ import java.io.IOException;
 @Service
 @Slf4j
 public class AuthServiceImpl implements AuthService {
+
+    @Autowired
+    private KeycloakClient keycloakClient;
 
     private final UserRepository userRepository;
     private final HelperUtils helperUtils;
@@ -143,4 +151,35 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Logout request to Keycloak failed", e);
         }
     }
+
+    public void updateUserPassword(@RequestHeader("X-SID") String sid, PasswordUpdateDto passwordUpdateDto) {
+
+        log.info("Starting Update Password");
+
+        log.info("SID = " + sid);
+
+        if (passwordUpdateDto.getOldPassword().equals(passwordUpdateDto.getNewPassword())) {
+            throw new IllegalArgumentException("New password must be different from the old password.");
+        }
+
+        log.info("Password Different");
+
+        // Request an admin access token from Keycloak
+        String adminToken = helperUtils.getAdminAccessToken();
+
+        log.info(adminToken);
+
+        // Create a PasswordRepresentation with the new password
+        PasswordRepresentation passwordRepresentation = new PasswordRepresentation();
+        passwordRepresentation.setType("password");
+        passwordRepresentation.setValue(passwordUpdateDto.getNewPassword());
+        passwordRepresentation.setTemporary(false);
+
+        // Send an update user password request to Keycloak
+        keycloakClient.updateUserPassword(keycloakProperties.getKeyUser().getRealm(), sid, passwordRepresentation, "Bearer " + adminToken);
+        log.info("fin");
+    }
+
+
+
 }
