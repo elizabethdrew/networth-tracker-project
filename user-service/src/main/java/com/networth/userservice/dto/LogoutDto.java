@@ -5,8 +5,6 @@ import lombok.Data;
 
 @Data
 public class LogoutDto {
-    @FormProperty("refresh_token")
-    private String refreshToken;
-    @FormProperty("id_token_hint")
-    private String idTokenHint;
+    private String refresh_token;
+    private String id_token_hint;
 }

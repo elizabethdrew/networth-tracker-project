@@ -1,6 +1,7 @@
 package com.networth.userservice.service.impl;
 
 import com.networth.userservice.config.properties.KeycloakProperties;
+import com.networth.userservice.dto.KeycloakAccessDto;
 import com.networth.userservice.dto.LoginDto;
 import com.networth.userservice.dto.LoginResponse;
 import com.networth.userservice.dto.LogoutDto;
@@ -69,18 +70,27 @@ public class AuthServiceImpl implements AuthService {
 
     public void userLogout(LogoutDto logoutDto) {
 
+        log.info("Starting Logout");
+
         KeycloakClient keycloakClient = Feign.builder()
                 .encoder(new FormEncoder(new JacksonEncoder()))
                 .decoder(new JacksonDecoder())
                 .target(KeycloakClient.class, keycloakProperties.getBaseUri());
 
+        // Create the logout form data
+        KeycloakAccessDto formData = new KeycloakAccessDto();
+        formData.setClient_id(keycloakProperties.getKeyUser().getClientId());
+        formData.setClient_secret(keycloakProperties.getKeyUser().getClientSecret());
+        formData.setRefresh_token(logoutDto.getRefresh_token());
+        formData.setId_token_hint(logoutDto.getId_token_hint());
+        formData.setPost_logout_redirect_uri(keycloakProperties.getLogoutRedirectUrl());
+
+        log.info(String.valueOf(formData));
+
         try {
-            Response response = keycloakClient.keycloakLogout(
-                    keycloakProperties.getKeyUser().getClientId(),
-                    keycloakProperties.getKeyUser().getClientSecret(),
-                    logoutDto.getRefreshToken(),
-                    logoutDto.getIdTokenHint(),
-                    keycloakProperties.getLogoutRedirectUrl());
+            Response response = keycloakClient.keycloakLogout(formData);
+
+            log.info(String.valueOf(response));
 
             if (response.status() < 200 || response.status() >= 300) {
                 throw new KeycloakException("Failed to logout user. Status: " + response.status());

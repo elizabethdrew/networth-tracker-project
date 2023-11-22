@@ -10,6 +10,12 @@ public class KeycloakAccessDto {
     private String client_id;
     @FormProperty("client_secret")
     private String client_secret;
+    @FormProperty("refresh_token")
+    private String refresh_token;
+    @FormProperty("id_token_hint")
+    private String id_token_hint;
+    @FormProperty("post_logout_redirect_uri")
+    private String post_logout_redirect_uri;
     @FormProperty("scope")
     private String scope;
     @FormProperty("grant_type")
