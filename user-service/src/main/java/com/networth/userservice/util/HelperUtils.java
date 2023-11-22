@@ -1,10 +1,11 @@
 package com.networth.userservice.util;
 
 import com.networth.userservice.config.properties.KeycloakProperties;
-import com.networth.userservice.dto.AdminAccessDto;
+import com.networth.userservice.dto.KeycloakAccessDto;
+import com.networth.userservice.dto.LoginDto;
 import com.networth.userservice.dto.TokenResponse;
 import com.networth.userservice.exception.InvalidInputException;
-import com.networth.userservice.feign.KeycloakAdminClient;
+import com.networth.userservice.feign.KeycloakClient;
 import feign.Feign;
 import feign.form.FormEncoder;
 import feign.jackson.JacksonDecoder;
@@ -17,11 +18,7 @@ import org.passay.PasswordData;
 import org.passay.PasswordValidator;
 import org.passay.Rule;
 import org.passay.RuleResult;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,13 +58,13 @@ public class HelperUtils {
     public String getAdminAccessToken() {
         log.info("Keycloak Admin Access Flow Started");
 
-        KeycloakAdminClient keycloakAdminClient = Feign.builder()
+        KeycloakClient keycloakClient = Feign.builder()
                 .encoder(new FormEncoder(new JacksonEncoder()))
                 .decoder(new JacksonDecoder())
-                .target(KeycloakAdminClient.class, keycloakProperties.getBaseUri());
+                .target(KeycloakClient.class, keycloakProperties.getBaseUri());
 
         // Create the request form data
-        AdminAccessDto formData = new AdminAccessDto();
+        KeycloakAccessDto formData = new KeycloakAccessDto();
         formData.setClient_id(keycloakProperties.getKeyAdmin().getClientId());
         formData.setGrant_type("password");
         formData.setUsername(keycloakProperties.getKeyAdmin().getUsername());
@@ -76,10 +73,41 @@ public class HelperUtils {
         log.info(String.valueOf(formData));
 
         try {
-            TokenResponse tokenResponse = keycloakAdminClient.getAdminAccessToken(formData);
+            TokenResponse tokenResponse = keycloakClient.getAdminAccessToken(formData);
 
             log.info("Extracted access token");
             return tokenResponse.getAccessToken();
+        } catch (Exception e) {
+            log.error("Failed to retrieve access token", e);
+            throw new RuntimeException("Failed to retrieve access token", e);
+        }
+    }
+
+    // Get Keycloak User Access Token
+    public TokenResponse getUserAccessToken(LoginDto loginDto) {
+        log.info("Keycloak User Access Flow Started");
+
+        KeycloakClient keycloakClient = Feign.builder()
+                .encoder(new FormEncoder(new JacksonEncoder()))
+                .decoder(new JacksonDecoder())
+                .target(KeycloakClient.class, keycloakProperties.getBaseUri());
+
+        // Create the request form data
+        KeycloakAccessDto formData = new KeycloakAccessDto();
+        formData.setClient_id(keycloakProperties.getKeyUser().getClientId());
+        formData.setClient_secret(keycloakProperties.getKeyUser().getClientSecret());
+        formData.setScope("openid email profile");
+        formData.setGrant_type("password");
+        formData.setUsername(loginDto.getUsername());
+        formData.setPassword(loginDto.getPassword());
+
+        log.info(String.valueOf(formData));
+
+        try {
+            TokenResponse tokenResponse = keycloakClient.getUserAccessToken(formData);
+
+            log.info("Extracted access token");
+            return tokenResponse;
         } catch (Exception e) {
             log.error("Failed to retrieve access token", e);
             throw new RuntimeException("Failed to retrieve access token", e);
