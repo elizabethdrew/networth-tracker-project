@@ -7,6 +7,8 @@ import com.networth.userservice.exception.InsufficientPermissionException;
 import com.networth.userservice.exception.InvalidInputException;
 import com.networth.userservice.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,18 +39,22 @@ public class UserController {
     }
 
     @PostMapping
-    @Operation(summary = "Create a new user")
+    @Operation(
+            summary = "Register a new user",
+            description = "Creates a new user account with the provided information. " +
+            "The user's unique identifier is returned in the Location header of the response.")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "User created successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid Request"),
-            @ApiResponse(responseCode = "403", description = "Insufficient Permissions"),
-            @ApiResponse(responseCode = "409", description = "Already Exists"),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+            @ApiResponse(responseCode = "201", description = "User created successfully", content = @Content(schema = @Schema(implementation = UserOutput.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid Request - the provided data is invalid or incomplete"),
+            @ApiResponse(responseCode = "403", description = "Insufficient Permissions - the requester does not have permission to create a new user"),
+            @ApiResponse(responseCode = "409", description = "Already Exists - a user with the provided details already exists"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error - an unexpected error occurred while processing the request")
     })
     public ResponseEntity<UserOutput> registerUser(@RequestBody RegisterDto registerDto, UriComponentsBuilder uriBuilder) {
         UserOutput userOutput = userService.registerUser(registerDto);
 
-        URI location = uriBuilder.path("/api/v1/users/{id}")
+        URI location = uriBuilder
+                .path("/{id}")
                 .buildAndExpand(userOutput.getUserId())
                 .toUri();
 
