@@ -109,6 +109,7 @@ services:
       start_period: 10s
     depends_on:
       - configserver
+      - keycloak
       - users_db
     deploy:
       restart_policy:
@@ -155,6 +156,8 @@ services:
       KC_LOG_LEVEL: DEBUG
     ports:
       - "7080:8080"
+    depends_on:
+      - keycloak_db
     networks:
       - networth
     command:

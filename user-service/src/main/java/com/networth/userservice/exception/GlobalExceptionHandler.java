@@ -3,6 +3,7 @@ package com.networth.userservice.exception;
 import com.networth.userservice.dto.ErrorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -43,7 +44,22 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidInputException.class)
     public ResponseEntity<ErrorResponse> handleInvalidInputException(InvalidInputException e) {
-        return generateErrorResponse(HttpStatus.BAD_REQUEST, "InvalidInput", e);
+        return generateErrorResponse(HttpStatus.BAD_REQUEST, "Invalid Input", e);
+    }
+
+    @ExceptionHandler(DuplicateException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateException(DuplicateException e) {
+        return generateErrorResponse(HttpStatus.CONFLICT, "Duplicate Input", e);
+    }
+
+    @ExceptionHandler(InsufficientPermissionException.class)
+    public ResponseEntity<ErrorResponse> handleInsufficientPermissionException(InsufficientPermissionException e) {
+        return generateErrorResponse(HttpStatus.FORBIDDEN, "Insufficient Permissions", e);
+    }
+
+    @ExceptionHandler(KeycloakException.class)
+    public ResponseEntity<ErrorResponse> handleKeycloakException(KeycloakException e) {
+        return generateErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Keycloak Error", e);
     }
 
 }

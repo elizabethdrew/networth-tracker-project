@@ -1,7 +1,10 @@
 package com.networth.userservice.controller;
 
-import com.networth.userservice.dto.UserInput;
+import com.networth.userservice.dto.RegisterDto;
 import com.networth.userservice.dto.UserOutput;
+import com.networth.userservice.exception.DuplicateException;
+import com.networth.userservice.exception.InsufficientPermissionException;
+import com.networth.userservice.exception.InvalidInputException;
 import com.networth.userservice.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 
 @RestController
@@ -36,10 +40,11 @@ public class UserController {
             @ApiResponse(responseCode = "409", description = "Already Exists"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    public ResponseEntity<UserOutput> createUser(@RequestBody UserInput userInput) {
-        UserOutput userOutput = userService.createUser(userInput);
-        return new ResponseEntity<>(userOutput, HttpStatus.CREATED);
+    public ResponseEntity<UserOutput> registerUser(@RequestBody RegisterDto registerDto) {
+        UserOutput userOutput = userService.registerUser(registerDto);
+        return ResponseEntity.ok(userOutput);
     }
+
 
     @GetMapping("/{userId}")
     @Operation(summary = "Get a user by id")
@@ -55,31 +60,31 @@ public class UserController {
         return ResponseEntity.ok(userOutput);
     }
 
-    @PutMapping("/{userId}")
-    @Operation(summary = "Update a user by id")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Updated the user"),
-            @ApiResponse(responseCode = "400", description = "Invalid id supplied"),
-            @ApiResponse(responseCode = "403", description = "Insufficient Permissions"),
-            @ApiResponse(responseCode = "404", description = "User not found"),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error")
-    })
-    public ResponseEntity<UserOutput> updateUser(@PathVariable Long userId, @RequestBody UserInput userInput) {
-        UserOutput userOutput = userService.updateUser(userId, userInput);
-        return ResponseEntity.ok(userOutput);
-    }
-
-    @DeleteMapping("/{userId}")
-    @Operation(summary = "Delete a user by id")
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Deleted the user"),
-            @ApiResponse(responseCode = "400", description = "Invalid id supplied"),
-            @ApiResponse(responseCode = "403", description = "Insufficient Permissions"),
-            @ApiResponse(responseCode = "404", description = "User not found"),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error")
-    })
-    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
-        userService.deleteUser(userId);
-        return ResponseEntity.noContent().build();
-    }
+//    @PutMapping("/{userId}")
+//    @Operation(summary = "Update a user by id")
+//    @ApiResponses({
+//            @ApiResponse(responseCode = "200", description = "Updated the user"),
+//            @ApiResponse(responseCode = "400", description = "Invalid id supplied"),
+//            @ApiResponse(responseCode = "403", description = "Insufficient Permissions"),
+//            @ApiResponse(responseCode = "404", description = "User not found"),
+//            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+//    })
+//    public ResponseEntity<UserOutput> updateUser(@PathVariable Long userId, @RequestBody RegisterDto registerDto) {
+//        UserOutput userOutput = userService.updateUser(userId, registerDto);
+//        return ResponseEntity.ok(userOutput);
+//    }
+//
+//    @DeleteMapping("/{userId}")
+//    @Operation(summary = "Delete a user by id")
+//    @ApiResponses({
+//            @ApiResponse(responseCode = "204", description = "Deleted the user"),
+//            @ApiResponse(responseCode = "400", description = "Invalid id supplied"),
+//            @ApiResponse(responseCode = "403", description = "Insufficient Permissions"),
+//            @ApiResponse(responseCode = "404", description = "User not found"),
+//            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+//    })
+//    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
+//        userService.deleteUser(userId);
+//        return ResponseEntity.noContent().build();
+//    }
 }

@@ -23,14 +23,14 @@ public class User {
     @Column( name = "user_id")
     private Long userId;
 
+    @Column (name = "keycloak_id", unique = true)
+    private String keycloakId;
+
     @Column (name = "username", unique = true)
     private String username;
 
     @Column( name = "email", unique = true)
     private String email;
-
-    @Column( name = "password")
-    private String password;
 
     @Column ( name = "active_user")
     private Boolean activeUser = true;
