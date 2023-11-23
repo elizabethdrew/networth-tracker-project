@@ -80,7 +80,7 @@
 			<groupId>io.github.openfeign</groupId>
 			<artifactId>feign-jackson</artifactId>
 		</dependency>
-    </dependencies>
+	</dependencies>
 
 	<dependencyManagement>
 		<dependencies>
