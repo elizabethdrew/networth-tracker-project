@@ -47,6 +47,11 @@ public class GlobalExceptionHandler {
         return generateErrorResponse(HttpStatus.BAD_REQUEST, "Invalid Input", e);
     }
 
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidCredentialsException(InvalidCredentialsException e) {
+        return generateErrorResponse(HttpStatus.BAD_REQUEST, "Invalid Credentials", e);
+    }
+
     @ExceptionHandler(DuplicateException.class)
     public ResponseEntity<ErrorResponse> handleDuplicateException(DuplicateException e) {
         return generateErrorResponse(HttpStatus.CONFLICT, "Duplicate Input", e);

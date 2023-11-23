@@ -107,11 +107,11 @@ public class UserServiceImpl implements UserService {
                 log.error("Failed to create user in Keycloak. Status: {}, Body: {}", response.status(), response.body());
                 throw new KeycloakException("Failed to create user in Keycloak. Status: " + response.status());
             }
-        } catch (InvalidInputException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            log.error("An unexpected error occurred during user registration", ex);
-            throw new ServiceException("An unexpected error occurred during registration", ex);
+        } catch (InvalidInputException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("An unexpected error occurred during user registration", e);
+            throw new ServiceException("An unexpected error occurred during registration", e);
         }
     }
 

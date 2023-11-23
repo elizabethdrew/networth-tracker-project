@@ -20,32 +20,32 @@ import java.time.LocalDateTime;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column( name = "user_id")
+    @Column(name = "user_id")
     private Long userId;
 
-    @Column (name = "keycloak_id", unique = true)
+    @Column(name = "keycloak_id", unique = true)
     private String keycloakId;
 
-    @Column (name = "username", unique = true)
+    @Column(name = "username", unique = true)
     private String username;
 
-    @Column( name = "email", unique = true)
+    @Column(name = "email", unique = true)
     private String email;
 
-    @Column ( name = "active_user")
+    @Column(name = "active_user")
     private Boolean activeUser = true;
 
     @Enumerated(EnumType.STRING)
-    @Column ( name = "tax_rate")
+    @Column(name = "tax_rate")
     private TaxRate taxRate;
 
-    @Column ( name = "date_birth")
+    @Column(name = "date_birth")
     private LocalDate dateOfBirth;
 
-    @Column ( name = "date_open")
+    @Column(name = "date_open")
     private LocalDateTime dateOpened;
 
-    @Column (name = "date_updated")
+    @Column(name = "date_updated")
     private LocalDateTime dateUpdated;
 
 }

@@ -34,7 +34,7 @@ public class HelperUtils {
 
 
     // Validate Password Against Rules
-    public void validatePassword(String password) {
+    public Boolean validatePassword(String password) {
 
         // Define rules
         List<Rule> rules = new ArrayList<>();
@@ -51,6 +51,8 @@ public class HelperUtils {
             String message = String.join(", ", validator.getMessages(result));
             throw new InvalidInputException("Invalid password: " + message);
         }
+
+        return result.isValid();
 
     }
 
@@ -74,7 +76,6 @@ public class HelperUtils {
 
         try {
             TokenResponse tokenResponse = keycloakClient.getAdminAccessToken(formData);
-
             log.info("Extracted access token");
             return tokenResponse.getAccessToken();
         } catch (Exception e) {
@@ -105,7 +106,6 @@ public class HelperUtils {
 
         try {
             TokenResponse tokenResponse = keycloakClient.getUserAccessToken(formData);
-
             log.info("Extracted access token");
             return tokenResponse;
         } catch (Exception e) {

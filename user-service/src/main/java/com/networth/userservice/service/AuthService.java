@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 
 public interface AuthService {
     LoginResponse userLogin(LoginDto loginDto);
-
     void userLogout(LogoutDto logoutDto);
 
 }

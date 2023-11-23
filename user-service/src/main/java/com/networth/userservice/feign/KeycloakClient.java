@@ -5,7 +5,6 @@ import com.networth.userservice.dto.TokenResponse;
 import com.networth.userservice.dto.UserRepresentationDto;
 import feign.HeaderMap;
 import feign.Headers;
-import feign.Param;
 import feign.RequestLine;
 import feign.Response;
 import org.springframework.web.bind.annotation.RequestBody;
