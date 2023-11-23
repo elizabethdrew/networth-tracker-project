@@ -5,6 +5,6 @@ import org.springframework.dao.DataAccessException;
 
 public class AuthenticationServiceException extends DataAccessException {
     public AuthenticationServiceException(String message, FeignException e) {
-        super(message);
+        super(message, e);
     }
 }

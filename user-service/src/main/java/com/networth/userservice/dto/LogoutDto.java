@@ -1,6 +1,5 @@
 package com.networth.userservice.dto;
 
-import feign.form.FormProperty;
 import lombok.Data;
 
 @Data
