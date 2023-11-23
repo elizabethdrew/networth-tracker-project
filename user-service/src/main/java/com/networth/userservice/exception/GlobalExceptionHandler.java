@@ -1,8 +1,7 @@
 package com.networth.userservice.exception;
 
 import com.networth.userservice.dto.ErrorResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -10,13 +9,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
-    // Logger to log information and warnings
-    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-
     private ResponseEntity<ErrorResponse> generateErrorResponse(HttpStatus status, Exception e) {
-        LOGGER.warn(String.valueOf(e));
+        log.warn(String.valueOf(e));
         ErrorResponse error = new ErrorResponse();
         error.setCode(status.value());
         error.setMessage(e.getMessage());
@@ -24,7 +21,7 @@ public class GlobalExceptionHandler {
     }
 
     private ResponseEntity<ErrorResponse> generateErrorResponse(HttpStatus status, String message, Exception e) {
-        LOGGER.warn(message, e);
+        log.warn(message, e);
         ErrorResponse error = new ErrorResponse();
         error.setCode(status.value());
         error.setMessage(message);
