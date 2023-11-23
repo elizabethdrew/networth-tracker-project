@@ -3,14 +3,17 @@ package com.drew.gatewayserver.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.oauth2.server.resource.introspection.NimbusOpaqueTokenIntrospector;
-import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
 @Configuration
 public class SecurityConfig {
+
+    private final KeycloakProperties keycloakProperties;
+
+    public SecurityConfig(KeycloakProperties keycloakProperties) {
+        this.keycloakProperties = keycloakProperties;
+    }
 
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
@@ -23,8 +26,8 @@ public class SecurityConfig {
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .opaqueToken(opaqueToken -> opaqueToken
-                                .introspectionUri("http://keycloak:8080/realms/networth/protocol/openid-connect/token/introspect")
-                                .introspectionClientCredentials("apigateway", "Ow1dayvip5w4BHJeacRzVLHLCfJNCm3W")
+                                .introspectionUri(keycloakProperties.getIntrospectionUri())
+                                .introspectionClientCredentials(keycloakProperties.getClientId(), keycloakProperties.getClientSecret())
                         )
                 )
         .csrf(csrf -> csrf.disable());
