@@ -10,6 +10,8 @@ public class KeycloakAccessDto {
     private String client_id;
     @FormProperty("client_secret")
     private String client_secret;
+    @FormProperty("token")
+    private String token;
     @FormProperty("refresh_token")
     private String refresh_token;
     @FormProperty("id_token_hint")

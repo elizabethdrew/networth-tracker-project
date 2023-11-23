@@ -31,4 +31,8 @@ public interface KeycloakClient {
     @Headers("Content-Type: application/x-www-form-urlencoded")
     Response keycloakLogout(@RequestBody KeycloakAccessDto formData);
 
+    @RequestLine("POST /realms/networth/protocol/openid-connect/revoke")
+    @Headers("Content-Type: application/x-www-form-urlencoded")
+    Response keycloakRevoke(@RequestBody KeycloakAccessDto formData);
+
 }

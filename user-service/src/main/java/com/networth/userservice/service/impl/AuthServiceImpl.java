@@ -66,9 +66,36 @@ public class AuthServiceImpl implements AuthService {
 
     public void userLogout(LogoutDto logoutDto) {
 
+        log.info("Starting Revoke");
+
+        KeycloakClient keycloakRevokeClient = Feign.builder()
+                .encoder(new FormEncoder(new JacksonEncoder()))
+                .decoder(new JacksonDecoder())
+                .target(KeycloakClient.class, keycloakProperties.getBaseUri());
+
+        // Create the logout form data
+        KeycloakAccessDto revokeData = new KeycloakAccessDto();
+        revokeData.setClient_id(keycloakProperties.getKeyUser().getClientId());
+        revokeData.setClient_secret(keycloakProperties.getKeyUser().getClientSecret());
+        revokeData.setToken(logoutDto.getAccess_token());
+
+        log.info(String.valueOf(revokeData));
+
+        try {
+            Response response = keycloakRevokeClient.keycloakRevoke(revokeData);
+
+            log.info(String.valueOf(response));
+
+            if (response.status() < 200 || response.status() >= 300) {
+                throw new KeycloakException("Failed to logout user. Status: " + response.status());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to logout from Keycloak", e);
+        }
+
         log.info("Starting Logout");
 
-        KeycloakClient keycloakClient = Feign.builder()
+        KeycloakClient keycloakLogoutClient = Feign.builder()
                 .encoder(new FormEncoder(new JacksonEncoder()))
                 .decoder(new JacksonDecoder())
                 .target(KeycloakClient.class, keycloakProperties.getBaseUri());
@@ -84,7 +111,7 @@ public class AuthServiceImpl implements AuthService {
         log.info(String.valueOf(formData));
 
         try {
-            Response response = keycloakClient.keycloakLogout(formData);
+            Response response = keycloakLogoutClient.keycloakLogout(formData);
 
             log.info(String.valueOf(response));
 
@@ -94,6 +121,8 @@ public class AuthServiceImpl implements AuthService {
         } catch (Exception e) {
             throw new RuntimeException("Failed to logout from Keycloak", e);
         }
+
+
     }
 
 }
