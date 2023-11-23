@@ -62,4 +62,9 @@ public class GlobalExceptionHandler {
         return generateErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Keycloak Error", e);
     }
 
+    @ExceptionHandler(UserServiceException.class)
+    public ResponseEntity<ErrorResponse> handleUserServiceException(UserServiceException e) {
+        return generateErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "User Service Error", e);
+    }
+
 }

@@ -9,6 +9,7 @@ import com.networth.userservice.entity.User;
 import com.networth.userservice.exception.InvalidInputException;
 import com.networth.userservice.exception.KeycloakException;
 import com.networth.userservice.exception.UserNotFoundException;
+import com.networth.userservice.exception.UserServiceException;
 import com.networth.userservice.feign.KeycloakClient;
 import com.networth.userservice.mapper.UserMapper;
 import com.networth.userservice.repository.UserRepository;
@@ -20,6 +21,9 @@ import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.service.spi.ServiceException;
+import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -58,49 +62,67 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserOutput registerUser(RegisterDto registerDto) {
 
-        log.info("Register User Flow Started");
+        try {
+            log.info("Starting registration for username: {}", registerDto.getUsername());
 
-        // Check if username already exists
-        if (userRepository.existsByUsername(registerDto.getUsername())) {
-            throw new InvalidInputException("Username already in use: " + registerDto.getUsername());
+            // Check if username already exists
+            if (userRepository.existsByUsername(registerDto.getUsername())) {
+                log.warn("Registration failed: Username '{}' is already in use.", registerDto.getUsername());
+                throw new InvalidInputException("Username already in use: " + registerDto.getUsername());
+            }
+
+            // Check if email already exists
+            if (userRepository.existsByEmail(registerDto.getEmail())) {
+                log.warn("Registration failed: Email '{}' is already in use.", registerDto.getEmail());
+                throw new InvalidInputException("Email already in use: " + registerDto.getEmail());
+            }
+
+            // Validate Password
+            helperUtils.validatePassword(registerDto.getPassword());
+
+            // Get Admin Access Token
+            String accessToken = helperUtils.getAdminAccessToken();
+            Map<String, Object> headers = new HashMap<>();
+            headers.put("Authorization", "Bearer " + accessToken);
+
+            log.info("Registering user '{}' with Keycloak.", registerDto.getUsername());
+
+            KeycloakClient keycloakClient = Feign.builder()
+                    .encoder(new JacksonEncoder())
+                    .decoder(new JacksonDecoder())
+                    .target(KeycloakClient.class, keycloakProperties.getBaseUri());
+
+            UserRepresentationDto formData = createUserRepresentation(registerDto);
+
+            log.info("Adding User To Keycloak");
+            Response response = keycloakClient.createKeycloakUser(headers, formData);
+
+            if (response.status() == HttpStatus.CREATED.value()) {
+                String keycloakUserId = extractKeycloakUserId(response);
+                User user = createUserEntity(registerDto, keycloakUserId);
+                user = userRepository.save(user);
+                log.info("User '{}' successfully registered with Keycloak ID: {}", registerDto.getUsername(), keycloakUserId);
+                return userMapper.toUserOutput(user);
+            } else {
+                log.error("Failed to create user in Keycloak. Status: {}, Body: {}", response.status(), response.body());
+                throw new KeycloakException("Failed to create user in Keycloak. Status: " + response.status());
+            }
+        } catch (InvalidInputException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            log.error("An unexpected error occurred during user registration", ex);
+            throw new ServiceException("An unexpected error occurred during registration", ex);
         }
+    }
 
-        log.info("Username Passed Checks");
 
-        // Check if email already exists
-        if (userRepository.existsByEmail(registerDto.getEmail())) {
-            throw new InvalidInputException("Email already in use: " + registerDto.getEmail());
-        }
+    private UserRepresentationDto createUserRepresentation(RegisterDto registerDto) {
+        log.debug("Constructing UserRepresentationDto for username: {}", registerDto.getUsername());
 
-        log.info("Email Passed Checks");
-
-        // Validate Password
-        helperUtils.validatePassword(registerDto.getPassword());
-
-        log.info("Password Passed Checks");
-
-        // Get Admin Access Token
-
-        String accessToken = helperUtils.getAdminAccessToken();
-        Map<String, Object> headers = new HashMap<>();
-        headers.put("Authorization", "Bearer " + accessToken);
-
-        log.info(headers.toString());
-
-        log.info("Creating User Representation");
-
-        KeycloakClient keycloakClient = Feign.builder()
-                .encoder(new JacksonEncoder())
-                .decoder(new JacksonDecoder())
-                .target(KeycloakClient.class, keycloakProperties.getBaseUri());
-
-        // Create User Representation
         UserRepresentationDto formData = new UserRepresentationDto();
         formData.setUsername(registerDto.getUsername());
         formData.setEmail(registerDto.getEmail());
         formData.setEnabled(true);
-
-        log.info("Creating User Password Credential");
 
         PasswordCredentialDto password = new PasswordCredentialDto();
         password.setType("PASSWORD");
@@ -109,56 +131,50 @@ public class UserServiceImpl implements UserService {
 
         formData.setCredentials(Collections.singletonList(password));
 
-        log.info("Adding User To Keycloak");
+        log.debug("UserRepresentationDto constructed for username: {}", registerDto.getUsername());
+        return formData;
+    }
 
-        log.info(String.valueOf(formData));
+    private String extractKeycloakUserId(Response response) {
+        log.debug("Extracting Keycloak User Id from response");
 
-        Response response = keycloakClient.createKeycloakUser(headers, formData);
-
-        if (response.status() != 201) {
-            log.error("Error response from Keycloak: Status Code: {}, Body: {}", response.status(), response);
-            throw new KeycloakException("Unable to create user in Keycloak. Status: " + response.status());
-        }
-
-        log.info("Extracting Keycloak User Id");
-
-        if(response.status() == 201) {
-            String locationHeader = response.headers().get("Location").stream().findFirst().orElse(null);
-
-            if(locationHeader == null) {
-                throw new KeycloakException("Location header is missing in the response from Keycloak.");
-            }
+        if (response.status() == HttpStatus.CREATED.value()) {
+            String locationHeader = response.headers().get("Location").stream().findFirst()
+                    .orElseThrow(() -> new KeycloakException("Location header is missing in the response from Keycloak."));
 
             URI locationURI = URI.create(locationHeader);
             String path = locationURI.getPath();
             String keycloakUserId = path.substring(path.lastIndexOf('/') + 1);
 
             if (keycloakUserId.isEmpty()) {
-                log.error("Keycloak User Id is Null");
-                throw new KeycloakException("Keycloak User Id is Null");
+                throw new KeycloakException("Extracted Keycloak User Id is null or empty.");
             }
 
-            // Create New User
-            log.info("Creating User");
-            User user = new User();
-            user.setUsername(registerDto.getUsername());
-            user.setEmail(registerDto.getEmail());
-            user.setDateOpened(LocalDateTime.now());
-            user.setActiveUser(true);
-            user.setKeycloakId(keycloakUserId);
-
-            // Save user to the repository
-            log.info("Saving User");
-            user = userRepository.save(user);
-
-            return userMapper.toUserOutput(user);
-
+            log.info("Extracted Keycloak User Id: {}", keycloakUserId);
+            return keycloakUserId;
         } else {
-            log.error("That didn't work. Sheet.");
-            throw new KeycloakException("Bugger");
+            throw new KeycloakException("Expected status 201 but received " + response.status());
         }
+    }
 
+    private User createUserEntity(RegisterDto registerDto, String keycloakUserId) {
+        log.info("Creating user entity for username: {}", registerDto.getUsername());
 
+        User user = new User();
+        user.setUsername(registerDto.getUsername());
+        user.setEmail(registerDto.getEmail());
+        user.setDateOpened(LocalDateTime.now());
+        user.setActiveUser(true);
+        user.setKeycloakId(keycloakUserId);
+
+        try {
+            User savedUser = userRepository.save(user);
+            log.info("User entity saved with ID: {}", savedUser.getUserId());
+            return savedUser;
+        } catch (DataAccessException e) {
+            log.error("Error occurred while saving user entity for username: {}", registerDto.getUsername(), e);
+            throw new UserServiceException("Failed to save user entity", e);
+        }
     }
 
 
