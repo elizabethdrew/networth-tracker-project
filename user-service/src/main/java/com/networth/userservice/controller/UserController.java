@@ -20,6 +20,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
 
 
 @RestController
@@ -42,9 +45,14 @@ public class UserController {
             @ApiResponse(responseCode = "409", description = "Already Exists"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    public ResponseEntity<UserOutput> registerUser(@RequestBody RegisterDto registerDto) {
+    public ResponseEntity<UserOutput> registerUser(@RequestBody RegisterDto registerDto, UriComponentsBuilder uriBuilder) {
         UserOutput userOutput = userService.registerUser(registerDto);
-        return ResponseEntity.ok(userOutput);
+
+        URI location = uriBuilder.path("/api/v1/users/{id}")
+                .buildAndExpand(userOutput.getUserId())
+                .toUri();
+
+        return ResponseEntity.created(location).body(userOutput);
     }
 
 
