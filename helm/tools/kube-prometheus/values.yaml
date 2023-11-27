@@ -1168,7 +1168,7 @@ prometheus:
           "metrics_path": "/actuator/prometheus",
           "static_configs": [
             {
-              "targets": [ "api-gateway" ]
+              "targets": [ "gatewayserver" ]
             }
           ]
         },
