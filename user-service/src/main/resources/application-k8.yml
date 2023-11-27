@@ -10,7 +10,7 @@ spring:
                 health-indicator:
                     enabled: false
     datasource:
-        url: jdbc:mysql://user-service_db:3306/user-servicedb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+        url: jdbc:mysql://user-service-mysql:3306/user-service-db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
         username: admin
         password: password
 
@@ -21,4 +21,4 @@ eureka:
 keycloak:
     base-uri: http://keycloak:8080
     keyUser:
-        client-secret: cAVfmhFehqi9sJuPwfD5q7vSKd1e9rsy
+        client-secret: S7tTW9qIFn2sG6kzWNPJYkorHwPUCGgC

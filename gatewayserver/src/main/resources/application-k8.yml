@@ -14,7 +14,7 @@ spring:
         oauth2:
             resource-server:
                 opaque-token:
-                    client-secret: cAVfmhFehqi9sJuPwfD5q7vSKd1e9rsy
+                    client-secret: S7tTW9qIFn2sG6kzWNPJYkorHwPUCGgC
                     introspection-uri: http://keycloak:8080/realms/networth/protocol/openid-connect/token/introspect
                 jwt:
                     jwk-set-uri: http://keycloak:8080/realms/networth/protocol/openid-connect/certs
