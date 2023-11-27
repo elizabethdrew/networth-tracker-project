@@ -1160,7 +1160,7 @@ prometheus:
           "metrics_path": "/actuator/prometheus",
           "static_configs": [
             {
-                "targets": [ "user-service" ]
+                "targets": [ "user-service:8081" ]
             }
           ]
         },
@@ -1168,7 +1168,7 @@ prometheus:
           "metrics_path": "/actuator/prometheus",
           "static_configs": [
             {
-              "targets": [ "gatewayserver" ]
+              "targets": [ "gatewayserver:8080" ]
             }
           ]
         },
@@ -1176,7 +1176,7 @@ prometheus:
           "metrics_path": "/actuator/prometheus",
           "static_configs": [
             {
-              "targets": [ "eurekaserver" ]
+              "targets": [ "eurekaserver:8761" ]
             }
           ]
         },
@@ -1184,7 +1184,7 @@ prometheus:
           "metrics_path": "/actuator/prometheus",
           "static_configs": [
             {
-              "targets": [ "keycloak" ]
+              "targets": [ "keycloak:8080" ]
             }
           ]
         },
@@ -1192,7 +1192,7 @@ prometheus:
           "metrics_path": "/actuator/prometheus",
           "static_configs": [
             {
-              "targets": [ "configserver" ]
+              "targets": [ "configserver:8071" ]
             }
           ]
         } ]
