@@ -9,6 +9,10 @@ spring:
             client:
                 health-indicator:
                     enabled: false
+    datasource:
+        url: jdbc:mysql://user-service_db:3306/user-servicedb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+        username: admin
+        password: password
 
 eureka:
     client:

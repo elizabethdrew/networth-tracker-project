@@ -6,10 +6,6 @@ spring:
   output:
     ansi:
       enabled: always
-  datasource:
-    url: jdbc:mysql://users_db:3306/userdb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-    username: admin
-    password: password
   liquibase:
     contexts: default
     change-log: classpath:/db/changelog/db.changelog-master.yml

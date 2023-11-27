@@ -8,6 +8,10 @@ spring:
         locator:
           enabled: true
           lowerCaseServiceId: true
+  datasource:
+    url: jdbc:mysql://users_db:3306/userdb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: admin
+    password: password
 
 eureka:
   instance:

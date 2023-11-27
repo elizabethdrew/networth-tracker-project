@@ -29,7 +29,6 @@ spring:
             - name: CircuitBreaker
               args:
                 name: usersCircuitBreaker
-                fallbackUri: forward:/contactSupport
             - name: RequestRateLimiter
 
 server:
