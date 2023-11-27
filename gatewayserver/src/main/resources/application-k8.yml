@@ -12,6 +12,15 @@ spring:
             client:
                 health-indicator:
                     enabled: false
+    security:
+        oauth2:
+            resource-server:
+                opaque-token:
+                    client-secret: Ow1dayvip5w4BHJeacRzVLHLCfJNCm3W
+                    introspection-uri: http://keycloak/realms/networth/protocol/openid-connect/token/introspect
+                jwt:
+                    jwk-set-uri: http://keycloak/realms/networth/protocol/openid-connect/certs
+                    issuer-uri: http://keycloak/realms/networth
 
 eureka:
     client:

@@ -14,3 +14,8 @@ eureka:
     fetch-registry: true
     serviceUrl:
       defaultZone: http://discovery-service:8761/eureka/
+
+keycloak:
+  base-uri: http://keycloak:8080
+  keyUser:
+    client-secret: Ow1dayvip5w4BHJeacRzVLHLCfJNCm3W

@@ -21,7 +21,6 @@ spring:
       ddl-auto: none
 
 keycloak:
-  base-uri: http://keycloak:8080
   logout-redirect-url: http://localhost:8080/contactSupport
   keyAdmin:
     realm: master
@@ -31,7 +30,6 @@ keycloak:
   keyUser:
     realm: networth
     client-id: apigateway
-    client-secret: Ow1dayvip5w4BHJeacRzVLHLCfJNCm3W
 
 feign:
   client:

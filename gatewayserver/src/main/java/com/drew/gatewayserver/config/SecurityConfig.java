@@ -20,6 +20,7 @@ public class SecurityConfig {
 
         http.authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/actuator/**").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/api/v1/users/test").permitAll() // Allow User Registration
                         .pathMatchers(HttpMethod.POST, "/api/v1/users").permitAll() // Allow User Registration
                         .pathMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll() // Allow User Login
                         .anyExchange().authenticated()

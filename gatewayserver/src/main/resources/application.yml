@@ -8,11 +8,6 @@ spring:
       resource-server:
         opaque-token:
           client-id: apigateway
-          client-secret: Ow1dayvip5w4BHJeacRzVLHLCfJNCm3W
-          introspection-uri: http://keycloak:8080/realms/networth/protocol/openid-connect/token/introspect
-        jwt:
-          jwk-set-uri: http://keycloak:8080/realms/networth/protocol/openid-connect/certs
-          issuer-uri: http://keycloak:8080/realms/networth
   data:
     redis:
       connect-timeout: 2s

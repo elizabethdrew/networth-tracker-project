@@ -16,3 +16,8 @@ spring:
 eureka:
     client:
         enabled: false
+
+keycloak:
+    base-uri: http://keycloak
+    keyUser:
+        client-secret: Ow1dayvip5w4BHJeacRzVLHLCfJNCm3W
