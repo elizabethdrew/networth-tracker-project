@@ -18,6 +18,6 @@ eureka:
         enabled: false
 
 keycloak:
-    base-uri: http://keycloak
+    base-uri: http://keycloak:8080
     keyUser:
-        client-secret: Ow1dayvip5w4BHJeacRzVLHLCfJNCm3W
+        client-secret: cAVfmhFehqi9sJuPwfD5q7vSKd1e9rsy

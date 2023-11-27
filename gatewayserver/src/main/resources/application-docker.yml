@@ -5,6 +5,9 @@ spring:
         locator:
           enabled: true
           lowerCaseServiceId: true
+    kubernetes:
+      discovery:
+        enabled:false:
   security:
     oauth2:
       resource-server:
@@ -14,6 +17,7 @@ spring:
         jwt:
           jwk-set-uri: http://keycloak:8080/realms/networth/protocol/openid-connect/certs
           issuer-uri: http://keycloak:8080/realms/networth
+
 
 eureka:
   instance:
