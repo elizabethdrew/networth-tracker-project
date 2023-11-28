@@ -45,9 +45,7 @@ server:
 
 logging:
   level:
-    com:
-      drew:
-        user-service: DEBUG
+    root: DEBUG
   pattern:
     level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
 

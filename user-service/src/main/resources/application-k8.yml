@@ -21,4 +21,4 @@ eureka:
 keycloak:
     base-uri: http://keycloak:8080
     keyUser:
-        client-secret: S7tTW9qIFn2sG6kzWNPJYkorHwPUCGgC
+        client-secret: 9uryiJScfMY8gXBawWmWsIvtSlIeS4ig
