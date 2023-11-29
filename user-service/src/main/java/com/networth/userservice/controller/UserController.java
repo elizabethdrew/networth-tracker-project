@@ -70,11 +70,6 @@ public class UserController {
         return ResponseEntity.ok(userOutput);
     }
 
-    @GetMapping("/test")
-    public String testEndpoint() {
-        return "I Work!";
-    }
-
 //    @PutMapping("/{userId}")
 //    @Operation(summary = "Update a user by id")
 //    @ApiResponses({
