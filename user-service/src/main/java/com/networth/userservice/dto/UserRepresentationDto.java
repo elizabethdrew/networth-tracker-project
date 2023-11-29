@@ -1,11 +1,9 @@
 package com.networth.userservice.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
 
 import java.util.List;
 
-@Data
 public class UserRepresentationDto {
 
     @JsonProperty("username")
@@ -16,4 +14,36 @@ public class UserRepresentationDto {
     private Boolean enabled;
     @JsonProperty("credentials")
     private List<PasswordCredentialDto> credentials;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public List<PasswordCredentialDto> getCredentials() {
+        return credentials;
+    }
+
+    public void setCredentials(List<PasswordCredentialDto> credentials) {
+        this.credentials = credentials;
+    }
 }
