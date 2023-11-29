@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Map;
 
-@FeignClient(name="keycloak", url="http://keycloak:8080", fallback = KeycloakFallback.class)
+@FeignClient(name="keycloak", fallback = KeycloakFallback.class)
 public interface KeycloakClient {
 
     @RequestLine("POST /admin/realms/networth/users")
