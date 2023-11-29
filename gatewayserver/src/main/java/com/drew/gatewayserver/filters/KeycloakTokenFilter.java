@@ -44,7 +44,7 @@ public class KeycloakTokenFilter implements GlobalFilter {
         try {
             String[] parts = token.split("\\.");
             if (parts.length < 2) {return null;}
-            String payload = parts[1]; // Get the payload part
+            String payload = parts[1];
             String decodedJson = new String(Base64Utils.decodeFromString(payload));
             ObjectMapper objectMapper = new ObjectMapper();
             Map<String, Object> claims = objectMapper.readValue(decodedJson, Map.class);
