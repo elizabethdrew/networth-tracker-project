@@ -179,12 +179,12 @@ public class UserServiceImpl implements UserService {
     public UserOutput updateUser(String keycloakId, UpdateUserDto updateUserDto)
             throws UserNotFoundException {
 
-        log.info("Staring update user");
+        log.info("Starting update user");
+
         // Retrieve the user with the specified ID from the repository
         User user = userRepository.findByKeycloakId(keycloakId)
                 .orElseThrow(() -> new UserNotFoundException("Keycloak ID not found: " + keycloakId));
 
-        log.info("User: " + user);
 
         // Create updated user
         User updatedUser = userMapper.toUpdateUser(updateUserDto);
@@ -195,29 +195,27 @@ public class UserServiceImpl implements UserService {
         updatedUser.setDateOpened(user.getDateOpened());
         updatedUser.setDateUpdated(LocalDateTime.now());
 
-        log.info("Updated User: " + updatedUser);
 
         User savedUser = userRepository.save(updatedUser);
 
-        log.info("Saved User: " + savedUser);
         return userMapper.toUserOutput(savedUser);
     }
 
-//    @Transactional
-//    public void deleteUser(Long userId) {
-//
-//        // Retrieve the user with the specified ID from the repository
-//        User user = userRepository.findByUserId(userId)
-//                .orElseThrow(() -> new UserNotFoundException("User Id not found: " + userId));
-//
-//        // Add security to check user is only editing own profile
-//
-//        // Mark the user as deleted
-//        user.setActiveUser(false);
-//
-//        // Save the updated user entity
-//        userRepository.save(user);
-//    }
+    @Transactional
+    public void deleteUser(String keycloakId) {
+
+        log.info("Starting soft delete user");
+
+        // Retrieve the user with the specified ID from the repository
+        User user = userRepository.findByKeycloakId(keycloakId)
+                .orElseThrow(() -> new UserNotFoundException("Keycloak ID not found: " + keycloakId));
+
+        // Mark the user as deleted
+        user.setActiveUser(false);
+
+        // Save the updated user entity
+        userRepository.save(user);
+    }
 
 
 }

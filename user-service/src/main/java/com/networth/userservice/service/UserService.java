@@ -8,6 +8,5 @@ public interface UserService {
     UserOutput registerUser(RegisterDto registerDto);
     UserOutput getUser(String keycloakId);
     UserOutput updateUser(String keycloakId, UpdateUserDto updateUserDto);
-
-//    void deleteUser(Long userId);
+    void deleteUser(String keycloakId);
 }

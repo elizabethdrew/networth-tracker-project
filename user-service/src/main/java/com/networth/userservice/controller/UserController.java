@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -90,18 +91,18 @@ public class UserController {
     }
 
 
-//
-//    @DeleteMapping("/{userId}")
-//    @Operation(summary = "Delete a user by id")
-//    @ApiResponses({
-//            @ApiResponse(responseCode = "204", description = "Deleted the user"),
-//            @ApiResponse(responseCode = "400", description = "Invalid id supplied"),
-//            @ApiResponse(responseCode = "403", description = "Insufficient Permissions"),
-//            @ApiResponse(responseCode = "404", description = "User not found"),
-//            @ApiResponse(responseCode = "500", description = "Internal Server Error")
-//    })
-//    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
-//        userService.deleteUser(userId);
-//        return ResponseEntity.noContent().build();
-//    }
+
+    @DeleteMapping
+    @Operation(summary = "Delete a user by id")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Deleted the user"),
+            @ApiResponse(responseCode = "400", description = "Invalid id supplied"),
+            @ApiResponse(responseCode = "403", description = "Insufficient Permissions"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
+    public ResponseEntity<Void> deleteUser(@RequestHeader("X-User-ID") String keycloakUserId) {
+        userService.deleteUser(keycloakUserId);
+        return ResponseEntity.noContent().build();
+    }
 }
