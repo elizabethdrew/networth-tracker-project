@@ -3,6 +3,7 @@ package com.networth.userservice.service.impl;
 import com.networth.userservice.config.properties.KeycloakProperties;
 import com.networth.userservice.dto.PasswordCredentialDto;
 import com.networth.userservice.dto.RegisterDto;
+import com.networth.userservice.dto.UpdateUserDto;
 import com.networth.userservice.dto.UserOutput;
 import com.networth.userservice.dto.UserRepresentationDto;
 import com.networth.userservice.entity.User;
@@ -174,34 +175,33 @@ public class UserServiceImpl implements UserService {
 
 
 
-//    @Transactional
-//    public UserOutput updateUser(Long userId, RegisterDto registerDto)
-//            throws UserNotFoundException {
-//
-//        // Retrieve the user with the specified ID from the repository
-//        User user = userRepository.findByUserId(userId)
-//                .orElseThrow(() -> new UserNotFoundException("User Id not found: " + userId));
-//
-//        // Add security to check user is only editing own profile
-//
-//        // Create updated user
-//        User updatedUser = userMapper.toUser(registerDto);
-//        updatedUser.setUserId(user.getUserId());
-//        updatedUser.setDateOpened(user.getDateOpened());
-//        updatedUser.setDateOpened(user.getDateOpened());
-//
-////        // Check if new password is provided
-////        if(registerDto.getPassword() != null) {
-////            // Encrypt new password
-////            String encryptedPassword = passwordEncoder.encode(registerDto.getPassword());
-////            updatedUser.setPassword(encryptedPassword);
-////        } else {
-////            updatedUser.setPassword(user.getPassword());
-////        }
-//
-//        User savedUser = userRepository.save(updatedUser);
-//        return userMapper.toUserOutput(savedUser);
-//    }
+    @Transactional
+    public UserOutput updateUser(String keycloakId, UpdateUserDto updateUserDto)
+            throws UserNotFoundException {
+
+        log.info("Staring update user");
+        // Retrieve the user with the specified ID from the repository
+        User user = userRepository.findByKeycloakId(keycloakId)
+                .orElseThrow(() -> new UserNotFoundException("Keycloak ID not found: " + keycloakId));
+
+        log.info("User: " + user);
+
+        // Create updated user
+        User updatedUser = userMapper.toUpdateUser(updateUserDto);
+        updatedUser.setUserId(user.getUserId());
+        updatedUser.setUsername(user.getUsername());
+        updatedUser.setKeycloakId(user.getKeycloakId());
+        updatedUser.setActiveUser(user.getActiveUser());
+        updatedUser.setDateOpened(user.getDateOpened());
+        updatedUser.setDateUpdated(LocalDateTime.now());
+
+        log.info("Updated User: " + updatedUser);
+
+        User savedUser = userRepository.save(updatedUser);
+
+        log.info("Saved User: " + savedUser);
+        return userMapper.toUserOutput(savedUser);
+    }
 
 //    @Transactional
 //    public void deleteUser(Long userId) {
