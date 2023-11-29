@@ -8,19 +8,22 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Map;
 
 
+@Slf4j
 @RestController
 @RequestMapping("api/v1/users")
 public class UserController {
@@ -56,17 +59,17 @@ public class UserController {
     }
 
 
-    @GetMapping("/{userId}")
-    @Operation(summary = "Get a user by id")
+    @Operation(summary = "Get a user by Keycloak ID")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Found the user"),
-            @ApiResponse(responseCode = "400", description = "Invalid id supplied"),
+            @ApiResponse(responseCode = "400", description = "Invalid Keycloak ID supplied"),
             @ApiResponse(responseCode = "403", description = "Insufficient Permissions"),
             @ApiResponse(responseCode = "404", description = "User not found"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    public ResponseEntity<UserOutput> getUser(@PathVariable Long userId) {
-        UserOutput userOutput = userService.getUser(userId);
+    @GetMapping
+    public ResponseEntity<UserOutput> getUser(@RequestHeader("X-User-ID") String keycloakUserId) {
+        UserOutput userOutput = userService.getUser(keycloakUserId);
         return ResponseEntity.ok(userOutput);
     }
 

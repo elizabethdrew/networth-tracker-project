@@ -47,15 +47,9 @@ public class UserServiceImpl implements UserService {
         this.keycloakProperties = keycloakProperties;
     }
 
-    public UserOutput getUser(Long userId) {
-
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new UserNotFoundException("User Id not found: " + userId));
-
-        // Add security to check user is only viewing own profile
-
-        // If deleted send different output?
-
+    public UserOutput getUser(String keycloakId) {
+        User user = userRepository.findByKeycloakId(keycloakId)
+                .orElseThrow(() -> new UserNotFoundException("Keycloak ID not found: " + keycloakId));
         return userMapper.toUserOutput(user);
     }
 

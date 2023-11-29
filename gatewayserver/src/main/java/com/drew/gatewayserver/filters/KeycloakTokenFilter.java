@@ -6,6 +6,7 @@ import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -27,11 +28,12 @@ public class KeycloakTokenFilter implements GlobalFilter {
             if (authHeader.startsWith("Bearer ")) {
                 String token = authHeader.substring(7);
                 String uid = extractUidFromToken(token);
-                log.info("Uid: " + uid);
                 if (uid != null) {
-                    return chain.filter(exchange).then(Mono.fromRunnable(() -> {
-                        exchange.getResponse().getHeaders().set("X-User-ID", uid);
-                    }));
+                    log.info("Added X-User-ID header: " + uid);
+                    ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
+                            .header("X-User-ID", uid)
+                            .build();
+                    return chain.filter(exchange.mutate().request(mutatedRequest).build());
                 }
             }
         }

@@ -33,7 +33,6 @@ public class SecurityConfig {
                         )
                 )
         .csrf(csrf -> csrf.disable());
-        //http.addFilterBefore(new KeycloakTokenFilter(), SecurityWebFiltersOrder.AUTHENTICATION);
         return http.build();
     }
 
