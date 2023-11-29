@@ -1168,7 +1168,7 @@ prometheus:
           "metrics_path": "/actuator/prometheus",
           "static_configs": [
             {
-              "targets": [ "api-gateway:8080" ]
+              "targets": [ "gatewayserver:8080" ]
             }
           ]
         },
@@ -1177,6 +1177,14 @@ prometheus:
           "static_configs": [
             {
               "targets": [ "eurekaserver:8761" ]
+            }
+          ]
+        },
+        { "job_name": "keycloak",
+          "metrics_path": "/actuator/prometheus",
+          "static_configs": [
+            {
+              "targets": [ "keycloak:8080" ]
             }
           ]
         },

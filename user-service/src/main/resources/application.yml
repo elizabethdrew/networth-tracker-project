@@ -6,10 +6,6 @@ spring:
   output:
     ansi:
       enabled: always
-  datasource:
-    url: jdbc:mysql://users_db:3306/userdb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-    username: admin
-    password: password
   liquibase:
     contexts: default
     change-log: classpath:/db/changelog/db.changelog-master.yml
@@ -21,7 +17,6 @@ spring:
       ddl-auto: none
 
 keycloak:
-  base-uri: http://keycloak:8080
   logout-redirect-url: http://localhost:8080/contactSupport
   keyAdmin:
     realm: master
@@ -31,7 +26,6 @@ keycloak:
   keyUser:
     realm: networth
     client-id: apigateway
-    client-secret: Ow1dayvip5w4BHJeacRzVLHLCfJNCm3W
 
 feign:
   client:
@@ -51,9 +45,7 @@ server:
 
 logging:
   level:
-    com:
-      drew:
-        user-service: DEBUG
+    root: DEBUG
   pattern:
     level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
 
