@@ -183,13 +183,9 @@ public class UserServiceImpl implements UserService {
             boolean emailChanged = !user.getEmail().equals(updateUserDto.getEmail());
 
             // Map to updated user
-            User updatedUser = userMapper.toUpdateUser(updateUserDto);
-            updatedUser.setUserId(user.getUserId());
-            updatedUser.setUsername(user.getUsername());
-            updatedUser.setKeycloakId(user.getKeycloakId());
-            updatedUser.setActiveUser(user.getActiveUser());
-            updatedUser.setDateOpened(user.getDateOpened());
-            updatedUser.setDateUpdated(LocalDateTime.now());
+            userMapper.updateUserFromDto(updateUserDto, user);
+            user.setDateUpdated(LocalDateTime.now());
+
 
             // Update User in Keycloak if email has changed
             if (emailChanged) {
@@ -197,7 +193,7 @@ public class UserServiceImpl implements UserService {
             }
 
             // Save updated user in the repository
-            User savedUser = userRepository.save(updatedUser);
+            User savedUser = userRepository.save(user);
             return userMapper.toUserOutput(savedUser);
 
         } catch (Exception e) {
