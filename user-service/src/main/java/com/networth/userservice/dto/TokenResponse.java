@@ -4,28 +4,28 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TokenResponse {
 
-    @JsonProperty("access_token")
+    @JsonProperty("accessToken")
     private String accessToken;
 
-    @JsonProperty("expires_in")
+    @JsonProperty("expiresIn")
     private int expiresIn;
 
-    @JsonProperty("refresh_expires_in")
+    @JsonProperty("refreshExpiresIn")
     private int refreshExpiresIn;
 
-    @JsonProperty("refresh_token")
+    @JsonProperty("refreshToken")
     private String refreshToken;
 
-    @JsonProperty("token_type")
+    @JsonProperty("tokenType")
     private String tokenType;
 
-    @JsonProperty("id_token")
+    @JsonProperty("idToken")
     private String idToken;
 
-    @JsonProperty("not-before-policy")
+    @JsonProperty("notBeforePolicy")
     private int notBeforePolicy;
 
-    @JsonProperty("session_state")
+    @JsonProperty("sessionState")
     private String sessionState;
 
     @JsonProperty("scope")
