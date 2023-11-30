@@ -86,12 +86,12 @@ public class AuthServiceImpl implements AuthService {
     public void userLogout(LogoutDto logoutDto) {
 
         // Revoke the access token first
-        if (logoutDto.getAccess_token() != null && !logoutDto.getAccess_token().isEmpty()) {
-            revokeAccessToken(logoutDto.getAccess_token());
+        if (logoutDto.getAccessToken() != null && !logoutDto.getAccessToken().isEmpty()) {
+            revokeAccessToken(logoutDto.getAccessToken());
         }
 
         // Then logout the user, which invalidates the refresh token
-        if (logoutDto.getRefresh_token() != null && !logoutDto.getRefresh_token().isEmpty()) {
+        if (logoutDto.getRefreshToken() != null && !logoutDto.getRefreshToken().isEmpty()) {
             logoutUser(logoutDto);
         }
     }
@@ -140,19 +140,19 @@ public class AuthServiceImpl implements AuthService {
 
     private KeycloakAccessDto buildRevokeData(String accessToken) {
         KeycloakAccessDto revokeData = new KeycloakAccessDto();
-        revokeData.setClient_id(keycloakProperties.getKeyUser().getClientId());
-        revokeData.setClient_secret(keycloakProperties.getKeyUser().getClientSecret());
+        revokeData.setClientId(keycloakProperties.getKeyUser().getClientId());
+        revokeData.setClientSecret(keycloakProperties.getKeyUser().getClientSecret());
         revokeData.setToken(accessToken);
         return revokeData;
     }
 
     private KeycloakAccessDto buildLogoutData(LogoutDto logoutDto) {
         KeycloakAccessDto formData = new KeycloakAccessDto();
-        formData.setClient_id(keycloakProperties.getKeyUser().getClientId());
-        formData.setClient_secret(keycloakProperties.getKeyUser().getClientSecret());
-        formData.setRefresh_token(logoutDto.getRefresh_token());
-        formData.setId_token_hint(logoutDto.getId_token_hint());
-        formData.setPost_logout_redirect_uri(keycloakProperties.getLogoutRedirectUrl());
+        formData.setClientId(keycloakProperties.getKeyUser().getClientId());
+        formData.setClientSecret(keycloakProperties.getKeyUser().getClientSecret());
+        formData.setRefreshToken(logoutDto.getRefreshToken());
+        formData.setIdTokenHint(logoutDto.getIdTokenHint());
+        formData.setPostLogoutRedirectUri(keycloakProperties.getLogoutRedirectUrl());
         return formData;
     }
 
