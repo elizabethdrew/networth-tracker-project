@@ -67,8 +67,8 @@ public class HelperUtils {
 
         // Create the request form data
         KeycloakAccessDto formData = new KeycloakAccessDto();
-        formData.setClient_id(keycloakProperties.getKeyAdmin().getClientId());
-        formData.setGrant_type("password");
+        formData.setClientId(keycloakProperties.getKeyAdmin().getClientId());
+        formData.setGrantType("password");
         formData.setUsername(keycloakProperties.getKeyAdmin().getUsername());
         formData.setPassword(keycloakProperties.getKeyAdmin().getPassword());
 
@@ -95,10 +95,10 @@ public class HelperUtils {
 
         // Create the request form data
         KeycloakAccessDto formData = new KeycloakAccessDto();
-        formData.setClient_id(keycloakProperties.getKeyUser().getClientId());
-        formData.setClient_secret(keycloakProperties.getKeyUser().getClientSecret());
+        formData.setClientId(keycloakProperties.getKeyUser().getClientId());
+        formData.setClientSecret(keycloakProperties.getKeyUser().getClientSecret());
         formData.setScope("openid email profile");
-        formData.setGrant_type("password");
+        formData.setGrantType("password");
         formData.setUsername(loginDto.getUsername());
         formData.setPassword(loginDto.getPassword());
 
