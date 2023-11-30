@@ -4,9 +4,11 @@ import com.networth.userservice.config.properties.KeycloakProperties;
 import com.networth.userservice.dto.PasswordCredentialDto;
 import com.networth.userservice.dto.RegisterDto;
 import com.networth.userservice.dto.UpdateUserDto;
+import com.networth.userservice.dto.UpdateUserEmailDto;
 import com.networth.userservice.dto.UserOutput;
 import com.networth.userservice.dto.UserRepresentationDto;
 import com.networth.userservice.entity.User;
+import com.networth.userservice.exception.AuthenticationServiceException;
 import com.networth.userservice.exception.InvalidInputException;
 import com.networth.userservice.exception.KeycloakException;
 import com.networth.userservice.exception.UserNotFoundException;
@@ -17,6 +19,7 @@ import com.networth.userservice.repository.UserRepository;
 import com.networth.userservice.service.UserService;
 import com.networth.userservice.util.HelperUtils;
 import feign.Feign;
+import feign.FeignException;
 import feign.Response;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
@@ -180,26 +183,68 @@ public class UserServiceImpl implements UserService {
             throws UserNotFoundException {
 
         log.info("Starting update user");
+        try {
+            // Retrieve the user with the specified ID from the repository
+            User user = userRepository.findByKeycloakId(keycloakId)
+                    .orElseThrow(() -> new UserNotFoundException("Keycloak ID not found: " + keycloakId));
 
-        // Retrieve the user with the specified ID from the repository
-        User user = userRepository.findByKeycloakId(keycloakId)
-                .orElseThrow(() -> new UserNotFoundException("Keycloak ID not found: " + keycloakId));
+            boolean emailChanged = !user.getEmail().equals(updateUserDto.getEmail());
 
+            // Map to updated user
+            User updatedUser = userMapper.toUpdateUser(updateUserDto);
+            updatedUser.setUserId(user.getUserId());
+            updatedUser.setUsername(user.getUsername());
+            updatedUser.setKeycloakId(user.getKeycloakId());
+            updatedUser.setActiveUser(user.getActiveUser());
+            updatedUser.setDateOpened(user.getDateOpened());
+            updatedUser.setDateUpdated(LocalDateTime.now());
 
-        // Create updated user
-        User updatedUser = userMapper.toUpdateUser(updateUserDto);
-        updatedUser.setUserId(user.getUserId());
-        updatedUser.setUsername(user.getUsername());
-        updatedUser.setKeycloakId(user.getKeycloakId());
-        updatedUser.setActiveUser(user.getActiveUser());
-        updatedUser.setDateOpened(user.getDateOpened());
-        updatedUser.setDateUpdated(LocalDateTime.now());
+            // Update User in Keycloak if email has changed
+            if (emailChanged) {
+                updateEmailKeycloak(updateUserDto.getEmail(), keycloakId);
+            }
 
+            // Save updated user in the repository
+            User savedUser = userRepository.save(updatedUser);
+            return userMapper.toUserOutput(savedUser);
 
-        User savedUser = userRepository.save(updatedUser);
-
-        return userMapper.toUserOutput(savedUser);
+        } catch (Exception e) {
+            log.error("An unexpected error occurred during update user", e);
+            throw new ServiceException("An unexpected error occurred during update user", e);
+        }
     }
+
+    private void updateEmailKeycloak(String email, String keycloakId) {
+        log.info("Starting Update User in Keycloak");
+
+        try {
+            String accessToken = helperUtils.getAdminAccessToken();
+            Map<String, Object> headers = new HashMap<>();
+            headers.put("Authorization", "Bearer " + accessToken);
+
+            KeycloakClient keycloakClient = Feign.builder()
+                    .encoder(new JacksonEncoder())
+                    .decoder(new JacksonDecoder())
+                    .target(KeycloakClient.class, keycloakProperties.getBaseUri());
+
+            UpdateUserEmailDto formData = new UpdateUserEmailDto();
+            formData.setEmail(email);
+            Response response = keycloakClient.updateKeycloakUser(headers, keycloakId, formData);
+
+            if (response.status() != HttpStatus.OK.value()) {
+                log.error("Failed to update user in Keycloak. Status: {}, Body: {}", response.status(), response.body());
+                throw new KeycloakException("Failed to update user in Keycloak. Status: " + response.status());
+            }
+            log.info("Email updated in Keycloak successfully");
+        } catch (FeignException e) {
+            log.error("Error communicating with Keycloak: ", e);
+            throw new AuthenticationServiceException("Error communicating with Keycloak", e);
+        } catch (Exception e) {
+            log.error("An unexpected error occurred during email update in Keycloak", e);
+            throw new UserServiceException("Unexpected error during email update in Keycloak", e);
+        }
+    }
+
 
     @Transactional
     public void deleteUser(String keycloakId) {
