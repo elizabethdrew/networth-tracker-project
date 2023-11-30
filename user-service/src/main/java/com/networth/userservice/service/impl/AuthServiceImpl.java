@@ -12,16 +12,12 @@ import com.networth.userservice.exception.InvalidCredentialsException;
 import com.networth.userservice.exception.KeycloakException;
 import com.networth.userservice.exception.UserNotFoundException;
 import com.networth.userservice.exception.UserServiceException;
-import com.networth.userservice.feign.KeycloakClient;
+import com.networth.userservice.feign.KeycloakFormClient;
 import com.networth.userservice.repository.UserRepository;
 import com.networth.userservice.service.AuthService;
 import com.networth.userservice.util.HelperUtils;
-import feign.Feign;
 import feign.FeignException;
 import feign.Response;
-import feign.form.FormEncoder;
-import feign.jackson.JacksonDecoder;
-import feign.jackson.JacksonEncoder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -33,11 +29,13 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final HelperUtils helperUtils;
     private final KeycloakProperties keycloakProperties;
+    private final KeycloakFormClient keycloakFormClient;
 
-    public AuthServiceImpl(UserRepository userRepository, HelperUtils helperUtils, KeycloakProperties keycloakProperties) {
+    public AuthServiceImpl(UserRepository userRepository, HelperUtils helperUtils, KeycloakProperties keycloakProperties, KeycloakFormClient keycloakFormClient) {
         this.userRepository = userRepository;
         this.helperUtils = helperUtils;
         this.keycloakProperties = keycloakProperties;
+        this.keycloakFormClient = keycloakFormClient;
     }
 
     public LoginResponse userLogin(LoginDto loginDto) {
@@ -99,13 +97,8 @@ public class AuthServiceImpl implements AuthService {
     private void revokeAccessToken(String accessToken) {
         log.debug("Revoking access token for user");
 
-        KeycloakClient keycloakRevokeClient = Feign.builder()
-                .encoder(new FormEncoder(new JacksonEncoder()))
-                .decoder(new JacksonDecoder())
-                .target(KeycloakClient.class, keycloakProperties.getBaseUri());
-
         try {
-            Response response = keycloakRevokeClient.keycloakRevoke(buildRevokeData(accessToken));
+            Response response = keycloakFormClient.keycloakRevoke(buildRevokeData(accessToken));
             handleKeycloakResponse(response, "Access token revocation failed");
             log.info("Access token revoked successfully");
         } catch (FeignException e) {
@@ -120,13 +113,8 @@ public class AuthServiceImpl implements AuthService {
     private void logoutUser(LogoutDto logoutDto) {
         log.debug("Logging out user from Keycloak");
 
-        KeycloakClient keycloakLogoutClient = Feign.builder()
-                .encoder(new FormEncoder(new JacksonEncoder()))
-                .decoder(new JacksonDecoder())
-                .target(KeycloakClient.class, keycloakProperties.getBaseUri());
-
         try {
-            Response response = keycloakLogoutClient.keycloakLogout(buildLogoutData(logoutDto));
+            Response response = keycloakFormClient.keycloakLogout(buildLogoutData(logoutDto));
             handleKeycloakResponse(response, "User logout failed");
             log.info("User logged out successfully");
         } catch (FeignException e) {

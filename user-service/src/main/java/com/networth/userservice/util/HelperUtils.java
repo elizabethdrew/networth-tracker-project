@@ -5,11 +5,7 @@ import com.networth.userservice.dto.KeycloakAccessDto;
 import com.networth.userservice.dto.LoginDto;
 import com.networth.userservice.dto.TokenResponse;
 import com.networth.userservice.exception.InvalidInputException;
-import com.networth.userservice.feign.KeycloakClient;
-import feign.Feign;
-import feign.form.FormEncoder;
-import feign.jackson.JacksonDecoder;
-import feign.jackson.JacksonEncoder;
+import com.networth.userservice.feign.KeycloakFormClient;
 import lombok.extern.slf4j.Slf4j;
 import org.passay.CharacterRule;
 import org.passay.EnglishCharacterData;
@@ -27,8 +23,11 @@ import java.util.List;
 @Slf4j
 public class HelperUtils {
 
+    private final KeycloakFormClient keycloakFormClient;
+
     private final KeycloakProperties keycloakProperties;
-    public HelperUtils(KeycloakProperties keycloakProperties) {
+    public HelperUtils(KeycloakFormClient keycloakFormClient, KeycloakProperties keycloakProperties) {
+        this.keycloakFormClient = keycloakFormClient;
         this.keycloakProperties = keycloakProperties;
     }
 
@@ -60,11 +59,6 @@ public class HelperUtils {
     public String getAdminAccessToken() {
         log.info("Keycloak Admin Access Flow Started");
 
-        KeycloakClient keycloakClient = Feign.builder()
-                .encoder(new FormEncoder(new JacksonEncoder()))
-                .decoder(new JacksonDecoder())
-                .target(KeycloakClient.class, keycloakProperties.getBaseUri());
-
         // Create the request form data
         KeycloakAccessDto formData = new KeycloakAccessDto();
         formData.setClientId(keycloakProperties.getKeyAdmin().getClientId());
@@ -75,7 +69,7 @@ public class HelperUtils {
         log.info(String.valueOf(formData));
 
         try {
-            TokenResponse tokenResponse = keycloakClient.getAdminAccessToken(formData);
+            TokenResponse tokenResponse = keycloakFormClient.getAdminAccessToken(formData);
             log.info("Extracted access token");
             return tokenResponse.getAccessToken();
         } catch (Exception e) {
@@ -88,11 +82,6 @@ public class HelperUtils {
     public TokenResponse getUserAccessToken(LoginDto loginDto) {
         log.info("Keycloak User Access Flow Started");
 
-        KeycloakClient keycloakClient = Feign.builder()
-                .encoder(new FormEncoder(new JacksonEncoder()))
-                .decoder(new JacksonDecoder())
-                .target(KeycloakClient.class, keycloakProperties.getBaseUri());
-
         // Create the request form data
         KeycloakAccessDto formData = new KeycloakAccessDto();
         formData.setClientId(keycloakProperties.getKeyUser().getClientId());
@@ -102,10 +91,8 @@ public class HelperUtils {
         formData.setUsername(loginDto.getUsername());
         formData.setPassword(loginDto.getPassword());
 
-        log.info(String.valueOf(formData));
-
         try {
-            TokenResponse tokenResponse = keycloakClient.getUserAccessToken(formData);
+            TokenResponse tokenResponse = keycloakFormClient.getUserAccessToken(formData);
             log.info("Extracted access token");
             return tokenResponse;
         } catch (Exception e) {

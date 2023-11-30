@@ -1,6 +1,5 @@
 package com.networth.userservice.service.impl;
 
-import com.networth.userservice.config.properties.KeycloakProperties;
 import com.networth.userservice.dto.PasswordCredentialDto;
 import com.networth.userservice.dto.RegisterDto;
 import com.networth.userservice.dto.UpdateUserDto;
@@ -18,11 +17,8 @@ import com.networth.userservice.mapper.UserMapper;
 import com.networth.userservice.repository.UserRepository;
 import com.networth.userservice.service.UserService;
 import com.networth.userservice.util.HelperUtils;
-import feign.Feign;
 import feign.FeignException;
 import feign.Response;
-import feign.jackson.JacksonDecoder;
-import feign.jackson.JacksonEncoder;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.service.spi.ServiceException;
@@ -42,13 +38,14 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final HelperUtils helperUtils;
-    private final KeycloakProperties keycloakProperties;
 
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, HelperUtils helperUtils, KeycloakProperties keycloakProperties) {
+    private final KeycloakClient keycloakClient;
+
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, HelperUtils helperUtils, KeycloakClient keycloakClient) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.helperUtils = helperUtils;
-        this.keycloakProperties = keycloakProperties;
+        this.keycloakClient = keycloakClient;
     }
 
     public UserOutput getUser(String keycloakId) {
@@ -84,11 +81,6 @@ public class UserServiceImpl implements UserService {
             headers.put("Authorization", "Bearer " + accessToken);
 
             log.info("Registering user '{}' with Keycloak.", registerDto.getUsername());
-
-            KeycloakClient keycloakClient = Feign.builder()
-                    .encoder(new JacksonEncoder())
-                    .decoder(new JacksonDecoder())
-                    .target(KeycloakClient.class, keycloakProperties.getBaseUri());
 
             UserRepresentationDto formData = createUserRepresentation(registerDto);
 
@@ -221,11 +213,6 @@ public class UserServiceImpl implements UserService {
             String accessToken = helperUtils.getAdminAccessToken();
             Map<String, Object> headers = new HashMap<>();
             headers.put("Authorization", "Bearer " + accessToken);
-
-            KeycloakClient keycloakClient = Feign.builder()
-                    .encoder(new JacksonEncoder())
-                    .decoder(new JacksonDecoder())
-                    .target(KeycloakClient.class, keycloakProperties.getBaseUri());
 
             UpdateKeycloakDto formData = new UpdateKeycloakDto();
             formData.setEmail(email);

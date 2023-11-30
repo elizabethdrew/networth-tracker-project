@@ -1,7 +1,5 @@
 package com.networth.userservice.feign;
 
-import com.networth.userservice.dto.KeycloakAccessDto;
-import com.networth.userservice.dto.TokenResponse;
 import com.networth.userservice.dto.UpdateKeycloakDto;
 import com.networth.userservice.dto.UserRepresentationDto;
 import feign.Response;
@@ -16,26 +14,6 @@ public class KeycloakFallback implements KeycloakClient {
 
     @Override
     public Response updateKeycloakUser(Map<String, Object> headers, String keycloakId, UpdateKeycloakDto formData) {
-        return null;
-    }
-
-    @Override
-    public TokenResponse getAdminAccessToken(KeycloakAccessDto formData) {
-        return null;
-    }
-
-    @Override
-    public TokenResponse getUserAccessToken(KeycloakAccessDto formData) {
-        return null;
-    }
-
-    @Override
-    public Response keycloakLogout(KeycloakAccessDto formData) {
-        return null;
-    }
-
-    @Override
-    public Response keycloakRevoke(KeycloakAccessDto formData) {
         return null;
     }
 }

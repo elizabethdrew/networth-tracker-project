@@ -1,47 +1,26 @@
 package com.networth.userservice.feign;
 
-import com.networth.userservice.dto.KeycloakAccessDto;
-import com.networth.userservice.dto.TokenResponse;
 import com.networth.userservice.dto.UpdateKeycloakDto;
 import com.networth.userservice.dto.UserRepresentationDto;
-import feign.HeaderMap;
-import feign.Headers;
-import feign.Param;
-import feign.RequestLine;
 import feign.Response;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.Map;
 
-@FeignClient(name="keycloak", fallback = KeycloakFallback.class)
+@FeignClient(name = "keycloak", url = "${keycloak.base-uri}", configuration = JacksonFeignClientConfig.class, fallback = KeycloakFallback.class)
 public interface KeycloakClient {
 
-    @RequestLine("POST /admin/realms/networth/users")
-    @Headers("Content-Type: application/json")
-    Response createKeycloakUser(@HeaderMap Map<String, Object> headers,
+    @PostMapping(value = "/admin/realms/networth/users", consumes = "application/json")
+    Response createKeycloakUser(@RequestHeader Map<String, Object> headers,
                                 @RequestBody UserRepresentationDto formData);
 
-    @RequestLine("PUT /admin/realms/networth/users/{keycloakId}")
-    @Headers("Content-Type: application/json")
-    Response updateKeycloakUser(@HeaderMap Map<String, Object> headers,
-                                @Param String keycloakId,
+    @PutMapping(value = "/admin/realms/networth/users/{keycloakId}", consumes = "application/json")
+    Response updateKeycloakUser(@RequestHeader Map<String, Object> headers,
+                                @PathVariable("keycloakId") String keycloakId,
                                 @RequestBody UpdateKeycloakDto formData);
-
-    @RequestLine("POST /realms/master/protocol/openid-connect/token")
-    @Headers("Content-Type: application/x-www-form-urlencoded")
-    TokenResponse getAdminAccessToken(@RequestBody KeycloakAccessDto formData);
-
-    @RequestLine("POST /realms/networth/protocol/openid-connect/token")
-    @Headers("Content-Type: application/x-www-form-urlencoded")
-    TokenResponse getUserAccessToken(@RequestBody KeycloakAccessDto formData);
-
-    @RequestLine("POST /realms/networth/protocol/openid-connect/logout")
-    @Headers("Content-Type: application/x-www-form-urlencoded")
-    Response keycloakLogout(@RequestBody KeycloakAccessDto formData);
-
-    @RequestLine("POST /realms/networth/protocol/openid-connect/revoke")
-    @Headers("Content-Type: application/x-www-form-urlencoded")
-    Response keycloakRevoke(@RequestBody KeycloakAccessDto formData);
-
 }
