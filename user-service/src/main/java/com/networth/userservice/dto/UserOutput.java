@@ -1,18 +1,28 @@
 package com.networth.userservice.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
 public class UserOutput {
 
+    @JsonProperty("user_id")
     private Long userId;
+    @JsonProperty("username")
     private String username;
+    @JsonProperty("email")
     private String email;
+    @JsonProperty("date_of_birth")
     private LocalDate dateOfBirth;
+    @JsonProperty("tax_rate")
     private TaxRate taxRate;
+    @JsonProperty("date_opened")
     private LocalDateTime dateOpened;
+    @JsonProperty("date_updated")
     private LocalDateTime dateUpdated;
+    @JsonProperty("active_user")
     private Boolean activeUser;
 
 
