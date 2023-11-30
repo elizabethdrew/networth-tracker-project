@@ -4,7 +4,7 @@ import com.networth.userservice.config.properties.KeycloakProperties;
 import com.networth.userservice.dto.PasswordCredentialDto;
 import com.networth.userservice.dto.RegisterDto;
 import com.networth.userservice.dto.UpdateUserDto;
-import com.networth.userservice.dto.UpdateUserEmailDto;
+import com.networth.userservice.dto.UpdateKeycloakDto;
 import com.networth.userservice.dto.UserOutput;
 import com.networth.userservice.dto.UserRepresentationDto;
 import com.networth.userservice.entity.User;
@@ -227,11 +227,11 @@ public class UserServiceImpl implements UserService {
                     .decoder(new JacksonDecoder())
                     .target(KeycloakClient.class, keycloakProperties.getBaseUri());
 
-            UpdateUserEmailDto formData = new UpdateUserEmailDto();
+            UpdateKeycloakDto formData = new UpdateKeycloakDto();
             formData.setEmail(email);
             Response response = keycloakClient.updateKeycloakUser(headers, keycloakId, formData);
 
-            if (response.status() != HttpStatus.OK.value()) {
+            if (response.status() != HttpStatus.NO_CONTENT.value()) {
                 log.error("Failed to update user in Keycloak. Status: {}, Body: {}", response.status(), response.body());
                 throw new KeycloakException("Failed to update user in Keycloak. Status: " + response.status());
             }

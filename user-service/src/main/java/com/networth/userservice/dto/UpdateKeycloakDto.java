@@ -2,7 +2,7 @@ package com.networth.userservice.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class UpdateUserEmailDto {
+public class UpdateKeycloakDto {
 
     public String getEmail() {
         return email;
