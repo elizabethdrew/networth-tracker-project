@@ -2249,11 +2249,12 @@
       "id": "0c77e0c4-95f4-4704-a24f-ee22deb43609",
       "username": "seeduser",
       "email": "seeduser@example.co.uk",
+      "createdTimestamp": 1689956105556,
       "enabled": true,
       "credentials": [
         {
           "type": "password",
-          "value": "password123!"
+          "value": "Password123!"
         }
       ],
       "clientRoles": {
