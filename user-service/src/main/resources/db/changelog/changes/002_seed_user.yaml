@@ -1,8 +1,8 @@
 databaseChangeLog:
   - changeSet:
-      id: test_001_seed_user
+      id: 002_seed_user
       author: elizabeth_drew
-      context: test
+      context: default
       changes:
         - insert:
             tableName: user
@@ -11,11 +11,14 @@ databaseChangeLog:
                   name: user_id
                   value: "1"
               - column:
+                  name: keycloak_id
+                  value: "0c77e0c4-95f4-4704-a24f-ee22deb43609"
+              - column:
                   name: username
-                  value: "johndoe"
+                  value: "seeduser"
               - column:
                   name: email
-                  value: "johndoe@example.co.uk"
+                  value: "seeduser@example.co.uk"
               - column:
                   name: active_user
                   valueBoolean: true

@@ -1,25 +1,30 @@
 package com.networth.userservice.service.impl;
 
-import com.networth.userservice.config.properties.KeycloakProperties;
+import com.networth.userservice.dto.PasswordCredentialDto;
 import com.networth.userservice.dto.RegisterDto;
+import com.networth.userservice.dto.UpdateUserDto;
+import com.networth.userservice.dto.UpdateKeycloakDto;
 import com.networth.userservice.dto.UserOutput;
+import com.networth.userservice.dto.UserRepresentationDto;
 import com.networth.userservice.entity.User;
+import com.networth.userservice.exception.AuthenticationServiceException;
 import com.networth.userservice.exception.InvalidInputException;
 import com.networth.userservice.exception.KeycloakException;
 import com.networth.userservice.exception.UserNotFoundException;
+import com.networth.userservice.exception.UserServiceException;
+import com.networth.userservice.feign.KeycloakClient;
 import com.networth.userservice.mapper.UserMapper;
 import com.networth.userservice.repository.UserRepository;
 import com.networth.userservice.service.UserService;
 import com.networth.userservice.util.HelperUtils;
+import feign.FeignException;
+import feign.Response;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
+import org.hibernate.service.spi.ServiceException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.time.LocalDateTime;
@@ -33,116 +38,118 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final HelperUtils helperUtils;
-    private final KeycloakProperties keycloakProperties;
-    private final RestTemplate restTemplate;
 
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, HelperUtils helperUtils, KeycloakProperties keycloakProperties, RestTemplate restTemplate) {
+    private final KeycloakClient keycloakClient;
+
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, HelperUtils helperUtils, KeycloakClient keycloakClient) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.helperUtils = helperUtils;
-        this.keycloakProperties = keycloakProperties;
-        this.restTemplate = restTemplate;
+        this.keycloakClient = keycloakClient;
     }
 
-    public UserOutput getUser(Long userId) {
-
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new UserNotFoundException("User Id not found: " + userId));
-
-        // Add security to check user is only viewing own profile
-
-        // If deleted send different output?
-
+    public UserOutput getUser(String keycloakId) {
+        User user = userRepository.findByKeycloakId(keycloakId)
+                .orElseThrow(() -> new UserNotFoundException("Keycloak ID not found: " + keycloakId));
         return userMapper.toUserOutput(user);
     }
 
     @Transactional
     public UserOutput registerUser(RegisterDto registerDto) {
 
-        log.info("Register User Flow Started");
+        try {
+            log.info("Starting registration for username: {}", registerDto.getUsername());
 
-        // Check if username already exists
-        if (userRepository.existsByUsername(registerDto.getUsername())) {
-            throw new InvalidInputException("Username already in use: " + registerDto.getUsername());
+            // Check if username already exists
+            if (userRepository.existsByUsername(registerDto.getUsername())) {
+                log.warn("Registration failed: Username '{}' is already in use.", registerDto.getUsername());
+                throw new InvalidInputException("Username already in use: " + registerDto.getUsername());
+            }
+
+            // Check if email already exists
+            if (userRepository.existsByEmail(registerDto.getEmail())) {
+                log.warn("Registration failed: Email '{}' is already in use.", registerDto.getEmail());
+                throw new InvalidInputException("Email already in use: " + registerDto.getEmail());
+            }
+
+            // Validate Password
+            helperUtils.validatePassword(registerDto.getPassword());
+
+            // Get Admin Access Token
+            String accessToken = helperUtils.getAdminAccessToken();
+            Map<String, Object> headers = new HashMap<>();
+            headers.put("Authorization", "Bearer " + accessToken);
+
+            log.info("Registering user '{}' with Keycloak.", registerDto.getUsername());
+
+            UserRepresentationDto formData = createUserRepresentation(registerDto);
+
+            log.info("Adding User To Keycloak");
+            Response response = keycloakClient.createKeycloakUser(headers, formData);
+
+            if (response.status() == HttpStatus.CREATED.value()) {
+                String keycloakUserId = extractKeycloakUserId(response);
+                User user = createUserEntity(registerDto, keycloakUserId);
+                user = userRepository.save(user);
+                log.info("User '{}' successfully registered with Keycloak ID: {}", registerDto.getUsername(), keycloakUserId);
+                return userMapper.toUserOutput(user);
+            } else {
+                log.error("Failed to create user in Keycloak. Status: {}, Body: {}", response.status(), response.body());
+                throw new KeycloakException("Failed to create user in Keycloak. Status: " + response.status());
+            }
+        } catch (InvalidInputException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("An unexpected error occurred during user registration", e);
+            throw new ServiceException("An unexpected error occurred during registration", e);
         }
+    }
 
-        log.info("Username Passed Checks");
 
-        // Check if email already exists
-        if (userRepository.existsByEmail(registerDto.getEmail())) {
-            throw new InvalidInputException("Email already in use: " + registerDto.getEmail());
+    private UserRepresentationDto createUserRepresentation(RegisterDto registerDto) {
+        log.debug("Constructing UserRepresentationDto for username: {}", registerDto.getUsername());
+
+        UserRepresentationDto formData = new UserRepresentationDto();
+        formData.setUsername(registerDto.getUsername());
+        formData.setEmail(registerDto.getEmail());
+        formData.setEnabled(true);
+
+        PasswordCredentialDto password = new PasswordCredentialDto();
+        password.setType("PASSWORD");
+        password.setValue(registerDto.getPassword());
+        password.setTemporary(false);
+
+        formData.setCredentials(Collections.singletonList(password));
+
+        log.debug("UserRepresentationDto constructed for username: {}", registerDto.getUsername());
+        return formData;
+    }
+
+    private String extractKeycloakUserId(Response response) {
+        log.debug("Extracting Keycloak User Id from response");
+
+        if (response.status() == HttpStatus.CREATED.value()) {
+            String locationHeader = response.headers().get("Location").stream().findFirst()
+                    .orElseThrow(() -> new KeycloakException("Location header is missing in the response from Keycloak."));
+
+            URI locationURI = URI.create(locationHeader);
+            String path = locationURI.getPath();
+            String keycloakUserId = path.substring(path.lastIndexOf('/') + 1);
+
+            if (keycloakUserId.isEmpty()) {
+                throw new KeycloakException("Extracted Keycloak User Id is null or empty.");
+            }
+
+            log.info("Extracted Keycloak User Id: {}", keycloakUserId);
+            return keycloakUserId;
+        } else {
+            throw new KeycloakException("Expected status 201 but received " + response.status());
         }
+    }
 
-        log.info("Email Passed Checks");
+    private User createUserEntity(RegisterDto registerDto, String keycloakUserId) {
+        log.info("Creating user entity for username: {}", registerDto.getUsername());
 
-        // Validate Password
-        helperUtils.validatePassword(registerDto.getPassword());
-
-        log.info("Password Passed Checks");
-
-        // Get Admin Access Token
-        String accessToken = helperUtils.getAdminAccessToken();
-
-        log.info("Creating User Representation");
-
-        // Create User Representation
-        Map<String, Object> userRepresentation = new HashMap<>();
-        userRepresentation.put("username", registerDto.getUsername());
-        userRepresentation.put("email", registerDto.getEmail());
-        userRepresentation.put("enabled", true);
-
-        log.info("Creating User Password Credential");
-
-        // Set up Password
-        Map<String, Object> passwordCredential = new HashMap<>();
-        passwordCredential.put("type", "PASSWORD");
-        passwordCredential.put("value", registerDto.getPassword());
-        passwordCredential.put("temporary", false);
-
-        userRepresentation.put("credentials", Collections.singletonList(passwordCredential));
-
-        log.info("Adding User To Keycloak");
-
-        // Create User in Keycloak using RestTemplate
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(accessToken);
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(userRepresentation, headers);
-
-        ResponseEntity<Void> response = restTemplate.postForEntity(
-                keycloakProperties.getBaseUri() + "/admin/realms/networth/users",
-                entity,
-                Void.class
-        );
-
-        if (response.getStatusCode() != HttpStatus.CREATED) {
-            log.error("Error response from Keycloak: Status Code: {}, Body: {}", response.getStatusCode(), response);
-            throw new KeycloakException("Unable to create user in Keycloak. Status: " + response.getStatusCode());
-        }
-
-        log.info("Extracting Keycloak User Id");
-        URI location = response.getHeaders().getLocation();
-        if (location == null) {
-            throw new KeycloakException("Location header is missing in the response from Keycloak.");
-        }
-        String path = location.getPath();
-        if (path == null || path.isEmpty()) {
-            throw new KeycloakException("Location header path is missing or empty.");
-        }
-        String[] segments = path.split("/");
-        if (segments.length < 2) {
-            throw new KeycloakException("Location header path does not contain the user ID.");
-        }
-
-        String keycloakUserId = segments[segments.length - 1];
-
-        if (keycloakUserId == null) {
-            log.error("Keycloak User Id is Null");
-            throw new KeycloakException("Keycloak User Id is Null");
-        }
-
-        // Create New User
-        log.info("Creating User");
         User user = new User();
         user.setUsername(registerDto.getUsername());
         user.setEmail(registerDto.getEmail());
@@ -150,60 +157,93 @@ public class UserServiceImpl implements UserService {
         user.setActiveUser(true);
         user.setKeycloakId(keycloakUserId);
 
-        // Save user to the repository
-        log.info("Saving User");
-        user = userRepository.save(user);
-
-        return userMapper.toUserOutput(user);
+        try {
+            User savedUser = userRepository.save(user);
+            log.info("User entity saved with ID: {}", savedUser.getUserId());
+            return savedUser;
+        } catch (DataAccessException e) {
+            log.error("Error occurred while saving user entity for username: {}", registerDto.getUsername(), e);
+            throw new UserServiceException("Failed to save user entity", e);
+        }
     }
 
 
 
 
-//    @Transactional
-//    public UserOutput updateUser(Long userId, RegisterDto registerDto)
-//            throws UserNotFoundException {
-//
-//        // Retrieve the user with the specified ID from the repository
-//        User user = userRepository.findByUserId(userId)
-//                .orElseThrow(() -> new UserNotFoundException("User Id not found: " + userId));
-//
-//        // Add security to check user is only editing own profile
-//
-//        // Create updated user
-//        User updatedUser = userMapper.toUser(registerDto);
-//        updatedUser.setUserId(user.getUserId());
-//        updatedUser.setDateOpened(user.getDateOpened());
-//        updatedUser.setDateOpened(user.getDateOpened());
-//
-////        // Check if new password is provided
-////        if(registerDto.getPassword() != null) {
-////            // Encrypt new password
-////            String encryptedPassword = passwordEncoder.encode(registerDto.getPassword());
-////            updatedUser.setPassword(encryptedPassword);
-////        } else {
-////            updatedUser.setPassword(user.getPassword());
-////        }
-//
-//        User savedUser = userRepository.save(updatedUser);
-//        return userMapper.toUserOutput(savedUser);
-//    }
+    @Transactional
+    public UserOutput updateUser(String keycloakId, UpdateUserDto updateUserDto)
+            throws UserNotFoundException {
 
-//    @Transactional
-//    public void deleteUser(Long userId) {
-//
-//        // Retrieve the user with the specified ID from the repository
-//        User user = userRepository.findByUserId(userId)
-//                .orElseThrow(() -> new UserNotFoundException("User Id not found: " + userId));
-//
-//        // Add security to check user is only editing own profile
-//
-//        // Mark the user as deleted
-//        user.setActiveUser(false);
-//
-//        // Save the updated user entity
-//        userRepository.save(user);
-//    }
+        log.info("Starting update user");
+        try {
+            // Retrieve the user with the specified ID from the repository
+            User user = userRepository.findByKeycloakId(keycloakId)
+                    .orElseThrow(() -> new UserNotFoundException("Keycloak ID not found: " + keycloakId));
+
+            boolean emailChanged = !user.getEmail().equals(updateUserDto.getEmail());
+
+            // Map to updated user
+            userMapper.updateUserFromDto(updateUserDto, user);
+            user.setDateUpdated(LocalDateTime.now());
+
+
+            // Update User in Keycloak if email has changed
+            if (emailChanged) {
+                updateEmailKeycloak(updateUserDto.getEmail(), keycloakId);
+            }
+
+            // Save updated user in the repository
+            User savedUser = userRepository.save(user);
+            return userMapper.toUserOutput(savedUser);
+
+        } catch (Exception e) {
+            log.error("An unexpected error occurred during update user", e);
+            throw new ServiceException("An unexpected error occurred during update user", e);
+        }
+    }
+
+    private void updateEmailKeycloak(String email, String keycloakId) {
+        log.info("Starting Update User in Keycloak");
+
+        try {
+            String accessToken = helperUtils.getAdminAccessToken();
+            Map<String, Object> headers = new HashMap<>();
+            headers.put("Authorization", "Bearer " + accessToken);
+
+            UpdateKeycloakDto formData = new UpdateKeycloakDto();
+            formData.setEmail(email);
+            Response response = keycloakClient.updateKeycloakUser(headers, keycloakId, formData);
+
+            if (response.status() != HttpStatus.NO_CONTENT.value()) {
+                log.error("Failed to update user in Keycloak. Status: {}, Body: {}", response.status(), response.body());
+                throw new KeycloakException("Failed to update user in Keycloak. Status: " + response.status());
+            }
+            log.info("Email updated in Keycloak successfully");
+        } catch (FeignException e) {
+            log.error("Error communicating with Keycloak: ", e);
+            throw new AuthenticationServiceException("Error communicating with Keycloak", e);
+        } catch (Exception e) {
+            log.error("An unexpected error occurred during email update in Keycloak", e);
+            throw new UserServiceException("Unexpected error during email update in Keycloak", e);
+        }
+    }
+
+
+    @Transactional
+    public void deleteUser(String keycloakId) {
+
+        log.info("Starting soft delete user");
+
+        // Retrieve the user with the specified ID from the repository
+        User user = userRepository.findByKeycloakId(keycloakId)
+                .orElseThrow(() -> new UserNotFoundException("Keycloak ID not found: " + keycloakId));
+
+        // Mark the user as deleted
+        user.setActiveUser(false);
+
+        // Save the updated user entity
+        userRepository.save(user);
+    }
 
 
 }

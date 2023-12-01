@@ -1,17 +1,24 @@
 spring:
-    kubernetes:
-        all-namespaces: true
     cloud:
         kubernetes:
             discovery:
-                discovery-server-url: http://spring-cloud-kubernetes-discoveryserver:80/
                 enabled: true
+                all-namespaces: true
             reload:
                 enabled: true
         discovery:
             client:
                 health-indicator:
                     enabled: false
+    security:
+        oauth2:
+            resource-server:
+                opaque-token:
+                    client-secret: Ow1dayvip5w4BHJeacRzVLHLCfJNCm3W
+                    introspection-uri: http://keycloak:80/realms/networth/protocol/openid-connect/token/introspect
+                jwt:
+                    jwk-set-uri: http://keycloak:80/realms/networth/protocol/openid-connect/certs
+                    issuer-uri: http://keycloak:80/realms/networth
 
 eureka:
     client:

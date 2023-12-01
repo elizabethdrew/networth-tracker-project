@@ -1,18 +1,24 @@
 spring:
-    kubernetes:
-        all-namespaces: true
     cloud:
         kubernetes:
             discovery:
-                discovery-server-url: http://spring-cloud-kubernetes-discoveryserver:80/
-                enabled: true
+                all-namespaces: true
             reload:
                 enabled: true
         discovery:
             client:
                 health-indicator:
                     enabled: false
+    datasource:
+        url: jdbc:mysql://user-service-mysql:3306/user-service-db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+        username: admin
+        password: password
 
 eureka:
     client:
         enabled: false
+
+keycloak:
+    base-uri: http://keycloak:80
+    keyUser:
+        client-secret: Ow1dayvip5w4BHJeacRzVLHLCfJNCm3W

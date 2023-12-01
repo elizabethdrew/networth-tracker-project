@@ -1,9 +1,7 @@
 package com.networth.userservice.exception;
 
 import com.networth.userservice.dto.ErrorResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataAccessException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -11,13 +9,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
-    // Logger to log information and warnings
-    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-
     private ResponseEntity<ErrorResponse> generateErrorResponse(HttpStatus status, Exception e) {
-        LOGGER.warn(String.valueOf(e));
+        log.warn(String.valueOf(e));
         ErrorResponse error = new ErrorResponse();
         error.setCode(status.value());
         error.setMessage(e.getMessage());
@@ -25,7 +21,7 @@ public class GlobalExceptionHandler {
     }
 
     private ResponseEntity<ErrorResponse> generateErrorResponse(HttpStatus status, String message, Exception e) {
-        LOGGER.warn(message, e);
+        log.warn(message, e);
         ErrorResponse error = new ErrorResponse();
         error.setCode(status.value());
         error.setMessage(message);
@@ -47,6 +43,11 @@ public class GlobalExceptionHandler {
         return generateErrorResponse(HttpStatus.BAD_REQUEST, "Invalid Input", e);
     }
 
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidCredentialsException(InvalidCredentialsException e) {
+        return generateErrorResponse(HttpStatus.BAD_REQUEST, "Invalid Credentials", e);
+    }
+
     @ExceptionHandler(DuplicateException.class)
     public ResponseEntity<ErrorResponse> handleDuplicateException(DuplicateException e) {
         return generateErrorResponse(HttpStatus.CONFLICT, "Duplicate Input", e);
@@ -60,6 +61,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(KeycloakException.class)
     public ResponseEntity<ErrorResponse> handleKeycloakException(KeycloakException e) {
         return generateErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Keycloak Error", e);
+    }
+
+    @ExceptionHandler(UserServiceException.class)
+    public ResponseEntity<ErrorResponse> handleUserServiceException(UserServiceException e) {
+        return generateErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "User Service Error", e);
     }
 
 }

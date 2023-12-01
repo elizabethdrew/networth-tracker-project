@@ -2,10 +2,10 @@ global: {}
 
 app:
   name: user-service
-  label: users
-  deploymentName: users-deployment
+  label: user-service
+  deploymentName: user-service-deployment
   serviceName: user-service
-  configMapName: users-configmap
+  configMapName: user-service-configmap
   activeProfile: k8
   replicaCount: 1
 

@@ -1,10 +1,11 @@
 package com.networth.userservice.util;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networth.userservice.config.properties.KeycloakProperties;
+import com.networth.userservice.dto.KeycloakAccessDto;
+import com.networth.userservice.dto.LoginDto;
+import com.networth.userservice.dto.TokenResponse;
 import com.networth.userservice.exception.InvalidInputException;
-import com.networth.userservice.exception.KeycloakException;
+import com.networth.userservice.feign.KeycloakFormClient;
 import lombok.extern.slf4j.Slf4j;
 import org.passay.CharacterRule;
 import org.passay.EnglishCharacterData;
@@ -13,17 +14,8 @@ import org.passay.PasswordData;
 import org.passay.PasswordValidator;
 import org.passay.Rule;
 import org.passay.RuleResult;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,17 +23,17 @@ import java.util.List;
 @Slf4j
 public class HelperUtils {
 
-    private final RestTemplate restTemplate;
-    private final KeycloakProperties keycloakProperties;
+    private final KeycloakFormClient keycloakFormClient;
 
-    public HelperUtils(RestTemplate restTemplate, KeycloakProperties keycloakProperties) {
-        this.restTemplate = restTemplate;
+    private final KeycloakProperties keycloakProperties;
+    public HelperUtils(KeycloakFormClient keycloakFormClient, KeycloakProperties keycloakProperties) {
+        this.keycloakFormClient = keycloakFormClient;
         this.keycloakProperties = keycloakProperties;
     }
 
 
     // Validate Password Against Rules
-    public void validatePassword(String password) {
+    public Boolean validatePassword(String password) {
 
         // Define rules
         List<Rule> rules = new ArrayList<>();
@@ -59,48 +51,51 @@ public class HelperUtils {
             throw new InvalidInputException("Invalid password: " + message);
         }
 
+        return result.isValid();
+
     }
 
     // Get Keycloak Admin Access Token
     public String getAdminAccessToken() {
         log.info("Keycloak Admin Access Flow Started");
 
-        // Create the request body
-        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-        formData.add("client_id", keycloakProperties.getAdmin().getClientId());
-        formData.add("grant_type", "password");
-        formData.add("username", keycloakProperties.getAdmin().getUsername());
-        formData.add("password", keycloakProperties.getAdmin().getPassword());
+        // Create the request form data
+        KeycloakAccessDto formData = new KeycloakAccessDto();
+        formData.setClientId(keycloakProperties.getKeyAdmin().getClientId());
+        formData.setGrantType("password");
+        formData.setUsername(keycloakProperties.getKeyAdmin().getUsername());
+        formData.setPassword(keycloakProperties.getKeyAdmin().getPassword());
 
-        // Set the headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        // Create the HttpEntity
-        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(formData, headers);
+        log.info(String.valueOf(formData));
 
         try {
-            // Execute the POST request
-            ResponseEntity<String> response = restTemplate.postForEntity(
-                    keycloakProperties.getBaseUri() + "/realms/" + keycloakProperties.getAdmin().getRealm() + "/protocol/openid-connect/token",
-                    entity,
-                    String.class);
-
-            // Check for error response
-            if (response.getStatusCode().is4xxClientError() || response.getStatusCode().is5xxServerError()) {
-                log.error("Error response from Keycloak: Status Code: {}, Body: {}", response.getStatusCode(), response.getBody());
-                throw new KeycloakException("Error response from Keycloak: Status Code: " +
-                        response.getStatusCode() + ", Body: " + response.getBody());
-            }
-
-            // Parse the access token from the response
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(response.getBody());
-            String accessToken = jsonNode.get("access_token").asText();
+            TokenResponse tokenResponse = keycloakFormClient.getAdminAccessToken(formData);
             log.info("Extracted access token");
+            return tokenResponse.getAccessToken();
+        } catch (Exception e) {
+            log.error("Failed to retrieve access token", e);
+            throw new RuntimeException("Failed to retrieve access token", e);
+        }
+    }
 
-            return accessToken;
-        } catch (RestClientException | IOException e) {
+    // Get Keycloak User Access Token
+    public TokenResponse getUserAccessToken(LoginDto loginDto) {
+        log.info("Keycloak User Access Flow Started");
+
+        // Create the request form data
+        KeycloakAccessDto formData = new KeycloakAccessDto();
+        formData.setClientId(keycloakProperties.getKeyUser().getClientId());
+        formData.setClientSecret(keycloakProperties.getKeyUser().getClientSecret());
+        formData.setScope("openid email profile");
+        formData.setGrantType("password");
+        formData.setUsername(loginDto.getUsername());
+        formData.setPassword(loginDto.getPassword());
+
+        try {
+            TokenResponse tokenResponse = keycloakFormClient.getUserAccessToken(formData);
+            log.info("Extracted access token");
+            return tokenResponse;
+        } catch (Exception e) {
             log.error("Failed to retrieve access token", e);
             throw new RuntimeException("Failed to retrieve access token", e);
         }

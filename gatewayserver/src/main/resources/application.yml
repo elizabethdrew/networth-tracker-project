@@ -6,9 +6,8 @@ spring:
   security:
     oauth2:
       resource-server:
-        jwt:
-          jwk-set-uri: http://keycloak:8080/realms/networth/protocol/openid-connect/certs
-          issuer-uri: http://localhost:7080/realms/networth
+        opaque-token:
+          client-id: apigateway
   data:
     redis:
       connect-timeout: 2s
@@ -24,12 +23,12 @@ spring:
         - id: user-service
           uri: http://user-service:8081
           predicates:
-            - Path=/api/v1/users/**
+            - Path=/api/v1/users/**, /api/v1/auth/**
           filters:
+            - name: PreserveHostHeader
             - name: CircuitBreaker
               args:
                 name: usersCircuitBreaker
-                fallbackUri: forward:/contactSupport
             - name: RequestRateLimiter
 
 server:
@@ -37,9 +36,7 @@ server:
 
 logging:
   level:
-    com:
-      drew:
-        gatewayserver: DEBUG
+    root: DEBUG
   pattern:
     level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
 
