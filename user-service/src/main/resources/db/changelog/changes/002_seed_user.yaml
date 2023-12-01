@@ -9,7 +9,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: user_id
-                  value: "2"
+                  value: "1"
               - column:
                   name: keycloak_id
                   value: "0c77e0c4-95f4-4704-a24f-ee22deb43609"
