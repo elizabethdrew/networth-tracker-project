@@ -1,5 +1,6 @@
 package com.networth.userservice;
 
+import dasniko.testcontainers.keycloak.KeycloakContainer;
 import io.restassured.RestAssured;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.transaction.Transactional;
@@ -35,12 +36,17 @@ public abstract class GlobalTestContainer {
             .waitingFor(Wait.forListeningPort())
             .withEnv("MYSQL_ROOT_HOST", "%");
 
+    public static KeycloakContainer keycloakContainer = new KeycloakContainer()
+            .withRealmImportFile("keycloak/realm-export.json");
 
     @BeforeAll
     public static void setUp(){
 
         if(!container.isRunning()) {
             container.start();
+        }
+        if (!keycloakContainer.isRunning()) {
+            keycloakContainer.start();
         }
         RestAssured.baseURI = "http://localhost:8081";
 
