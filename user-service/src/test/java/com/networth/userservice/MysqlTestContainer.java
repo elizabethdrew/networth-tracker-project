@@ -1,6 +1,5 @@
 package com.networth.userservice;
 
-import dasniko.testcontainers.keycloak.KeycloakContainer;
 import io.restassured.RestAssured;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.transaction.Transactional;
@@ -21,7 +20,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(initializers = DockerMysqlDataSourceInitializer.class)
-public abstract class GlobalTestContainer {
+public abstract class MysqlTestContainer {
 
     @Autowired
     SpringLiquibase liquibase;
@@ -36,17 +35,11 @@ public abstract class GlobalTestContainer {
             .waitingFor(Wait.forListeningPort())
             .withEnv("MYSQL_ROOT_HOST", "%");
 
-    public static KeycloakContainer keycloakContainer = new KeycloakContainer()
-            .withRealmImportFile("keycloak/realm-export.json");
-
     @BeforeAll
     public static void setUp(){
 
         if(!container.isRunning()) {
             container.start();
-        }
-        if (!keycloakContainer.isRunning()) {
-            keycloakContainer.start();
         }
         RestAssured.baseURI = "http://localhost:8081";
 
@@ -54,6 +47,7 @@ public abstract class GlobalTestContainer {
 
     @AfterAll
     public static void tearDown(){
+
         container.stop();
     }
 
