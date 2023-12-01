@@ -1,0 +1,37 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002_seed_user
+      author: elizabeth_drew
+      context: default
+      changes:
+        - insert:
+            tableName: user
+            columns:
+              - column:
+                  name: user_id
+                  value: "2"
+              - column:
+                  name: keycloak_id
+                  value: "0c77e0c4-95f4-4704-a24f-ee22deb43609"
+              - column:
+                  name: username
+                  value: "seeduser"
+              - column:
+                  name: email
+                  value: "seeduser@example.co.uk"
+              - column:
+                  name: active_user
+                  valueBoolean: true
+              - column:
+                  name: tax_rate
+                  value: "BASIC"
+              - column:
+                  name: date_birth
+                  value: "1990-01-01"
+              - column:
+                  name: date_open
+                  value: "2023-06-06 12:00:00"
+              - column:
+                  name: date_updated
+                  type: "2023-10-06 12:00:00"
+      runAlways: true

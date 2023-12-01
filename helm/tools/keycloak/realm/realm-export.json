@@ -654,7 +654,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "**********",
+      "secret": "Ow1dayvip5w4BHJeacRzVLHLCfJNCm3W",
       "redirectUris": [
         "http://localhost:8080/login/oauth2/code/keycloak"
       ],
@@ -2243,5 +2243,25 @@
   },
   "clientPolicies": {
     "policies": []
-  }
+  },
+  "users": [
+    {
+      "id": "0c77e0c4-95f4-4704-a24f-ee22deb43609",
+      "username": "seeduser",
+      "email": "seeduser@example.co.uk",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password123!"
+        }
+      ],
+      "clientRoles": {
+        "account": [
+          "view-profile",
+          "manage-account"
+        ]
+      }
+    }
+  ]
 }
