@@ -90,7 +90,6 @@ public class UserServiceImpl implements UserService {
             if (response.status() == HttpStatus.CREATED.value()) {
                 String keycloakUserId = extractKeycloakUserId(response);
                 User user = createUserEntity(registerDto, keycloakUserId);
-                user = userRepository.save(user);
                 log.info("User '{}' successfully registered with Keycloak ID: {}", registerDto.getUsername(), keycloakUserId);
                 return userMapper.toUserOutput(user);
             } else {
