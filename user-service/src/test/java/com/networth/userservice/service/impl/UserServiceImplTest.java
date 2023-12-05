@@ -1,6 +1,8 @@
 package com.networth.userservice.service.impl;
 
 import com.networth.userservice.dto.RegisterDto;
+import com.networth.userservice.dto.TaxRate;
+import com.networth.userservice.dto.UpdateUserDto;
 import com.networth.userservice.dto.UserOutput;
 import com.networth.userservice.entity.User;
 import com.networth.userservice.exception.InvalidInputException;
@@ -13,6 +15,7 @@ import com.networth.userservice.util.HelperUtils;
 import feign.Request;
 import feign.RequestTemplate;
 import feign.Response;
+import org.hibernate.service.spi.ServiceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -20,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Optional;
@@ -49,16 +53,22 @@ public class UserServiceImplTest {
     private UserServiceImpl userService;
 
     private User testUser;
-    private UserOutput expectedOutput;
 
+    private User testUpdatedUser;
+    private UserOutput expectedOutput;
+    private UserOutput expectedUpdateOutput;
+    private UpdateUserDto testUpdateUserDto;
     private RegisterDto testRegister;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
         createTestUser();
+        createTestUpdatedUser();
         createTestOutputData();
         createTestRegisterData();
+        createTestUpdateData();
+        createTestUpdateUserDto();
     }
 
     private void createTestUser() {
@@ -74,6 +84,19 @@ public class UserServiceImplTest {
         testUser.setDateUpdated(null);
     }
 
+    private void createTestUpdatedUser() {
+        testUpdatedUser = new User();
+        testUpdatedUser.setUserId(1L);
+        testUpdatedUser.setKeycloakId("0c77e0c4-95f4-4704-a24f-ee22deb43609");
+        testUpdatedUser.setUsername("seeduser");
+        testUpdatedUser.setEmail("seeduser@example.co.uk");
+        testUpdatedUser.setActiveUser(true);
+        testUpdatedUser.setTaxRate(TaxRate.valueOf("BASIC"));
+        testUpdatedUser.setDateOfBirth(LocalDate.parse("1986-09-02"));
+        testUpdatedUser.setDateOpened(LocalDateTime.parse("2023-06-06T12:00:00"));
+        testUpdatedUser.setDateUpdated(LocalDateTime.parse("2023-06-06T12:00:00"));
+    }
+
     private void createTestOutputData() {
         expectedOutput = new UserOutput();
         expectedOutput.setUserId(1L);
@@ -84,6 +107,25 @@ public class UserServiceImplTest {
         expectedOutput.setDateOpened(LocalDateTime.parse("2023-06-06T12:00:00"));
         expectedOutput.setDateUpdated(null);
         expectedOutput.setActiveUser(true);
+    }
+
+    private void createTestUpdateData() {
+        expectedUpdateOutput = new UserOutput();
+        expectedUpdateOutput.setUserId(1L);
+        expectedUpdateOutput.setUsername("seeduser");
+        expectedUpdateOutput.setEmail("seeduser@example.co.uk");
+        expectedUpdateOutput.setDateOfBirth(LocalDate.parse("1986-09-02"));
+        expectedUpdateOutput.setTaxRate(TaxRate.valueOf("BASIC"));
+        expectedUpdateOutput.setDateOpened(LocalDateTime.parse("2023-06-06T12:00:00"));
+        expectedUpdateOutput.setDateUpdated(LocalDateTime.parse("2023-06-06T12:00:00"));
+        expectedUpdateOutput.setActiveUser(true);
+    }
+
+    private void createTestUpdateUserDto() {
+        testUpdateUserDto = new UpdateUserDto();
+        testUpdateUserDto.setEmail("seeduser@example.co.uk");
+        testUpdateUserDto.setDateOfBirth(LocalDate.parse("1986-09-02"));
+        testUpdateUserDto.setTaxRate(TaxRate.valueOf("BASIC"));
     }
 
     private void createTestRegisterData() {
@@ -187,6 +229,23 @@ public class UserServiceImplTest {
 
         assertThrows(KeycloakException.class, () -> userService.registerUser(testRegister));
         verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void testUpdateUser_EmailSame_Success() {
+
+        String keycloakId = testUser.getKeycloakId();
+        when(userRepository.findByKeycloakId(keycloakId)).thenReturn(Optional.of(testUser));
+        when(userMapper.updateUserFromDto(testUpdateUserDto, testUser)).thenReturn(expectedUpdateOutput);
+        when(userRepository.save(any(User.class))).thenReturn(testUpdatedUser);
+        when(userMapper.toUserOutput(testUpdatedUser)).thenReturn(expectedUpdateOutput);
+
+        UserOutput result = userService.updateUser(testUpdateUserDto);
+
+        assertEquals(expectedUpdateOutput, result);
+        verify(userRepository).save(any(User.class));
+        verify(userMapper).toUserOutput(testUpdatedUser);
+
     }
 
 
