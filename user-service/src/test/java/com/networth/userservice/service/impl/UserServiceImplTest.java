@@ -2,6 +2,7 @@ package com.networth.userservice.service.impl;
 
 import com.networth.userservice.dto.RegisterDto;
 import com.networth.userservice.dto.TaxRate;
+import com.networth.userservice.dto.UpdateKeycloakDto;
 import com.networth.userservice.dto.UpdateUserDto;
 import com.networth.userservice.dto.UserOutput;
 import com.networth.userservice.entity.User;
@@ -31,6 +32,8 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -233,20 +236,66 @@ public class UserServiceImplTest {
 
     @Test
     void testUpdateUser_EmailSame_Success() {
-
         String keycloakId = testUser.getKeycloakId();
+
         when(userRepository.findByKeycloakId(keycloakId)).thenReturn(Optional.of(testUser));
-        when(userMapper.updateUserFromDto(testUpdateUserDto, testUser)).thenReturn(expectedUpdateOutput);
+        doAnswer(invocation -> {
+            User u = invocation.getArgument(1);
+            u.setDateOfBirth(testUpdateUserDto.getDateOfBirth());
+            u.setTaxRate(testUpdateUserDto.getTaxRate());
+            return null;
+        }).when(userMapper).updateUserFromDto(eq(testUpdateUserDto), any(User.class));
+
         when(userRepository.save(any(User.class))).thenReturn(testUpdatedUser);
+
         when(userMapper.toUserOutput(testUpdatedUser)).thenReturn(expectedUpdateOutput);
 
-        UserOutput result = userService.updateUser(testUpdateUserDto);
+        UserOutput result = userService.updateUser(keycloakId, testUpdateUserDto);
 
         assertEquals(expectedUpdateOutput, result);
         verify(userRepository).save(any(User.class));
         verify(userMapper).toUserOutput(testUpdatedUser);
-
+        verify(userRepository).findByKeycloakId(keycloakId);
+        verify(userMapper).updateUserFromDto(eq(testUpdateUserDto), any(User.class));
     }
+
+    @Test
+    void testUpdateUser_EmailDifferent_Success() {
+        String keycloakId = testUser.getKeycloakId();
+        String newEmail = "newemail@example.com";
+        testUpdateUserDto.setEmail(newEmail);
+
+        when(userRepository.findByKeycloakId(keycloakId)).thenReturn(Optional.of(testUser));
+        doAnswer(invocation -> {
+            User u = invocation.getArgument(1);
+            u.setEmail(testUpdateUserDto.getEmail());
+            u.setDateOfBirth(testUpdateUserDto.getDateOfBirth());
+            u.setTaxRate(testUpdateUserDto.getTaxRate());
+            return null;
+        }).when(userMapper).updateUserFromDto(eq(testUpdateUserDto), any(User.class));
+
+        when(userRepository.save(any(User.class))).thenReturn(testUpdatedUser);
+
+        // Mock successful response from Keycloak for email update
+        Response keycloakResponse = Response.builder()
+                .status(HttpStatus.NO_CONTENT.value())
+                .request(Request.create(Request.HttpMethod.PUT, "", Collections.emptyMap(), null, new RequestTemplate()))
+                .build();
+        when(keycloakClient.updateKeycloakUser(any(), eq(keycloakId), any(UpdateKeycloakDto.class))).thenReturn(keycloakResponse);
+        when(helperUtils.getAdminAccessToken()).thenReturn("token");
+
+        when(userMapper.toUserOutput(testUpdatedUser)).thenReturn(expectedUpdateOutput);
+
+        UserOutput result = userService.updateUser(keycloakId, testUpdateUserDto);
+
+        assertEquals(expectedUpdateOutput, result);
+        verify(userRepository).findByKeycloakId(keycloakId);
+        verify(userMapper).updateUserFromDto(eq(testUpdateUserDto), any(User.class));
+        verify(userRepository).save(any(User.class));
+        verify(userMapper).toUserOutput(testUpdatedUser);
+        verify(keycloakClient).updateKeycloakUser(any(), eq(keycloakId), any(UpdateKeycloakDto.class));
+    }
+
 
 
 }
