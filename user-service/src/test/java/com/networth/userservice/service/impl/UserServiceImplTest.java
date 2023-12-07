@@ -1,5 +1,7 @@
 package com.networth.userservice.service.impl;
 
+import com.networth.userservice.dto.TaxRate;
+import com.networth.userservice.dto.UpdateUserDto;
 import com.networth.userservice.dto.UserOutput;
 import com.networth.userservice.entity.User;
 import com.networth.userservice.exception.UserNotFoundException;
@@ -21,6 +23,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -41,6 +44,8 @@ public class UserServiceImplTest {
     private final String keycloakId = "test-keycloak-id";
     private User mockUser;
     private UserOutput mockUserOutput;
+
+    private UpdateUserDto mockUpdateUserDto;
 
     @BeforeEach
     public void setup() {
@@ -66,6 +71,11 @@ public class UserServiceImplTest {
         mockUserOutput.setDateOpened(LocalDateTime.parse("2023-06-06T12:00:00"));
         mockUserOutput.setDateUpdated(null);
         mockUserOutput.setActiveUser(true);
+
+        mockUpdateUserDto = new UpdateUserDto();
+        mockUpdateUserDto.setEmail("seeduser@example.co.uk");
+        mockUpdateUserDto.setDateOfBirth(LocalDate.parse("1986-09-02"));
+        mockUpdateUserDto.setTaxRate(TaxRate.valueOf("BASIC"));
     }
 
     @Test
@@ -88,6 +98,52 @@ public class UserServiceImplTest {
 
         verify(userRepository).findByKeycloakId(keycloakId);
         verify(userMapper, never()).toUserOutput(any(User.class));
+    }
+
+    @Test
+    public void testUpdateUserSuccess() {
+        // Setup
+        when(userRepository.findByKeycloakId(keycloakId)).thenReturn(Optional.of(mockUser));
+        when(userRepository.save(any(User.class))).thenReturn(mockUser);
+        when(userMapper.toUserOutput(any(User.class))).thenReturn(mockUserOutput);
+
+        // Act
+        UserOutput result = userService.updateUser(keycloakId, mockUpdateUserDto);
+
+        // Assert
+        assertEquals(mockUserOutput, result);
+        verify(userRepository).findByKeycloakId(keycloakId);
+        verify(userMapper).updateUserFromDto(mockUpdateUserDto, mockUser);
+        verify(userRepository).save(mockUser);
+    }
+
+    @Test
+    public void testUpdateUserNotFound() {
+        // Setup
+        when(userRepository.findByKeycloakId(keycloakId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(UserNotFoundException.class, () -> userService.updateUser(keycloakId, mockUpdateUserDto));
+
+        verify(userRepository).findByKeycloakId(keycloakId);
+        verify(userMapper, never()).updateUserFromDto(any(UpdateUserDto.class), any(User.class));
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    public void testUpdateUserEmailChange() {
+        // Setup
+        mockUpdateUserDto.setEmail("newemail@example.com");
+        when(userRepository.findByKeycloakId(keycloakId)).thenReturn(Optional.of(mockUser));
+        when(userRepository.save(any(User.class))).thenReturn(mockUser);
+        when(userMapper.toUserOutput(any(User.class))).thenReturn(mockUserOutput);
+
+        // Act
+        userService.updateUser(keycloakId, mockUpdateUserDto);
+
+        // Assert
+        verify(helperUtils).validateEmailUnique("newemail@example.com");
+        verify(keycloakService).updateEmailKeycloak("newemail@example.com", keycloakId);
     }
 
     @Test

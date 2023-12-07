@@ -101,6 +101,8 @@ public class UserServiceImpl implements UserService {
             User savedUser = userRepository.save(user);
             return userMapper.toUserOutput(savedUser);
 
+        } catch (UserNotFoundException e ){
+            throw e;
         } catch (Exception e) {
             log.error("An unexpected error occurred during update user", e);
             throw new ServiceException("An unexpected error occurred during update user", e);
