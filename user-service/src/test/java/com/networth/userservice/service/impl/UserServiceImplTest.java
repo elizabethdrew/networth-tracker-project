@@ -1,14 +1,18 @@
 package com.networth.userservice.service.impl;
 
+import com.networth.userservice.dto.RegisterDto;
 import com.networth.userservice.dto.TaxRate;
 import com.networth.userservice.dto.UpdateUserDto;
 import com.networth.userservice.dto.UserOutput;
 import com.networth.userservice.entity.User;
+import com.networth.userservice.exception.InvalidInputException;
+import com.networth.userservice.exception.KeycloakException;
 import com.networth.userservice.exception.UserNotFoundException;
 import com.networth.userservice.repository.UserRepository;
 import com.networth.userservice.service.KeycloakService;
 import com.networth.userservice.mapper.UserMapper;
 import com.networth.userservice.util.HelperUtils;
+import feign.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -17,8 +21,11 @@ import org.mockito.MockitoAnnotations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -46,6 +53,8 @@ public class UserServiceImplTest {
     private UserOutput mockUserOutput;
 
     private UpdateUserDto mockUpdateUserDto;
+
+    private RegisterDto mockRegisterDto;
 
     @BeforeEach
     public void setup() {
@@ -76,6 +85,55 @@ public class UserServiceImplTest {
         mockUpdateUserDto.setEmail("seeduser@example.co.uk");
         mockUpdateUserDto.setDateOfBirth(LocalDate.parse("1986-09-02"));
         mockUpdateUserDto.setTaxRate(TaxRate.valueOf("BASIC"));
+
+        mockRegisterDto = new RegisterDto();
+        mockRegisterDto.setUsername("seeduser");
+        mockRegisterDto.setEmail("seeduser@example.co.uk");
+        mockRegisterDto.setPassword("Password123!");
+
+    }
+
+    @Test
+    public void testRegisterUserSuccess() {
+        // Setup
+        Response mockResponse = mock(Response.class);
+        when(keycloakService.createUser(mockRegisterDto)).thenReturn(mockResponse);
+        when(keycloakService.extractKeycloakUserId(mockResponse)).thenReturn(Optional.of("keycloakUserId"));
+        when(userRepository.save(any(User.class))).thenReturn(mockUser);
+        when(userMapper.toUserOutput(any(User.class))).thenReturn(mockUserOutput);
+
+        // Act
+        UserOutput result = userService.registerUser(mockRegisterDto);
+
+        // Assert
+        assertNotNull(result);
+        verify(userRepository).save(any(User.class));
+        verify(keycloakService).createUser(mockRegisterDto);
+        verify(keycloakService).extractKeycloakUserId(mockResponse);
+    }
+
+    @Test
+    public void testRegisterEmailValidationFailure() {
+        doThrow(new InvalidInputException("Email already exists")).when(helperUtils).validateEmailUnique(mockRegisterDto.getEmail());
+
+        // Act & Assert
+        assertThrows(InvalidInputException.class, () -> userService.registerUser(mockRegisterDto));
+    }
+
+    @Test
+    public void testRegisterUsernameValidationFailure() {
+        doThrow(new InvalidInputException("Username already exists")).when(helperUtils).validateUsernameUnique(mockRegisterDto.getUsername());
+
+        // Act & Assert
+        assertThrows(InvalidInputException.class, () -> userService.registerUser(mockRegisterDto));
+    }
+
+    @Test
+    public void testRegisterUserKeycloakFailure() {
+        when(keycloakService.createUser(mockRegisterDto)).thenThrow(new KeycloakException("Keycloak error"));
+
+        // Act & Assert
+        assertThrows(KeycloakException.class, () -> userService.registerUser(mockRegisterDto));
     }
 
     @Test
