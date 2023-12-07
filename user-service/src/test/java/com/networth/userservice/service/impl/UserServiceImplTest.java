@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -87,6 +88,32 @@ public class UserServiceImplTest {
 
         verify(userRepository).findByKeycloakId(keycloakId);
         verify(userMapper, never()).toUserOutput(any(User.class));
+    }
+
+    @Test
+    public void testDeleteUserSuccess() {
+        // Setup
+        when(userRepository.findByKeycloakId(keycloakId)).thenReturn(Optional.of(mockUser));
+
+        // Act
+        userService.deleteUser(keycloakId);
+
+        // Assert
+        assertFalse(mockUser.getActiveUser());
+        verify(userRepository).findByKeycloakId(keycloakId);
+        verify(userRepository).save(mockUser);
+    }
+
+    @Test
+    public void testDeleteUserNotFound() {
+        // Setup
+        when(userRepository.findByKeycloakId(keycloakId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(UserNotFoundException.class, () -> userService.deleteUser(keycloakId));
+
+        verify(userRepository).findByKeycloakId(keycloakId);
+        verify(userRepository, never()).save(any(User.class));
     }
 }
 
