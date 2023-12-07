@@ -34,4 +34,3 @@ databaseChangeLog:
               - column:
                   name: date_updated
                   type: "2023-10-06 12:00:00"
-      runAlways: true
