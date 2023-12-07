@@ -2,6 +2,7 @@ package com.networth.userservice.service.impl;
 
 import com.networth.userservice.dto.LoginDto;
 import com.networth.userservice.dto.LoginResponse;
+import com.networth.userservice.dto.LogoutDto;
 import com.networth.userservice.dto.TokenResponse;
 import com.networth.userservice.entity.User;
 import com.networth.userservice.exception.AuthenticationServiceException;
@@ -51,6 +52,8 @@ public class AuthServiceImplTest {
     private TokenResponse mockTokenResponse;
     private LoginResponse mockLoginResponse;
 
+    private LogoutDto mockLogoutDto;
+
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
@@ -83,6 +86,11 @@ public class AuthServiceImplTest {
 
         mockLoginResponse = new LoginResponse();
         mockLoginResponse.setUserId(1L);
+
+        mockLogoutDto = new LogoutDto();
+        mockLogoutDto.setAccessToken("mockAccessToken");
+        mockLogoutDto.setIdTokenHint("mockIdTokenHint");
+        mockLogoutDto.setRefreshToken("mockRefreshToken");
     }
 
     @Test
@@ -124,5 +132,51 @@ public class AuthServiceImplTest {
         verify(userRepository).findByUsername(mockLoginDto.getUsername());
         verify(keycloakService).getUserAccessToken(mockLoginDto);
         verify(tokenResponseMapper, never()).tokenResponseToLoginResponse(any(TokenResponse.class));
+    }
+
+    @Test
+    public void testUserLogoutWithTokens() {
+        authService.userLogout(mockLogoutDto);
+
+        // Assert
+        verify(keycloakService).revokeAccessToken(mockLogoutDto.getAccessToken());
+        verify(keycloakService).logoutUser(mockLogoutDto);
+    }
+
+    @Test
+    public void testUserLogoutWithOnlyAccessToken() {
+        mockLogoutDto.setRefreshToken(null);
+
+        // Act
+        authService.userLogout(mockLogoutDto);
+
+        // Assert
+        verify(keycloakService).revokeAccessToken(mockLogoutDto.getAccessToken());
+        verify(keycloakService, never()).logoutUser(any(LogoutDto.class));
+    }
+
+    @Test
+    public void testUserLogoutWithOnlyRefreshToken() {
+        mockLogoutDto.setAccessToken(null);
+
+        // Act
+        authService.userLogout(mockLogoutDto);
+
+        // Assert
+        verify(keycloakService, never()).revokeAccessToken(anyString());
+        verify(keycloakService).logoutUser(mockLogoutDto);
+    }
+
+    @Test
+    public void testUserLogoutWithNoTokens() {
+        mockLogoutDto.setAccessToken(null);
+        mockLogoutDto.setRefreshToken(null);
+
+        // Act
+        authService.userLogout(mockLogoutDto);
+
+        // Assert
+        verify(keycloakService, never()).revokeAccessToken(anyString());
+        verify(keycloakService, never()).logoutUser(any(LogoutDto.class));
     }
 }
