@@ -5,6 +5,7 @@ networks:
 
 volumes:
   db_users:
+  db_accounts:
   keycloak_data:
 
 services:
@@ -143,6 +144,55 @@ services:
       - networth
     volumes:
       - db_users:/var/lib/mysql
+
+  account-service:
+    image: networth/account-service:0.0.1-SNAPSHOT
+    ports:
+      - "8082:8082"
+    networks:
+      - networth
+    healthcheck:
+      test: "curl --fail --silent localhost:8761/actuator/health/readiness | grep UP || exit 1"
+      interval: 20s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    depends_on:
+      - configserver
+      - keycloak
+      - account_db
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+        max_attempts: 3
+        window: 120s
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_APPLICATION_NAME: user-service
+      SPRING_DATASOURCE_URL: jdbc:mysql://account_db:3306/accountdb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_CONFIG_IMPORT: optional:configserver:http://configserver:8071/
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8761/eureka/
+      JAVA_TOOL_OPTIONS: "-javaagent:/app/libs/opentelemetry-javaagent-1.31.0.jar"
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4317
+      OTEL_METRICS_EXPORTER: none
+      OTEL_SERVICE_NAME: "account-service"
+
+  account_db:
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=accountdb
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=password
+    ports:
+      - "3306:3306"
+    networks:
+      - networth
+    volumes:
+      - db_account:/var/lib/mysql
 
   keycloak:
     image: quay.io/keycloak/keycloak:latest
