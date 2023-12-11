@@ -204,6 +204,8 @@ public class KeycloakServiceTest {
         mockResponse = createMockResponse(HttpStatus.CREATED.value());
         when(keycloakFormDataBuilder.createUserRepresentation(mockRegisterDto)).thenReturn(mockUserRepresentationDto);
         when(keycloakClient.createKeycloakUser(any(Map.class), eq(mockUserRepresentationDto))).thenReturn(mockResponse);
+        when(keycloakFormDataBuilder.buildAdminAccessFormData()).thenReturn(mockKeycloakAccessDto);
+        when(keycloakFormClient.getAdminAccessToken(mockKeycloakAccessDto)).thenReturn(mockTokenResponse);
 
         Response response = keycloakService.createUser(mockRegisterDto);
 
@@ -218,6 +220,8 @@ public class KeycloakServiceTest {
         FeignException feignException = FeignException.errorStatus("createKeycloakUser", feignResponse);
         when(keycloakFormDataBuilder.createUserRepresentation(mockRegisterDto)).thenReturn(mockUserRepresentationDto);
         when(keycloakClient.createKeycloakUser(any(Map.class), eq(mockUserRepresentationDto))).thenThrow(feignException);
+        when(keycloakFormDataBuilder.buildAdminAccessFormData()).thenReturn(mockKeycloakAccessDto);
+        when(keycloakFormClient.getAdminAccessToken(mockKeycloakAccessDto)).thenReturn(mockTokenResponse);
 
         assertThrows(AuthenticationServiceException.class, () -> keycloakService.createUser(mockRegisterDto));
 
@@ -228,6 +232,8 @@ public class KeycloakServiceTest {
     public void testCreateUserGeneralException() {
         when(keycloakFormDataBuilder.createUserRepresentation(mockRegisterDto)).thenReturn(mockUserRepresentationDto);
         when(keycloakClient.createKeycloakUser(any(Map.class), eq(mockUserRepresentationDto))).thenThrow(RuntimeException.class);
+        when(keycloakFormDataBuilder.buildAdminAccessFormData()).thenReturn(mockKeycloakAccessDto);
+        when(keycloakFormClient.getAdminAccessToken(mockKeycloakAccessDto)).thenReturn(mockTokenResponse);
 
         assertThrows(UserServiceException.class, () -> keycloakService.createUser(mockRegisterDto));
 
