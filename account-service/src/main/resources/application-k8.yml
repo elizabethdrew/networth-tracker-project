@@ -1,0 +1,19 @@
+spring:
+    cloud:
+        kubernetes:
+            discovery:
+                all-namespaces: true
+            reload:
+                enabled: true
+        discovery:
+            client:
+                health-indicator:
+                    enabled: false
+    datasource:
+        url: jdbc:mysql://account-service-mysql:3306/account-service-db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+        username: admin
+        password: password
+
+eureka:
+    client:
+        enabled: false
