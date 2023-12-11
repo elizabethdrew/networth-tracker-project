@@ -5,7 +5,7 @@ networks:
 
 volumes:
   db_users:
-  db_accounts:
+  db_account:
   keycloak_data:
 
 services:
@@ -188,7 +188,7 @@ services:
       - MYSQL_USER=admin
       - MYSQL_PASSWORD=password
     ports:
-      - "3306:3306"
+      - "3307:3306"
     networks:
       - networth
     volumes:
