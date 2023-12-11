@@ -1,6 +1,5 @@
 package com.networth.userservice.util;
 
-import com.networth.userservice.dto.RegisterDto;
 import com.networth.userservice.exception.InvalidInputException;
 import com.networth.userservice.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
