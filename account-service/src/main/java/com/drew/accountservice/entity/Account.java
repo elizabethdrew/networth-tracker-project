@@ -18,7 +18,7 @@ public class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long accountId;
 
     @Column(name = "keycloak_id", nullable = false)
     private String keycloakId;
@@ -64,19 +64,19 @@ public class Account {
     @Column(name = "notes")
     private String notes;
 
-    public Long getId() {
-        return id;
+    public Long getAccountId() {
+        return accountId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
     }
 
     public String getKeycloakId() {
         return keycloakId;
     }
 
-    public void setKeycloakId(String userId) {
+    public void setKeycloakId(String keycloakId) {
         this.keycloakId = keycloakId;
     }
 

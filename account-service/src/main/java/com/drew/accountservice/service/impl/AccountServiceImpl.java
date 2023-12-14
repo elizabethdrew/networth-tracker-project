@@ -6,6 +6,7 @@ import com.drew.accountservice.entity.Account;
 import com.drew.accountservice.mapper.AccountMapper;
 import com.drew.accountservice.repository.AccountRepository;
 import com.drew.accountservice.service.AccountService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class AccountServiceImpl implements AccountService {
 
@@ -28,6 +30,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountOutputDto createAccount(String keycloakUserId, AccountInputDto accountInputDto) {
+
+        log.info("Keycloak User ID: " + keycloakUserId);
+
         Account newAccount = accountMapper.toEntity(accountInputDto);
 
         newAccount.setDateCreated(LocalDateTime.now());
@@ -53,13 +58,13 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Optional<AccountOutputDto> getAccountByIdAndKeycloakId(Long accountId, String keycloakUserId) {
-        Optional<Account> account = accountRepository.findByIdAndKeycloakId(accountId, keycloakUserId);
+        Optional<Account> account = accountRepository.findByAccountIdAndKeycloakId(accountId, keycloakUserId);
         return account.map(accountMapper::toOutputDto);
     }
 
     @Override
     public Optional<AccountOutputDto> updateAccountByIdAndKeycloakId(Long accountId, String keycloakUserId, AccountInputDto accountInputDto) {
-        return accountRepository.findByIdAndKeycloakId(accountId, keycloakUserId)
+        return accountRepository.findByAccountIdAndKeycloakId(accountId, keycloakUserId)
                 .map(account -> {
                     accountMapper.updateAccountFromInput(accountInputDto, account);
                     account.setDateUpdated(LocalDateTime.now());
@@ -74,7 +79,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public boolean softDeleteAccount(Long accountId, String keycloakUserId) {
-        return accountRepository.findByIdAndKeycloakId(accountId, keycloakUserId)
+        return accountRepository.findByAccountIdAndKeycloakId(accountId, keycloakUserId)
                 .map(account -> {
                     account.setStatus(Account.AccountStatus.ARCHIVED);
                     account.setDateUpdated(LocalDateTime.now());

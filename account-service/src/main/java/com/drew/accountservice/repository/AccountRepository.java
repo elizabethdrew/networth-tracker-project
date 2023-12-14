@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface AccountRepository extends JpaRepository<Account, Long> {
     List<Account> findAllByKeycloakId(String keycloakId);
-    Optional<Account> findByIdAndKeycloakId(Long accountId, String keycloakUserId);
+    Optional<Account> findByAccountIdAndKeycloakId(Long accountId, String keycloakUserId);
 }
