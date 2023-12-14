@@ -14,7 +14,7 @@ spring:
     defer-datasource-initialization: false
     show-sql: true
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
 
 feign:
   client:
