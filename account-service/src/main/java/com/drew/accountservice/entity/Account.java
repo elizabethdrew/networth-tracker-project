@@ -37,13 +37,13 @@ public class Account {
     private BigDecimal creditLimit;
 
     @Column(name = "isa")
-    private Boolean isa;
+    private Boolean isa = false;
 
     @Column(name = "percentage_ownership")
     private Long percentageOwnership;
 
     @Column(name = "fixed_term")
-    private Boolean fixedTerm;
+    private Boolean fixedTerm = false;
 
     @Column(name = "fixed_term_end_date")
     private LocalDateTime fixedTermEndDate;
