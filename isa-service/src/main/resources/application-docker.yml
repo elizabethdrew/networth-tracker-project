@@ -1,0 +1,23 @@
+spring:
+  cloud:
+    kubernetes:
+      discovery:
+        enabled: false
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lowerCaseServiceId: true
+  datasource:
+    url: jdbc:mysql://isa_db:3306/isadb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: admin
+    password: password
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    serviceUrl:
+      defaultZone: http://discovery-service:8761/eureka/
