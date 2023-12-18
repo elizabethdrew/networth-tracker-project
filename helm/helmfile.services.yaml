@@ -17,3 +17,9 @@ releases:
     version: 17.1.1
     values:
       - ./services/user-service/values.yaml
+  - name: account-service
+    namespace: default
+    chart: ./services/account-service
+    version: 17.1.1
+    values:
+      - ./services/account-service/values.yaml
