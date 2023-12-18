@@ -9,10 +9,10 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>user-service</artifactId>
+	<artifactId>account-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>user-service</name>
-	<description>User service for Spring Microservice</description>
+	<name>account-service</name>
+	<description>Account service for Spring Microservice</description>
 
 	<dependencies>
 		<dependency>
@@ -44,10 +44,6 @@
 			<artifactId>mapstruct-processor</artifactId>
 			<version>1.5.3.Final</version>
 			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.liquibase</groupId>
-			<artifactId>liquibase-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
@@ -146,7 +142,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<mainClass>com.networth.userservice.UserServiceApplication</mainClass>
+					<mainClass>com.networth.accountservice.AccountServiceApplication</mainClass>
 					<excludes>
 						<exclude>
 							<groupId>org.projectlombok</groupId>

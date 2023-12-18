@@ -30,6 +30,16 @@ spring:
               args:
                 name: usersCircuitBreaker
             - name: RequestRateLimiter
+        - id: account-service
+          uri: http://account-service:8082
+          predicates:
+            - Path=/api/v1/accounts/**
+          filters:
+            - name: PreserveHostHeader
+            - name: CircuitBreaker
+              args:
+                name: usersCircuitBreaker
+            - name: RequestRateLimiter
 
 server:
   port: 8080

@@ -30,7 +30,6 @@ public class KeycloakService {
 
     private final KeycloakFormClient keycloakFormClient;
     private final KeycloakClient keycloakClient;
-
     private final KeycloakFormDataBuilder keycloakFormDataBuilder;
 
     public KeycloakService(KeycloakFormClient keycloakFormClient, KeycloakClient keycloakClient, KeycloakFormDataBuilder keycloakFormDataBuilder) {
