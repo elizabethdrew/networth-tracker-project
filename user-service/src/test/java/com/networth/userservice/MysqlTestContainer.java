@@ -20,7 +20,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(initializers = DockerMysqlDataSourceInitializer.class)
-public abstract class GlobalTestContainer {
+public abstract class MysqlTestContainer {
 
     @Autowired
     SpringLiquibase liquibase;
@@ -35,7 +35,6 @@ public abstract class GlobalTestContainer {
             .waitingFor(Wait.forListeningPort())
             .withEnv("MYSQL_ROOT_HOST", "%");
 
-
     @BeforeAll
     public static void setUp(){
 
@@ -48,6 +47,7 @@ public abstract class GlobalTestContainer {
 
     @AfterAll
     public static void tearDown(){
+
         container.stop();
     }
 

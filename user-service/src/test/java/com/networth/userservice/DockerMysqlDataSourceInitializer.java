@@ -14,14 +14,23 @@ public class DockerMysqlDataSourceInitializer implements ApplicationContextIniti
     public void initialize(ConfigurableApplicationContext applicationContext) {
         TestPropertySourceUtils.addInlinedPropertiesToEnvironment(
                 applicationContext,
-                "spring.datasource.url=" + GlobalTestContainer.container.getJdbcUrl(),
-                "spring.datasource.username=" + GlobalTestContainer.container.getUsername(),
-                "spring.datasource.password=" + GlobalTestContainer.container.getPassword(),
+                "spring.datasource.url=" + MysqlTestContainer.container.getJdbcUrl(),
+                "spring.datasource.username=" + MysqlTestContainer.container.getUsername(),
+                "spring.datasource.password=" + MysqlTestContainer.container.getPassword(),
                 "server.port=8081",
                 "spring.liquibase.change-log=classpath:/db/changelog/db.changelog-master.yml",
-                "spring.liquibase.contexts=default,test"
+                "spring.liquibase.contexts=default,test",
+                "keycloak.base-uri=http://localhost:8081",
+                "keycloak.logout-redirect-url=http://localhost:8080/contactSupport",
+                "keycloak.keyAdmin.realm=master",
+                "keycloak.keyAdmin.clientId=admin-cli",
+                "keycloak.keyAdmin.username=admin",
+                "keycloak.keyAdmin.password=password",
+                "keycloak.keyUser.realm=networth",
+                "keycloak.keyUser.clientId=apigateway",
+                "keycloak.keyUser.clientSecret=Ow1dayvip5w4BHJeacRzVLHLCfJNCm3W"
         );
 
-        System.out.println("spring.datasource.url=" + GlobalTestContainer.container.getJdbcUrl());
+        System.out.println("spring.datasource.url=" + MysqlTestContainer.container.getJdbcUrl());
     }
 }

@@ -1,11 +1,7 @@
 package com.networth.userservice.util;
 
-import com.networth.userservice.config.properties.KeycloakProperties;
-import com.networth.userservice.dto.KeycloakAccessDto;
-import com.networth.userservice.dto.LoginDto;
-import com.networth.userservice.dto.TokenResponse;
 import com.networth.userservice.exception.InvalidInputException;
-import com.networth.userservice.feign.KeycloakFormClient;
+import com.networth.userservice.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.passay.CharacterRule;
 import org.passay.EnglishCharacterData;
@@ -23,17 +19,14 @@ import java.util.List;
 @Slf4j
 public class HelperUtils {
 
-    private final KeycloakFormClient keycloakFormClient;
+    private final UserRepository userRepository;
 
-    private final KeycloakProperties keycloakProperties;
-    public HelperUtils(KeycloakFormClient keycloakFormClient, KeycloakProperties keycloakProperties) {
-        this.keycloakFormClient = keycloakFormClient;
-        this.keycloakProperties = keycloakProperties;
+    public HelperUtils(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
-
     // Validate Password Against Rules
-    public Boolean validatePassword(String password) {
+    public void validatePassword(String password) {
 
         // Define rules
         List<Rule> rules = new ArrayList<>();
@@ -51,54 +44,22 @@ public class HelperUtils {
             throw new InvalidInputException("Invalid password: " + message);
         }
 
-        return result.isValid();
-
+        log.debug("Password validation passed");
     }
 
-    // Get Keycloak Admin Access Token
-    public String getAdminAccessToken() {
-        log.info("Keycloak Admin Access Flow Started");
-
-        // Create the request form data
-        KeycloakAccessDto formData = new KeycloakAccessDto();
-        formData.setClientId(keycloakProperties.getKeyAdmin().getClientId());
-        formData.setGrantType("password");
-        formData.setUsername(keycloakProperties.getKeyAdmin().getUsername());
-        formData.setPassword(keycloakProperties.getKeyAdmin().getPassword());
-
-        log.info(String.valueOf(formData));
-
-        try {
-            TokenResponse tokenResponse = keycloakFormClient.getAdminAccessToken(formData);
-            log.info("Extracted access token");
-            return tokenResponse.getAccessToken();
-        } catch (Exception e) {
-            log.error("Failed to retrieve access token", e);
-            throw new RuntimeException("Failed to retrieve access token", e);
+    public void validateUsernameUnique(String username) {
+        // Check if username already exists
+        if (userRepository.existsByUsername(username)) {
+            log.warn("Registration failed: Username '{}' is already in use.", username);
+            throw new InvalidInputException("Username already in use: " + username);
         }
     }
 
-    // Get Keycloak User Access Token
-    public TokenResponse getUserAccessToken(LoginDto loginDto) {
-        log.info("Keycloak User Access Flow Started");
-
-        // Create the request form data
-        KeycloakAccessDto formData = new KeycloakAccessDto();
-        formData.setClientId(keycloakProperties.getKeyUser().getClientId());
-        formData.setClientSecret(keycloakProperties.getKeyUser().getClientSecret());
-        formData.setScope("openid email profile");
-        formData.setGrantType("password");
-        formData.setUsername(loginDto.getUsername());
-        formData.setPassword(loginDto.getPassword());
-
-        try {
-            TokenResponse tokenResponse = keycloakFormClient.getUserAccessToken(formData);
-            log.info("Extracted access token");
-            return tokenResponse;
-        } catch (Exception e) {
-            log.error("Failed to retrieve access token", e);
-            throw new RuntimeException("Failed to retrieve access token", e);
+    public void validateEmailUnique(String email) {
+        // Check if email already exists
+        if (userRepository.existsByEmail(email)) {
+            log.warn("Registration failed: Email '{}' is already in use.", email);
+            throw new InvalidInputException("Email already in use: " + email);
         }
     }
-
 }
