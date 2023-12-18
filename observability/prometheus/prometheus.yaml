@@ -11,6 +11,10 @@ scrape_configs:
     metrics_path: '/actuator/prometheus'
     static_configs:
       - targets: [ 'account-service:8082' ]
+  - job_name: 'isa-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'isa-service:8082' ]
   - job_name: 'gatewayserver'
     metrics_path: '/actuator/prometheus'
     static_configs:
