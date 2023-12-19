@@ -3,11 +3,13 @@ package com.drew.accountservice.service.impl;
 import com.drew.accountservice.dto.AccountInputDto;
 import com.drew.accountservice.dto.AccountOutputDto;
 import com.drew.accountservice.entity.Account;
+import com.drew.accountservice.kafka.KafkaSenderService;
 import com.drew.accountservice.mapper.AccountMapper;
 import com.drew.accountservice.repository.AccountRepository;
 import com.drew.accountservice.service.AccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,6 +23,8 @@ public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
     private final AccountMapper accountMapper;
+    @Autowired
+    private KafkaSenderService kafkaSenderService;
 
     @Autowired
     public AccountServiceImpl(AccountRepository accountRepository, AccountMapper accountMapper) {
@@ -42,7 +46,8 @@ public class AccountServiceImpl implements AccountService {
         Account savedAccount = accountRepository.save(newAccount);
 
         if (savedAccount.getIsa()) {
-            // Tell ISA Service If New ISA Account
+            String message = buildIsaAccountMessage(savedAccount);
+            kafkaSenderService.sendKafkaMessage("new-isa-account-topic", message);
         }
 
         return accountMapper.toOutputDto(savedAccount);
@@ -70,12 +75,21 @@ public class AccountServiceImpl implements AccountService {
                     account.setDateUpdated(LocalDateTime.now());
                     Account updatedAccount = accountRepository.save(account);
 
-                    if (updatedAccount.getIsa()) {
-                        // Tell ISA Service If New ISA Account
+                    // Kafka to  ISA Service
+                    String message = buildIsaAccountMessage(updatedAccount);
+                    if (account.getIsa() & !updatedAccount.getIsa()) {
+                        // If account ISA status was true and now false
+                        kafkaSenderService.sendKafkaMessage("remove-isa-account-topic", message);
+                    } else if (!account.getIsa() & updatedAccount.getIsa()) {
+                        // If account ISA status was false and now true
+                        kafkaSenderService.sendKafkaMessage("new-isa-account-topic", message);
                     }
+
+
                     return accountMapper.toOutputDto(updatedAccount);
                 });
     }
+
 
     @Override
     public boolean softDeleteAccount(Long accountId, String keycloakUserId) {
@@ -87,4 +101,9 @@ public class AccountServiceImpl implements AccountService {
                     return true;
                 }).orElse(false);
     }
+
+    private String buildIsaAccountMessage(Account account) {
+        return "Type: " + account.getType() + ", Account Number: " + account.getAccountId();
+    }
+
 }
