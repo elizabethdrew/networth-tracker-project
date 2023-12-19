@@ -244,6 +244,14 @@ services:
     volumes:
       - db_isa:/var/lib/mysql
 
+  message:
+    image: "eazybytes/message:s14"
+    container_name: message-ms
+    environment:
+      SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: "kafka:9092"
+    networks:
+      - networth
+
   kafka:
     image: docker.io/bitnami/kafka:3.5
     ports:
