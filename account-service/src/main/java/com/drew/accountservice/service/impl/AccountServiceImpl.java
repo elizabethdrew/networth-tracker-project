@@ -103,7 +103,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private String buildIsaAccountMessage(Account account) {
-        return "Type: " + account.getType() + ", Account Number: " + account.getAccountId();
+        return "Type: " + account.getType() + ", Account Number: " + account.getAccountId() + ", User: " + account.getKeycloakId();
     }
 
 }
