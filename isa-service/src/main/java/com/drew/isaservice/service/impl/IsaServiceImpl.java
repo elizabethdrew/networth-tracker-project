@@ -77,5 +77,6 @@ public class IsaServiceImpl implements IsaService {
 
         // Save the updated ISA tracker
         isaRepository.save(isaTracker);
+        log.info("Isa Tracker now updated");
     }
 }
