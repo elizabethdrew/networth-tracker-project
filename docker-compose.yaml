@@ -8,6 +8,7 @@ volumes:
   db_account:
   db_isa:
   keycloak_data:
+  kafka_data:
 
 services:
 
@@ -180,6 +181,7 @@ services:
       OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4317
       OTEL_METRICS_EXPORTER: none
       OTEL_SERVICE_NAME: "account-service"
+      SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: "kafka:9092"
 
   account_db:
     image: mysql:8.0
@@ -244,9 +246,8 @@ services:
     volumes:
       - db_isa:/var/lib/mysql
 
-  message:
-    image: "eazybytes/message:s14"
-    container_name: message-ms
+  message-service:
+    image: networth/message-service:0.0.1-SNAPSHOT
     environment:
       SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: "kafka:9092"
     networks:

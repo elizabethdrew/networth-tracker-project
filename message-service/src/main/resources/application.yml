@@ -14,7 +14,7 @@ spring:
       kafka:
         binder:
           brokers:
-            - localhost:9092
+            - kafka:9092
 
 
 server:
@@ -24,7 +24,7 @@ server:
 
 logging:
   level:
-    root: DEBUG
+    root: INFO
   pattern:
     level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
 

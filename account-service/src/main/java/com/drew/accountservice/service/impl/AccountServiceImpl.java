@@ -2,18 +2,15 @@ package com.drew.accountservice.service.impl;
 
 import com.drew.accountservice.dto.AccountInputDto;
 import com.drew.accountservice.dto.AccountOutputDto;
-import com.drew.accountservice.dto.AccountsMsgDto;
+import com.drew.accountservice.dto.AccountMsgDto;
 import com.drew.accountservice.entity.Account;
 import com.drew.accountservice.mapper.AccountMapper;
 import com.drew.accountservice.repository.AccountRepository;
 import com.drew.accountservice.service.AccountService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.common.errors.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.function.StreamBridge;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -58,7 +55,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private void sendCommunication(Account account) {
-        var accountsMsgDto = new AccountsMsgDto(account.getAccountId(), account.getAccountNickname(), account.getKeycloakId());
+        var accountsMsgDto = new AccountMsgDto(account.getAccountId(), account.getAccountNickname(), account.getKeycloakId());
         log.info("Sending Communication request for the details: {}", accountsMsgDto);
         streamBridge.send("sendCommunication-out-0", accountsMsgDto);
     }

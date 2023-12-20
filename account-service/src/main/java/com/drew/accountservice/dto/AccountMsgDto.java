@@ -5,5 +5,5 @@ package com.drew.accountservice.dto;
  * @param accountNickname
  * @param keycloakId
  */
-public record AccountsMsgDto(Long accountId, String accountNickname, String keycloakId ) {
+public record AccountMsgDto(Long accountId, String accountNickname, String keycloakId ) {
 }
