@@ -1,8 +1,8 @@
 package com.drew.accountservice.service.impl;
 
 import com.drew.accountservice.dto.AccountInputDto;
+import com.drew.accountservice.dto.AccountIsaDto;
 import com.drew.accountservice.dto.AccountOutputDto;
-import com.drew.accountservice.dto.AccountMsgDto;
 import com.drew.accountservice.entity.Account;
 import com.drew.accountservice.mapper.AccountMapper;
 import com.drew.accountservice.repository.AccountRepository;
@@ -49,15 +49,15 @@ public class AccountServiceImpl implements AccountService {
         Account savedAccount = accountRepository.save(newAccount);
 
         // Send fake message to message service
-        sendCommunication(savedAccount);
+        sendNewIsaAccount(savedAccount);
 
         return accountMapper.toOutputDto(savedAccount);
     }
 
-    private void sendCommunication(Account account) {
-        var accountsMsgDto = new AccountMsgDto(account.getAccountId(), account.getAccountNickname(), account.getKeycloakId());
-        log.info("Sending Communication request for the details: {}", accountsMsgDto);
-        streamBridge.send("sendCommunication-out-0", accountsMsgDto);
+    private void sendNewIsaAccount(Account account) {
+        var accountIsaDto = new AccountIsaDto(account.getAccountId(), account.getType(), account.getKeycloakId());
+        log.info("Sending to Isa Service - New Isa Account: {}", accountIsaDto);
+        streamBridge.send("sendNewIsaAccount-out-0", accountIsaDto);
     }
 
     @Override

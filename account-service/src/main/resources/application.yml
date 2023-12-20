@@ -16,19 +16,13 @@ spring:
     hibernate:
       ddl-auto: create
   cloud:
-    function:
-      definition: updateCommunication
     stream:
-      bindings:
-        updateCommunication-in-0:
-          destination: communication-sent
-          group: ${spring.application.name}
-        sendCommunication-out-0:
-          destination: send-communication
       kafka:
         binder:
-          brokers:
-            - kafka:9092
+          brokers: kafka:9092
+      bindings:
+        sendNewIsaAccount-out-0:
+          destination: new-isa-account-topic
 
 feign:
   client:

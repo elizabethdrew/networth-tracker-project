@@ -15,20 +15,18 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: create
-#  cloud:
-#    function:
-#      definition: notsure
-#    stream:
-#      bindings:
-#        updateCommunication-in-0:
-#          destination: communication-sent
-#          group: ${spring.application.name}
-#        sendCommunication-out-0:
-#          destination: send-communication
-#      kafka:
-#        binder:
-#          brokers:
-#            - localhost:9092
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: kafka:9092
+      function:
+        definition: addIsaAccount
+      bindings:
+        addIsaAccount-in-0:
+          destination: new-isa-account-topic
+          group: ${spring.application.name}
+
 
 
 feign:
@@ -49,7 +47,7 @@ server:
 
 logging:
   level:
-    root: DEBUG
+    root: INFO
   pattern:
     level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
 
