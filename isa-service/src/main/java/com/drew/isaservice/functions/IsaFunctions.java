@@ -1,6 +1,6 @@
 package com.drew.isaservice.functions;
 
-import com.drew.isaservice.dto.AccountIsaDto;
+import com.drew.commonlibrary.dto.AccountIsaDto;
 import com.drew.isaservice.service.IsaService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;

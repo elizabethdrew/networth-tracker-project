@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import com.drew.commonlibrary.types.AccountType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -177,21 +178,5 @@ public class Account {
         IN_USE,
         ARCHIVED,
         DORMANT
-    }
-
-    public enum AccountType {
-        CASH_ISA,
-        STOCKS_AND_SHARES_ISA,
-        INNOVATIVE_FINANCE_ISA,
-        LIFETIME_ISA,
-        CURRENT_ACCOUNT,
-        SAVINGS_ACCOUNT,
-        CREDIT_CARD,
-        LOAN,
-        PROPERTY,
-        MORTGAGE,
-        INVESTMENTS,
-        PENSION,
-        OTHER
     }
 }

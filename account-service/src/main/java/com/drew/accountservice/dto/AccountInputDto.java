@@ -2,6 +2,7 @@ package com.drew.accountservice.dto;
 
 import com.drew.accountservice.entity.Account;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.drew.commonlibrary.types.AccountType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -12,7 +13,7 @@ public class AccountInputDto {
     private String accountNickname;
 
     @JsonProperty("type")
-    private Account.AccountType type;
+    private AccountType type;
 
     @JsonProperty("currency")
     private String currency;
@@ -46,11 +47,11 @@ public class AccountInputDto {
         this.accountNickname = accountNickname;
     }
 
-    public Account.AccountType getType() {
+    public AccountType getType() {
         return type;
     }
 
-    public void setType(Account.AccountType type) {
+    public void setType(AccountType type) {
         this.type = type;
     }
 

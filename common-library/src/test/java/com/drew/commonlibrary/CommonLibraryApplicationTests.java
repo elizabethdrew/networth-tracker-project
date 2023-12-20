@@ -1,10 +1,10 @@
-package com.drew.gatewayserver;
+package com.drew.commonlibrary;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class GatewayserverApplicationTests {
+class CommonLibraryApplicationTests {
 
 	@Test
 	void contextLoads() {

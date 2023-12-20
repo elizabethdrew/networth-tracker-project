@@ -25,6 +25,7 @@
 		<module>gatewayserver</module>
 		<module>account-service</module>
 		<module>isa-service</module>
+		<module>common-library</module>
 	</modules>
 
 	<properties>

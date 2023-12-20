@@ -1,6 +1,6 @@
 package com.drew.isaservice.service;
 
-import com.drew.isaservice.dto.AccountIsaDto;
+import com.drew.commonlibrary.dto.AccountIsaDto;
 
 public interface IsaService {
 
