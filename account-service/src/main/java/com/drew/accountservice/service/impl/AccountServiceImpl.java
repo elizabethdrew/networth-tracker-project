@@ -2,13 +2,17 @@ package com.drew.accountservice.service.impl;
 
 import com.drew.accountservice.dto.AccountInputDto;
 import com.drew.accountservice.dto.AccountOutputDto;
+import com.drew.accountservice.dto.AccountsMsgDto;
 import com.drew.accountservice.entity.Account;
-import com.drew.accountservice.kafka.KafkaSenderService;
 import com.drew.accountservice.mapper.AccountMapper;
 import com.drew.accountservice.repository.AccountRepository;
 import com.drew.accountservice.service.AccountService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.errors.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -23,13 +27,15 @@ public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
     private final AccountMapper accountMapper;
-    @Autowired
-    private KafkaSenderService kafkaSenderService;
+    private final ObjectMapper objectMapper;
+    private final StreamBridge streamBridge;
 
     @Autowired
-    public AccountServiceImpl(AccountRepository accountRepository, AccountMapper accountMapper) {
+    public AccountServiceImpl(AccountRepository accountRepository, AccountMapper accountMapper, ObjectMapper objectMapper, StreamBridge streamBridge) {
         this.accountRepository = accountRepository;
         this.accountMapper = accountMapper;
+        this.objectMapper = objectMapper;
+        this.streamBridge = streamBridge;
     }
 
     @Override
@@ -45,12 +51,16 @@ public class AccountServiceImpl implements AccountService {
 
         Account savedAccount = accountRepository.save(newAccount);
 
-        if (savedAccount.getIsa()) {
-            String message = buildIsaAccountMessage(savedAccount);
-            kafkaSenderService.sendKafkaMessage("new-isa-account-topic", message);
-        }
+        // Send fake message to message service
+        sendCommunication(savedAccount);
 
         return accountMapper.toOutputDto(savedAccount);
+    }
+
+    private void sendCommunication(Account account) {
+        var accountsMsgDto = new AccountsMsgDto(account.getAccountId(), account.getAccountNickname(), account.getKeycloakId());
+        log.info("Sending Communication request for the details: {}", accountsMsgDto);
+        streamBridge.send("sendCommunication-out-0", accountsMsgDto);
     }
 
     @Override
@@ -75,16 +85,15 @@ public class AccountServiceImpl implements AccountService {
                     account.setDateUpdated(LocalDateTime.now());
                     Account updatedAccount = accountRepository.save(account);
 
+
                     // Kafka to  ISA Service
-                    String message = buildIsaAccountMessage(updatedAccount);
                     if (account.getIsa() & !updatedAccount.getIsa()) {
                         // If account ISA status was true and now false
-                        kafkaSenderService.sendKafkaMessage("remove-isa-account-topic", message);
+
                     } else if (!account.getIsa() & updatedAccount.getIsa()) {
                         // If account ISA status was false and now true
-                        kafkaSenderService.sendKafkaMessage("new-isa-account-topic", message);
-                    }
 
+                    }
 
                     return accountMapper.toOutputDto(updatedAccount);
                 });
@@ -100,10 +109,6 @@ public class AccountServiceImpl implements AccountService {
                     accountRepository.save(account);
                     return true;
                 }).orElse(false);
-    }
-
-    private String buildIsaAccountMessage(Account account) {
-        return "Type: " + account.getType() + ", Account Number: " + account.getAccountId() + ", User: " + account.getKeycloakId();
     }
 
 }

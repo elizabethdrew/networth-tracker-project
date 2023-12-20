@@ -1,4 +1,4 @@
-package com.drew.messageservice.dto;
+package com.drew.accountservice.dto;
 
 /**
  * @param accountId
