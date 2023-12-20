@@ -14,6 +14,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import com.drew.commonlibrary.types.AccountType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -53,7 +54,7 @@ class AccountServiceImplTest {
         BigDecimal creditLimit = BigDecimal.valueOf(5000);
         Boolean isa = true;
         String notes = "Here are some notes";
-        Account.AccountType type = Account.AccountType.SAVINGS_ACCOUNT;
+        AccountType type = AccountType.SAVINGS_ACCOUNT;
         Account.AccountStatus status = Account.AccountStatus.IN_USE;
         LocalDateTime dateOpened = LocalDateTime.parse("2023-06-06T12:00:00");
         Boolean fixedTerm = true;
@@ -65,7 +66,6 @@ class AccountServiceImplTest {
         inputDto.setAccountNickname(accountNickname);
         inputDto.setCurrency(currency);
         inputDto.setCreditLimit(creditLimit);
-        inputDto.setIsa(isa);
         inputDto.setNotes(notes);
         inputDto.setType(type);
         inputDto.setStatus(status);
@@ -79,7 +79,6 @@ class AccountServiceImplTest {
         outputDto.setAccountNickname(accountNickname);
         outputDto.setCurrency(currency);
         outputDto.setCreditLimit(creditLimit);
-        outputDto.setIsa(isa);
         outputDto.setNotes(notes);
         outputDto.setType(type);
         outputDto.setStatus(status);
@@ -105,8 +104,8 @@ class AccountServiceImplTest {
     }
 
     @ParameterizedTest
-    @EnumSource(Account.AccountType.class)
-    void createAccountTestWithDifferentAccountTypes(Account.AccountType accountType) {
+    @EnumSource(AccountType.class)
+    void createAccountTestWithDifferentAccountTypes(AccountType accountType) {
         inputDto.setType(accountType);
         outputDto.setType(accountType);
 
@@ -129,19 +128,6 @@ class AccountServiceImplTest {
         verify(accountRepository).save(accountEntity);
         verify(accountMapper).toOutputDto(accountEntity);
         assertEquals(notes, resultDto.getNotes(), "Notes in output should match input");
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void createAccountTestWithOptionalFields(Boolean isa) {
-        inputDto.setIsa(isa);
-        outputDto.setIsa(isa);
-
-        AccountOutputDto resultDto = accountService.createAccount(keycloakUserId, inputDto);
-
-        verify(accountRepository).save(accountEntity);
-        verify(accountMapper).toOutputDto(accountEntity);
-        assertEquals(isa, resultDto.getIsa(), "ISA in output should match input");
     }
 
     @ParameterizedTest

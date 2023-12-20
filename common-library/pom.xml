@@ -9,21 +9,20 @@
 	</parent>
 
 	<artifactId>common-library</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<name>common-library</name>
 	<description>Common Library For Networth Project</description>
-
-	<dependencies>
-
-	</dependencies>
+	<packaging>jar</packaging>
 
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.2.0</version>
 			</plugin>
 		</plugins>
 	</build>
 
+
 </project>
+
