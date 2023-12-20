@@ -36,9 +36,6 @@ public class Account {
     @Column(name = "credit_limit")
     private BigDecimal creditLimit;
 
-    @Column(name = "isa")
-    private Boolean isa = false;
-
     @Column(name = "percentage_ownership")
     private Long percentageOwnership;
 
@@ -174,14 +171,6 @@ public class Account {
 
     public void setNotes(String notes) {
         this.notes = notes;
-    }
-
-    public Boolean getIsa() {
-        return isa;
-    }
-
-    public void setIsa(Boolean isa) {
-        this.isa = isa;
     }
 
     public enum AccountStatus {

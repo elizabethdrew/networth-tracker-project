@@ -20,9 +20,6 @@ public class AccountInputDto {
     @JsonProperty("credit_limit")
     private BigDecimal creditLimit;
 
-    @JsonProperty("isa")
-    private Boolean isa;
-
     @JsonProperty("percentage_ownership")
     private Long percentageOwnership;
 
@@ -122,11 +119,4 @@ public class AccountInputDto {
         this.notes = notes;
     }
 
-    public Boolean getIsa() {
-        return isa;
-    }
-
-    public void setIsa(Boolean isa) {
-        this.isa = isa;
-    }
 }

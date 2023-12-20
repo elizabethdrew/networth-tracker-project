@@ -48,16 +48,21 @@ public class AccountServiceImpl implements AccountService {
 
         Account savedAccount = accountRepository.save(newAccount);
 
-        // Send fake message to message service
-        sendNewIsaAccount(savedAccount);
+        // If ISA account, tell ISA Service
+        if (savedAccount.getType().toString().contains("ISA")) {
+            log.info("New account is an ISA");
+            sendToIsaAccount("sendNewIsaAccount-out-0", savedAccount);
+        } else {
+            log.info("New account is not an ISA");
+        }
 
         return accountMapper.toOutputDto(savedAccount);
     }
 
-    private void sendNewIsaAccount(Account account) {
+    private void sendToIsaAccount(String topic, Account account) {
         var accountIsaDto = new AccountIsaDto(account.getAccountId(), account.getType(), account.getKeycloakId());
         log.info("Sending to Isa Service - New Isa Account: {}", accountIsaDto);
-        streamBridge.send("sendNewIsaAccount-out-0", accountIsaDto);
+        streamBridge.send(topic, accountIsaDto);
     }
 
     @Override
@@ -81,16 +86,6 @@ public class AccountServiceImpl implements AccountService {
                     accountMapper.updateAccountFromInput(accountInputDto, account);
                     account.setDateUpdated(LocalDateTime.now());
                     Account updatedAccount = accountRepository.save(account);
-
-
-                    // Kafka to  ISA Service
-                    if (account.getIsa() & !updatedAccount.getIsa()) {
-                        // If account ISA status was true and now false
-
-                    } else if (!account.getIsa() & updatedAccount.getIsa()) {
-                        // If account ISA status was false and now true
-
-                    }
 
                     return accountMapper.toOutputDto(updatedAccount);
                 });
