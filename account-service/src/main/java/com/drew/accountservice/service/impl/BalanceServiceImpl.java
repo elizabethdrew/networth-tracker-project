@@ -81,11 +81,7 @@ public class BalanceServiceImpl implements BalanceService {
         // If ISA account, tell ISA Service
         if (account.getType().toString().contains("ISA")) {
             log.info("New balance is ISA");
-            KafkaBalanceDto kafkaBalanceDto = balanceMapper.toKafkaBalanceDto(savedBalance);
-            kafkaBalanceDto.setAccountId(accountId);
-            kafkaBalanceDto.setKeycloakId(keycloakUserId);
-            kafkaBalanceDto.setAccountType(account.getType());
-            kafkaService.newBalanceKafka("sendNewBalance-out-0", kafkaBalanceDto);
+            kafkaService.newBalanceKafka("sendNewBalance-out-0", savedBalance, keycloakUserId);
         } else {
             log.info("New balance is not ISA");
         }

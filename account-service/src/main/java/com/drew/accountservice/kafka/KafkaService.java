@@ -1,10 +1,12 @@
 package com.drew.accountservice.kafka;
 
 import com.drew.accountservice.entity.Account;
+import com.drew.accountservice.entity.Balance;
 import com.drew.commonlibrary.dto.AccountIsaDto;
 import com.drew.commonlibrary.dto.KafkaBalanceDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.function.StreamBridge;
+
 
 @Slf4j
 public class KafkaService {
@@ -20,7 +22,15 @@ public class KafkaService {
         streamBridge.send(topic, accountIsaDto);
     }
 
-    public void newBalanceKafka(String topic, KafkaBalanceDto kafkaBalanceDto) {
+    public void newBalanceKafka(String topic, Balance balance, String keycloakId) {
+        var kafkaBalanceDto = new KafkaBalanceDto(
+                balance.getAccount().getAccountId(),
+                keycloakId,
+                balance.getAccount().getType(),
+                balance.getBalance(),
+                balance.getDepositValue(),
+                balance.getWithdrawalValue()
+        );
         log.info("Alerting isa service about balance update: " + kafkaBalanceDto);
         streamBridge.send(topic, kafkaBalanceDto);
 

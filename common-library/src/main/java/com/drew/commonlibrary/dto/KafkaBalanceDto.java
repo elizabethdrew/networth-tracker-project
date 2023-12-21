@@ -9,10 +9,6 @@ public record KafkaBalanceDto (
     AccountType accountType,
     BigDecimal currentBalance,
     BigDecimal depositValue,
-    BigDecimal withdrawalValue,
-    BigDecimal interestValue,
-    BigDecimal feesValue,
-    BigDecimal bonusValue,
-    BigDecimal growthValue ) {
+    BigDecimal withdrawalValue ) {
 
 }
