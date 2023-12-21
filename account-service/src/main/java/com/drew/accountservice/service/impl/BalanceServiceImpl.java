@@ -11,7 +11,6 @@ import com.drew.accountservice.mapper.BalanceMapper;
 import com.drew.accountservice.repository.AccountRepository;
 import com.drew.accountservice.repository.BalanceRepository;
 import com.drew.accountservice.service.BalanceService;
-import com.drew.commonlibrary.dto.KafkaBalanceDto;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
