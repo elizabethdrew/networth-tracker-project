@@ -15,10 +15,6 @@ scrape_configs:
     metrics_path: '/actuator/prometheus'
     static_configs:
       - targets: [ 'isa-service:8083' ]
-  - job_name: 'message-service'
-    metrics_path: '/actuator/prometheus'
-    static_configs:
-      - targets: [ 'message-service:8084' ]
   - job_name: 'gatewayserver'
     metrics_path: '/actuator/prometheus'
     static_configs:
@@ -35,3 +31,7 @@ scrape_configs:
     metrics_path: '/actuator/prometheus'
     static_configs:
       - targets: [ 'keycloak:8080' ]
+  - job_name: 'kafka'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'kafka:9092' ]
