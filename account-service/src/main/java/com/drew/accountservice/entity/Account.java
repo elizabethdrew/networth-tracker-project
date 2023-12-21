@@ -1,5 +1,6 @@
 package com.drew.accountservice.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -7,11 +8,16 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import com.drew.commonlibrary.types.AccountType;
+import jakarta.persistence.Transient;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 @Entity
 @Table(name = "account")
@@ -61,6 +67,17 @@ public class Account {
 
     @Column(name = "notes")
     private String notes;
+
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Balance> balances = new ArrayList<>();
+
+    @Transient
+    public BigDecimal getLatestBalance() {
+        return balances.stream()
+                .max(Comparator.comparing(Balance::getReconcileDate))
+                .map(Balance::getBalance)
+                .orElse(BigDecimal.ZERO);
+    }
 
     public Long getAccountId() {
         return accountId;
@@ -172,6 +189,14 @@ public class Account {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public List<Balance> getBalances() {
+        return balances;
+    }
+
+    public void setBalances(List<Balance> balances) {
+        this.balances = balances;
     }
 
     public enum AccountStatus {

@@ -23,6 +23,8 @@ spring:
       bindings:
         sendNewIsaAccount-out-0:
           destination: new-isa-account-topic
+        sendNewBalance-out-0:
+          destination: new-balance-topic
 
 feign:
   client:

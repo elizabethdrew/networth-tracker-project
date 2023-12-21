@@ -4,15 +4,14 @@ import com.drew.accountservice.dto.AccountInputDto;
 import com.drew.accountservice.dto.AccountOutputDto;
 import com.drew.accountservice.dto.AccountUpdateDto;
 import com.drew.accountservice.entity.Account;
+import com.drew.accountservice.kafka.KafkaService;
 import com.drew.accountservice.mapper.AccountMapper;
 import com.drew.accountservice.repository.AccountRepository;
 import com.drew.accountservice.service.AccountService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
-import com.drew.commonlibrary.dto.AccountIsaDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,15 +24,14 @@ public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
     private final AccountMapper accountMapper;
-    private final ObjectMapper objectMapper;
-    private final StreamBridge streamBridge;
+    private final KafkaService kafkaService;
+
 
     @Autowired
-    public AccountServiceImpl(AccountRepository accountRepository, AccountMapper accountMapper, ObjectMapper objectMapper, StreamBridge streamBridge) {
+    public AccountServiceImpl(AccountRepository accountRepository, AccountMapper accountMapper, KafkaService kafkaService) {
         this.accountRepository = accountRepository;
         this.accountMapper = accountMapper;
-        this.objectMapper = objectMapper;
-        this.streamBridge = streamBridge;
+        this.kafkaService = kafkaService;
     }
 
     @Override
@@ -52,7 +50,7 @@ public class AccountServiceImpl implements AccountService {
         // If ISA account, tell ISA Service
         if (savedAccount.getType().toString().contains("ISA")) {
             log.info("New account is an ISA");
-            sendToIsaAccount("sendNewIsaAccount-out-0", savedAccount);
+            kafkaService.newAccountKafka("sendNewIsaAccount-out-0", savedAccount);
         } else {
             log.info("New account is not an ISA");
         }
@@ -60,11 +58,7 @@ public class AccountServiceImpl implements AccountService {
         return accountMapper.toOutputDto(savedAccount);
     }
 
-    private void sendToIsaAccount(String topic, Account account) {
-        var accountIsaDto = new AccountIsaDto(account.getAccountId(), account.getType(), account.getKeycloakId());
-        log.info("Sending to Isa Service - New Isa Account: {}", accountIsaDto);
-        streamBridge.send(topic, accountIsaDto);
-    }
+
 
     @Override
     public List<AccountOutputDto> getUserAccounts(String keycloakUserId) {
