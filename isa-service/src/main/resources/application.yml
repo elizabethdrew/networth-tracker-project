@@ -26,6 +26,9 @@ spring:
         addIsaAccount-in-0:
           destination: new-isa-account-topic
           group: ${spring.application.name}
+        addIsaBalance-in-0:
+          destination: new-balance-topic
+          group: ${spring.application.name}
 
 
 

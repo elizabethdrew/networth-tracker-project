@@ -1,5 +1,6 @@
 package com.drew.isaservice.entity;
 
+import com.drew.commonlibrary.types.TaxYear;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -28,11 +29,14 @@ public class Isa {
     @Column(name = "tax_year_max_isa_allowance")
     private BigDecimal taxYearMaxIsaAllowance;
 
+    @Column(name = "tax_year_max_lisa_allowance")
+    private BigDecimal taxYearMaxLisaAllowance;
+
     @Column(name = "cash_isa_account_id")
     private Long cashIsaAccountId;
 
     @Column(name = "cash_isa_paid_in_total")
-    private BigDecimal cashIsaPainInTotal;
+    private BigDecimal cashIsaPaidInTotal;
 
     @Column(name = "cash_isa_withdrawn_total")
     private BigDecimal cashIsaWithdrawnTotal;
@@ -44,7 +48,7 @@ public class Isa {
     private Long stocksSharesIsaAccountId;
 
     @Column(name = "stocks_shares_isa_paid_in_total")
-    private BigDecimal stocksSharesIsaPainInTotal;
+    private BigDecimal stocksSharesIsaPaidInTotal;
 
     @Column(name = "stocks_shares_isa_withdrawn_total")
     private BigDecimal stocksSharesIsaWithdrawnTotal;
@@ -56,7 +60,7 @@ public class Isa {
     private Long innovativeFinanceIsaAccountId;
 
     @Column(name = "innovative_finance_isa_paid_in_total")
-    private BigDecimal innovativeFinanceIsaPainInTotal;
+    private BigDecimal innovativeFinanceIsaPaidInTotal;
 
     @Column(name = "innovative_finance_isa_withdrawn_total")
     private BigDecimal innovativeFinanceIsaWithdrawnTotal;
@@ -68,7 +72,7 @@ public class Isa {
     private Long lifetimeIsaAccountId;
 
     @Column(name = "lifetime_isa_paid_in_total")
-    private BigDecimal lifetimeIsaPainInTotal;
+    private BigDecimal lifetimeIsaPaidInTotal;
 
     @Column(name = "lifetime_isa_withdrawn_total")
     private BigDecimal lifetimeIsaWithdrawnTotal;
@@ -85,23 +89,8 @@ public class Isa {
     @Column(name = "tax_year_balance")
     private BigDecimal taxYearBalance;
 
-    public enum TaxYear {
-        YEAR_2020_2021("2020-2021"),
-        YEAR_2021_2022("2021-2022"),
-        YEAR_2022_2023("2022-2023"),
-        YEAR_2023_2024("2023-2024"),
-        YEAR_2024_2025("2024-2025");
-
-        private final String yearString;
-
-        TaxYear(String yearString) {
-            this.yearString = yearString;
-        }
-
-        @Override
-        public String toString() {
-            return this.yearString;
-        }
+    public void setCashIsaBalance(BigDecimal cashIsaBalance) {
+        this.cashIsaBalance = cashIsaBalance;
     }
 
     public Long getId() {
@@ -144,12 +133,12 @@ public class Isa {
         this.cashIsaAccountId = cashIsaAccountId;
     }
 
-    public BigDecimal getCashIsaPainInTotal() {
-        return cashIsaPainInTotal;
+    public BigDecimal getCashIsaPaidInTotal() {
+        return cashIsaPaidInTotal;
     }
 
-    public void setCashIsaPainInTotal(BigDecimal cashIsaPainInTotal) {
-        this.cashIsaPainInTotal = cashIsaPainInTotal;
+    public void setCashIsaPaidInTotal(BigDecimal cashIsaPaidInTotal) {
+        this.cashIsaPaidInTotal = cashIsaPaidInTotal;
     }
 
     public BigDecimal getCashIsaWithdrawnTotal() {
@@ -164,9 +153,6 @@ public class Isa {
         return cashIsaBalance;
     }
 
-    public void setCashIsaBalance(BigDecimal cashIsaBalance) {
-        this.cashIsaBalance = cashIsaBalance;
-    }
 
     public Long getStocksSharesIsaAccountId() {
         return stocksSharesIsaAccountId;
@@ -176,12 +162,12 @@ public class Isa {
         this.stocksSharesIsaAccountId = stocksSharesIsaAccountId;
     }
 
-    public BigDecimal getStocksSharesIsaPainInTotal() {
-        return stocksSharesIsaPainInTotal;
+    public BigDecimal getStocksSharesIsaPaidInTotal() {
+        return stocksSharesIsaPaidInTotal;
     }
 
-    public void setStocksSharesIsaPainInTotal(BigDecimal stocksSharesIsaPainInTotal) {
-        this.stocksSharesIsaPainInTotal = stocksSharesIsaPainInTotal;
+    public void setStocksSharesIsaPaidInTotal(BigDecimal stocksSharesIsaPaidInTotal) {
+        this.stocksSharesIsaPaidInTotal = stocksSharesIsaPaidInTotal;
     }
 
     public BigDecimal getStocksSharesIsaWithdrawnTotal() {
@@ -208,12 +194,12 @@ public class Isa {
         this.innovativeFinanceIsaAccountId = innovativeFinanceIsaAccountId;
     }
 
-    public BigDecimal getInnovativeFinanceIsaPainInTotal() {
-        return innovativeFinanceIsaPainInTotal;
+    public BigDecimal getInnovativeFinanceIsaPaidInTotal() {
+        return innovativeFinanceIsaPaidInTotal;
     }
 
-    public void setInnovativeFinanceIsaPainInTotal(BigDecimal innovativeFinanceIsaPainInTotal) {
-        this.innovativeFinanceIsaPainInTotal = innovativeFinanceIsaPainInTotal;
+    public void setInnovativeFinanceIsaPaidInTotal(BigDecimal innovativeFinanceIsaPaidInTotal) {
+        this.innovativeFinanceIsaPaidInTotal = innovativeFinanceIsaPaidInTotal;
     }
 
     public BigDecimal getInnovativeFinanceIsaWithdrawnTotal() {
@@ -240,12 +226,12 @@ public class Isa {
         this.lifetimeIsaAccountId = lifetimeIsaAccountId;
     }
 
-    public BigDecimal getLifetimeIsaPainInTotal() {
-        return lifetimeIsaPainInTotal;
+    public BigDecimal getLifetimeIsaPaidInTotal() {
+        return lifetimeIsaPaidInTotal;
     }
 
-    public void setLifetimeIsaPainInTotal(BigDecimal lifetimeIsaPainInTotal) {
-        this.lifetimeIsaPainInTotal = lifetimeIsaPainInTotal;
+    public void setLifetimeIsaPaidInTotal(BigDecimal lifetimeIsaPaidInTotal) {
+        this.lifetimeIsaPaidInTotal = lifetimeIsaPaidInTotal;
     }
 
     public BigDecimal getLifetimeIsaWithdrawnTotal() {
@@ -289,4 +275,11 @@ public class Isa {
     }
 
 
+    public BigDecimal getTaxYearMaxLisaAllowance() {
+        return taxYearMaxLisaAllowance;
+    }
+
+    public void setTaxYearMaxLisaAllowance(BigDecimal taxYearMaxLisaAllowance) {
+        this.taxYearMaxLisaAllowance = taxYearMaxLisaAllowance;
+    }
 }

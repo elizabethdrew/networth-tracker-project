@@ -2,6 +2,7 @@ package com.drew.accountservice.controller;
 
 import com.drew.accountservice.dto.BalanceAllocationDto;
 import com.drew.accountservice.dto.BalanceHistoryDto;
+import com.drew.accountservice.entity.Balance;
 import com.drew.accountservice.exception.AccountNotFoundException;
 import com.drew.accountservice.exception.InvalidAllocationException;
 import com.drew.accountservice.service.BalanceService;
@@ -47,7 +48,7 @@ public class BalanceController {
                                            @PathVariable Long accountId,
                                            @RequestBody BalanceAllocationDto balanceAllocationDto) {
         try {
-            KafkaBalanceDto newBalance = balanceService.addNewBalance(accountId, keycloakUserId, balanceAllocationDto);
+            Balance newBalance = balanceService.addNewBalance(accountId, keycloakUserId, balanceAllocationDto);
             return ResponseEntity.ok(newBalance);
         } catch (AccountNotFoundException | InvalidAllocationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

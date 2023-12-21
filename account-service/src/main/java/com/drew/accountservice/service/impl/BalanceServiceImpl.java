@@ -61,7 +61,7 @@ public class BalanceServiceImpl implements BalanceService {
 
     @Override
     @Transactional
-    public KafkaBalanceDto addNewBalance(Long accountId, String keycloakUserId, BalanceAllocationDto newAllocation) {
+    public Balance addNewBalance(Long accountId, String keycloakUserId, BalanceAllocationDto newAllocation) {
 
         Account account = accountRepository.findByAccountIdAndKeycloakId(accountId, keycloakUserId)
                 .orElseThrow(() -> new AccountNotFoundException("Account not found or does not belong to user"));
@@ -75,14 +75,22 @@ public class BalanceServiceImpl implements BalanceService {
         Balance newBalance = balanceMapper.toBalanceFromInput(newAllocation);
         newBalance.setDifferenceFromLast(difference);
         newBalance.setReconcileDate(LocalDate.now());
+        newBalance.setAccount(account);
         Balance savedBalance = balanceRepository.save(newBalance);
 
-        // Notify account and isa services (via kafka)
-        KafkaBalanceDto kafkaBalanceDto = balanceMapper.toKafkaBalanceDto(savedBalance);
-        kafkaBalanceDto.setAccountId(accountId);
-        kafkaService.newBalanceKafka("sendNewBalance-out-0", kafkaBalanceDto);
+        // If ISA account, tell ISA Service
+        if (account.getType().toString().contains("ISA")) {
+            log.info("New balance is ISA");
+            KafkaBalanceDto kafkaBalanceDto = balanceMapper.toKafkaBalanceDto(savedBalance);
+            kafkaBalanceDto.setAccountId(accountId);
+            kafkaBalanceDto.setKeycloakId(keycloakUserId);
+            kafkaBalanceDto.setAccountType(account.getType());
+            kafkaService.newBalanceKafka("sendNewBalance-out-0", kafkaBalanceDto);
+        } else {
+            log.info("New balance is not ISA");
+        }
 
-        return kafkaBalanceDto;
+        return savedBalance;
     }
 
     private BigDecimal calculateDifference(BigDecimal lastBalance, BigDecimal currentBalance) {
