@@ -1,0 +1,47 @@
+global: {}
+
+app:
+  name: isa-service
+  label: isa-service
+  deploymentName: isa-service-deployment
+  serviceName: isa-service
+  configMapName: isa-service-configmap
+  activeProfile: k8
+  replicaCount: 1
+
+settings:
+  enabledFeatures:
+    name: true
+    profile: true
+    mysql: true
+    configClient: true
+    configServer: false
+    discovery: true
+    securityServer: false
+    otel: true
+    kafka: true
+
+image:
+  repository: networth/isa-service
+  tag: 0.0.1-SNAPSHOT
+
+service:
+  type: ClusterIP
+  port: 8083
+  targetPort: 8083
+  containerPort: 8083
+
+mysql:
+  databaseUser: admin
+  databasePassword: password
+  replicas: 1
+  image: mysql:8.0
+  service:
+    type: ClusterIP
+    port: 3306
+    protocol: TCP
+  primary:
+    persistence:
+      enabled: true
+      accessModes: ["ReadWriteOnce"]
+      size: 8Gi

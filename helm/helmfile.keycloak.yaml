@@ -1,0 +1,7 @@
+releases:
+  - name: keycloak
+    namespace: default
+    chart: ./tools/keycloak
+    version: 17.1.1
+    values:
+      - ./tools/keycloak/values.yaml
