@@ -2,6 +2,7 @@ package com.drew.accountservice.service.impl;
 
 import com.drew.accountservice.dto.AccountInputDto;
 import com.drew.accountservice.dto.AccountOutputDto;
+import com.drew.accountservice.dto.AccountUpdateDto;
 import com.drew.accountservice.entity.Account;
 import com.drew.accountservice.mapper.AccountMapper;
 import com.drew.accountservice.repository.AccountRepository;
@@ -80,10 +81,10 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Optional<AccountOutputDto> updateAccountByIdAndKeycloakId(Long accountId, String keycloakUserId, AccountInputDto accountInputDto) {
+    public Optional<AccountOutputDto> updateAccountByIdAndKeycloakId(Long accountId, String keycloakUserId, AccountUpdateDto accountUpdateDto) {
         return accountRepository.findByAccountIdAndKeycloakId(accountId, keycloakUserId)
                 .map(account -> {
-                    accountMapper.updateAccountFromInput(accountInputDto, account);
+                    accountMapper.updateAccount(accountUpdateDto, account);
                     account.setDateUpdated(LocalDateTime.now());
                     Account updatedAccount = accountRepository.save(account);
 

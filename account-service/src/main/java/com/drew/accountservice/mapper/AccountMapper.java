@@ -2,6 +2,7 @@ package com.drew.accountservice.mapper;
 
 import com.drew.accountservice.dto.AccountInputDto;
 import com.drew.accountservice.dto.AccountOutputDto;
+import com.drew.accountservice.dto.AccountUpdateDto;
 import com.drew.accountservice.entity.Account;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
@@ -13,5 +14,5 @@ public interface AccountMapper {
 
     AccountOutputDto toOutputDto(Account account);
 
-    void updateAccountFromInput(AccountInputDto input, @MappingTarget Account account);
+    void updateAccount(AccountUpdateDto input, @MappingTarget Account account);
 }

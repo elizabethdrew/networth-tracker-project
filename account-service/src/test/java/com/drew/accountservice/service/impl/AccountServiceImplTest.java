@@ -2,6 +2,7 @@ package com.drew.accountservice.service.impl;
 
 import com.drew.accountservice.dto.AccountInputDto;
 import com.drew.accountservice.dto.AccountOutputDto;
+import com.drew.accountservice.dto.AccountUpdateDto;
 import com.drew.accountservice.entity.Account;
 import com.drew.accountservice.mapper.AccountMapper;
 import com.drew.accountservice.repository.AccountRepository;
@@ -37,6 +38,8 @@ class AccountServiceImplTest {
     private AccountInputDto inputDto;
     private Account accountEntity;
     private AccountOutputDto outputDto;
+
+    private AccountUpdateDto updateDto;
     private String keycloakUserId;
 
     @BeforeEach
@@ -47,6 +50,7 @@ class AccountServiceImplTest {
         accountEntity = new Account();
         inputDto = new AccountInputDto();
         outputDto = new AccountOutputDto();
+        updateDto = new AccountUpdateDto();
 
         keycloakUserId = "user123";
         String accountNickname = "Big Savings";
@@ -73,6 +77,12 @@ class AccountServiceImplTest {
         inputDto.setFixedTerm(fixedTerm);
         inputDto.setFixedTermEndDate(fixedTermEnd);
         inputDto.setPercentageOwnership(percentageOwnership);
+
+        updateDto.setAccountNickname(accountNickname);
+        updateDto.setCreditLimit(creditLimit);
+        updateDto.setNotes(notes);
+        updateDto.setStatus(status);
+        updateDto.setDateOpened(dateOpened);
 
         outputDto = new AccountOutputDto();
         outputDto.setAccountId(1L);
