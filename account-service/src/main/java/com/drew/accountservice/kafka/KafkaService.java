@@ -6,9 +6,11 @@ import com.drew.commonlibrary.dto.AccountIsaDto;
 import com.drew.commonlibrary.dto.KafkaBalanceDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.stereotype.Component;
 
 
 @Slf4j
+@Component
 public class KafkaService {
     private final StreamBridge streamBridge;
 

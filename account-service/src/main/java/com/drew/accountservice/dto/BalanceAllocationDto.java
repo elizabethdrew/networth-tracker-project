@@ -1,24 +1,26 @@
 package com.drew.accountservice.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.math.BigDecimal;
 
 public class BalanceAllocationDto {
+    @JsonProperty("balance")
+    private BigDecimal balance = BigDecimal.ZERO;
+    @JsonProperty("deposit_value")
+    private BigDecimal depositValue = BigDecimal.ZERO;
+    @JsonProperty("withdrawal_value")
+    private BigDecimal withdrawalValue = BigDecimal.ZERO;
+    @JsonProperty("interest_value")
+    private BigDecimal interestValue = BigDecimal.ZERO;
+    @JsonProperty("fees_value")
+    private BigDecimal feesValue = BigDecimal.ZERO;
+    @JsonProperty("bonus_value")
+    private BigDecimal bonusValue = BigDecimal.ZERO;
+    @JsonProperty("growth_value")
+    private BigDecimal growthValue = BigDecimal.ZERO;
 
-    private BigDecimal currentBalance;
-    private BigDecimal depositValue;
-    private BigDecimal withdrawalValue;
-    private BigDecimal interestValue;
-    private BigDecimal feesValue;
-    private BigDecimal bonusValue;
-    private BigDecimal growthValue;
 
-    public BigDecimal getCurrentBalance() {
-        return currentBalance;
-    }
-
-    public void setCurrentBalance(BigDecimal currentBalance) {
-        this.currentBalance = currentBalance;
-    }
 
     public BigDecimal getDepositValue() {
         return depositValue;
@@ -32,7 +34,7 @@ public class BalanceAllocationDto {
         return withdrawalValue;
     }
 
-    public void setWithdrawalValue(BigDecimal withdrawlValue) {
+    public void setWithdrawalValue(BigDecimal withdrawalValue) {
         this.withdrawalValue = withdrawalValue;
     }
 
@@ -66,6 +68,14 @@ public class BalanceAllocationDto {
 
     public void setGrowthValue(BigDecimal growthValue) {
         this.growthValue = growthValue;
+    }
+
+    public BigDecimal getBalance() {
+        return balance;
+    }
+
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
     }
 }
 

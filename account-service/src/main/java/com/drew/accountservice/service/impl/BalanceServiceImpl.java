@@ -62,12 +62,24 @@ public class BalanceServiceImpl implements BalanceService {
     @Transactional
     public Balance addNewBalance(Long accountId, String keycloakUserId, BalanceAllocationDto newAllocation) {
 
+        log.info("Allocation: " + newAllocation.toString());
+
+        log.info("Account Id: " + String.valueOf(accountId));
+
+        log.info("Keycloak Id: " + keycloakUserId);
+
         Account account = accountRepository.findByAccountIdAndKeycloakId(accountId, keycloakUserId)
                 .orElseThrow(() -> new AccountNotFoundException("Account not found or does not belong to user"));
 
+        log.info("Account: " + String.valueOf(account));
+
         BigDecimal lastBalance = account.getLatestBalance();
 
-        BigDecimal difference = calculateDifference(lastBalance, newAllocation.getCurrentBalance());
+        log.info("Last Balance: " + String.valueOf(lastBalance));
+
+        BigDecimal difference = calculateDifference(lastBalance, newAllocation.getBalance());
+
+        log.info("Difference: " + String.valueOf(difference));
 
         validateAllocations(difference, newAllocation);
 
@@ -76,6 +88,8 @@ public class BalanceServiceImpl implements BalanceService {
         newBalance.setReconcileDate(LocalDate.now());
         newBalance.setAccount(account);
         Balance savedBalance = balanceRepository.save(newBalance);
+
+        log.info("Saved Balance: " + String.valueOf(savedBalance));
 
         // If ISA account, tell ISA Service
         if (account.getType().toString().contains("ISA")) {
@@ -89,22 +103,41 @@ public class BalanceServiceImpl implements BalanceService {
     }
 
     private BigDecimal calculateDifference(BigDecimal lastBalance, BigDecimal currentBalance) {
+        log.info("Calculating Difference");
         return Optional.ofNullable(currentBalance)
                 .orElse(BigDecimal.ZERO)
                 .subtract(Optional.ofNullable(lastBalance).orElse(BigDecimal.ZERO));
     }
 
     private void validateAllocations(BigDecimal difference, BalanceAllocationDto allocation) {
-        BigDecimal totalAllocations = allocation.getDepositValue()
-                .add(allocation.getInterestValue())
-                .add(allocation.getBonusValue())
-                .add(allocation.getGrowthValue())
-                .subtract(allocation.getWithdrawalValue())
-                .subtract(allocation.getFeesValue());
+        log.info("Validating Allocation");
+
+        BigDecimal depositValue = Optional.ofNullable(allocation.getDepositValue()).orElse(BigDecimal.ZERO);
+        log.info("Deposit Value: " + depositValue);
+        BigDecimal withdrawalValue = Optional.ofNullable(allocation.getWithdrawalValue()).orElse(BigDecimal.ZERO);
+        log.info("Withdrawal Value: " + withdrawalValue);
+        BigDecimal interestValue = Optional.ofNullable(allocation.getInterestValue()).orElse(BigDecimal.ZERO);
+        log.info("Interest Value: " + interestValue);
+        BigDecimal feesValue = Optional.ofNullable(allocation.getFeesValue()).orElse(BigDecimal.ZERO);
+        log.info("Fees Value: " + feesValue);
+        BigDecimal bonusValue = Optional.ofNullable(allocation.getBonusValue()).orElse(BigDecimal.ZERO);
+        log.info("Bonus Value: " + bonusValue);
+        BigDecimal growthValue = Optional.ofNullable(allocation.getGrowthValue()).orElse(BigDecimal.ZERO);
+        log.info("Growth Value: " + growthValue);
+
+        BigDecimal totalAllocations = depositValue
+                .add(interestValue)
+                .add(bonusValue)
+                .add(growthValue)
+                .subtract(withdrawalValue)
+                .subtract(feesValue);
+
+        log.info("Allocation Value: " + totalAllocations);
 
         if (difference.compareTo(totalAllocations) != 0) {
             throw new InvalidAllocationException("Allocation amounts do not match expected total value");
         }
     }
+
 }
 
