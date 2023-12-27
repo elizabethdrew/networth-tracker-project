@@ -43,7 +43,11 @@ public class BalanceServiceImpl implements BalanceService {
         Account account = accountRepository.findByAccountIdAndKeycloakId(accountId, keycloakUserId)
                 .orElseThrow(() -> new AccountNotFoundException("Account not found or does not belong to user"));
 
+        log.info("Account: " + account);
+
         List<Balance> balanceHistory = balanceRepository.findByAccount(account);
+
+        log.info("Balance History: " + balanceHistory);
 
         BalanceHistoryDto history = new BalanceHistoryDto();
 
@@ -88,6 +92,9 @@ public class BalanceServiceImpl implements BalanceService {
         newBalance.setReconcileDate(LocalDate.now());
         newBalance.setAccount(account);
         Balance savedBalance = balanceRepository.save(newBalance);
+
+        account.getBalances().add(savedBalance);
+        accountRepository.save(account);
 
         log.info("Saved Balance: " + String.valueOf(savedBalance));
 

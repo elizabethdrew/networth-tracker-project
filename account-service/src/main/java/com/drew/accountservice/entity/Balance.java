@@ -1,5 +1,6 @@
 package com.drew.accountservice.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -16,6 +17,7 @@ public class Balance {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", referencedColumnName = "accountId", insertable = false, updatable = false)
+    @JsonBackReference
     private Account account;
 
     @Column(name = "reconcile_date")
