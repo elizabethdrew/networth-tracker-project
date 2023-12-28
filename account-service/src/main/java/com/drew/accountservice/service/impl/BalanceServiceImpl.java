@@ -69,21 +69,22 @@ public class BalanceServiceImpl implements BalanceService {
         newBalance.setDifferenceFromLast(difference);
         newBalance.setReconcileDate(LocalDate.now());
         newBalance.setAccountId(accountId);
-        Balance savedBalance = balanceRepository.save(newBalance);
+        balanceRepository.save(newBalance);
 
-        account.setCurrentBalance(savedBalance.getBalance());
+        account.setCurrentBalance(newBalance.getBalance());
         accountRepository.save(account);
 
-        log.info("Saved Balance: " + String.valueOf(savedBalance));
+        log.info("Saved Balance: " + String.valueOf(newBalance));
 
         // If ISA account, tell ISA Service
         if (account.getType().toString().contains("ISA")) {
             log.info("New balance is ISA");
-            kafkaService.newBalanceKafka("sendNewBalance-out-0", savedBalance, keycloakUserId, account.getType());
+            kafkaService.newBalanceKafka("sendNewBalance-out-0", newBalance, keycloakUserId, account.getType());
         } else {
             log.info("New balance is not ISA");
         }
 
+        BalanceDto savedBalance = balanceMapper.toBalanceDto(newBalance);
         return savedBalance;
     }
 
