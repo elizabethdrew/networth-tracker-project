@@ -7,7 +7,7 @@ import com.drew.commonlibrary.dto.KafkaBalanceDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Component;
-
+import com.drew.commonlibrary.types.AccountType;
 
 @Slf4j
 @Component
@@ -24,11 +24,11 @@ public class KafkaService {
         streamBridge.send(topic, accountIsaDto);
     }
 
-    public void newBalanceKafka(String topic, Balance balance, String keycloakId) {
+    public void newBalanceKafka(String topic, Balance balance, String keycloakId, AccountType accountType) {
         var kafkaBalanceDto = new KafkaBalanceDto(
-                balance.getAccount().getAccountId(),
+                balance.getAccountId(),
                 keycloakId,
-                balance.getAccount().getType(),
+                accountType,
                 balance.getBalance(),
                 balance.getDepositValue(),
                 balance.getWithdrawalValue()
