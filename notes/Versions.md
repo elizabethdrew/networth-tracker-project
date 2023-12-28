@@ -1,5 +1,26 @@
 # Versions
 
+## v1.6.0
+**Date: 28/12/2023**
+
++ The basic balance functions added to Account Service. 
++ Isa Service created with Kafka introduced to manage inter service notifications.
++ Test suit not completed due to time restraints.
+
+## v1.5.0
+**Date: 18/12/2023**
+
+The Account Service was created with basic CRUD operations - more tests need to be added but decision was made to focus on new challenges as time for project running low.
+
+
+## v1.4.0
+**Date: 11/12/2023**
+
+The User Service was completed
++ Login and logout of Keycloak through the Auth Controller
++ CRUD User endpoints
++ Keycloak ID passed to services through headers
+
 ## v1.3.0
 **Date: 16/11/2023**
 
