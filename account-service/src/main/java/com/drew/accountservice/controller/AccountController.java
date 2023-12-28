@@ -54,7 +54,7 @@ public class AccountController {
 
         URI location = uriBuilder
                 .path("/{id}")
-                .buildAndExpand(accountOutputDto.getAccountId())
+                .buildAndExpand(accountOutputDto.accountId())
                 .toUri();
 
         return ResponseEntity.created(location).body(accountOutputDto);

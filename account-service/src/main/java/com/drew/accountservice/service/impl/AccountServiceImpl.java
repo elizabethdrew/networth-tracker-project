@@ -38,11 +38,10 @@ public class AccountServiceImpl implements AccountService {
 
         log.info("Keycloak User ID: " + keycloakUserId);
 
-        Account newAccount = accountMapper.toEntity(accountInputDto);
+        Account newAccount = accountMapper.toEntity(keycloakUserId, accountInputDto);
 
         newAccount.setDateCreated(LocalDateTime.now());
         newAccount.setDateUpdated(LocalDateTime.now());
-        newAccount.setKeycloakId(keycloakUserId);
 
         Account savedAccount = accountRepository.save(newAccount);
 

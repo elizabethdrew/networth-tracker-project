@@ -62,7 +62,7 @@ public class BalanceServiceImpl implements BalanceService {
 
         log.info("Last Balance: " + String.valueOf(lastBalance));
 
-        BigDecimal difference = calculateDifference(lastBalance, newAllocation.getBalance());
+        BigDecimal difference = calculateDifference(lastBalance, newAllocation.balance());
 
         log.info("Difference: " + String.valueOf(difference));
 
@@ -109,17 +109,17 @@ public class BalanceServiceImpl implements BalanceService {
     private void validateAllocations(BigDecimal difference, BalanceAllocationDto allocation) {
         log.info("Validating Allocation");
 
-        BigDecimal depositValue = Optional.ofNullable(allocation.getDepositValue()).orElse(BigDecimal.ZERO);
+        BigDecimal depositValue = Optional.ofNullable(allocation.depositValue()).orElse(BigDecimal.ZERO);
         log.info("Deposit Value: " + depositValue);
-        BigDecimal withdrawalValue = Optional.ofNullable(allocation.getWithdrawalValue()).orElse(BigDecimal.ZERO);
+        BigDecimal withdrawalValue = Optional.ofNullable(allocation.withdrawalValue()).orElse(BigDecimal.ZERO);
         log.info("Withdrawal Value: " + withdrawalValue);
-        BigDecimal interestValue = Optional.ofNullable(allocation.getInterestValue()).orElse(BigDecimal.ZERO);
+        BigDecimal interestValue = Optional.ofNullable(allocation.interestValue()).orElse(BigDecimal.ZERO);
         log.info("Interest Value: " + interestValue);
-        BigDecimal feesValue = Optional.ofNullable(allocation.getFeesValue()).orElse(BigDecimal.ZERO);
+        BigDecimal feesValue = Optional.ofNullable(allocation.feesValue()).orElse(BigDecimal.ZERO);
         log.info("Fees Value: " + feesValue);
-        BigDecimal bonusValue = Optional.ofNullable(allocation.getBonusValue()).orElse(BigDecimal.ZERO);
+        BigDecimal bonusValue = Optional.ofNullable(allocation.bonusValue()).orElse(BigDecimal.ZERO);
         log.info("Bonus Value: " + bonusValue);
-        BigDecimal growthValue = Optional.ofNullable(allocation.getGrowthValue()).orElse(BigDecimal.ZERO);
+        BigDecimal growthValue = Optional.ofNullable(allocation.growthValue()).orElse(BigDecimal.ZERO);
         log.info("Growth Value: " + growthValue);
 
         BigDecimal totalAllocations = depositValue
