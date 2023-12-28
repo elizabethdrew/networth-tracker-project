@@ -71,6 +71,7 @@ Each service plays a vital role in ensuring the application's functionality and 
 
 - **Enhanced Testing**: Develop comprehensive tests for account and balance management functionalities to ensure robustness and reliability.
 - **Editable Balance Entries**: Consider implementing editable balance entries with mechanisms for tracking changes and rollback capabilities.
+- **Liquibase**: Needs to be added once entity class is firmly set in stone
 
 ### User Service
 
@@ -81,6 +82,7 @@ Each service plays a vital role in ensuring the application's functionality and 
 - **Implementing Comprehensive Testing**: Establish a thorough testing framework to validate all aspects of the ISA service.
 - **Change History and Rollback**: Explore the feasibility of maintaining a log of updates for change history tracking and potential rollback capabilities.
 - **User Communication Strategy**: Develop methods for effectively communicating errors, warnings, and informational messages to users. This includes implementing retrieval functions and a dedicated message service.
+- **Liquibase**: Needs to be added once entity class is firmly set in stone
 
 ### Overall Application Development
 
@@ -98,3 +100,81 @@ Each service plays a vital role in ensuring the application's functionality and 
 - **Regulatory Compliance**: Ensure continuous compliance with financial regulations and data privacy laws.
 
 ## Learning Outcomes
+
+### Core Frameworks and Libraries
+
+1. **Spring Boot**: Foundation for building stand-alone, production-grade Spring-based applications.
+2. **Spring Cloud**: Simplifies the development of distributed systems and microservices with patterns such as service discovery, circuit breakers, and configuration management.
+3. **Spring Data JPA**: Provides a more sophisticated integration between Spring Boot and JPA for data handling in SQL databases.
+4. **Spring WebFlux**: Enables building reactive applications on the Spring ecosystem.
+5. **Spring Cloud Stream**: Framework for building event-driven microservices connected with shared messaging systems.
+6. **Spring Cloud Config Client**: Client support for externalized configuration in a distributed system.
+7. **Spring Cloud Gateway**: Implements API Gateway patterns for microservices.
+
+### Database and Persistence
+
+1. **MySQL Connector**: JDBC driver for MySQL.
+2. **Jakarta Persistence API**: Standardises the persistence layer in Java EE applications.
+
+### Security and Authentication
+
+1. **Keycloak**: Open-source identity and access management for modern applications and services.
+2. **Spring Security**: Security framework for authentication and authorization.
+3. **OAuth2 OIDC SDK**: Library for OpenID Connect and OAuth 2.0.
+
+### API and Documentation
+
+1. **Swagger Annotations**: Annotations to describe and document RESTful APIs.
+
+### Messaging and Streaming
+
+1. **Spring Cloud Stream Binder Kafka**: Integration of Spring Cloud Stream with Apache Kafka.
+2. **Apache Kafka**: Messaging system for building real-time data pipelines and streaming apps.
+
+### Logging and Monitoring
+
+1. **SLF4J**: Simple Logging Facade for Java for abstracting various logging frameworks.
+2. **Micrometer**: Application metrics facade for integrating with monitoring systems like Prometheus.
+3. **OpenTelemetry JavaAgent**: Provides automatic instrumentation for monitoring application performance.
+4. **Prometheus**: Monitoring system and time series database.
+5. **Grafana**: Analytics and monitoring platform.
+6. **Loki**: Log aggregation system compatible with Grafana.
+7. **Promtail**: Log collector for Loki.
+
+### Infrastructure and Service Discovery
+
+1. **Spring Cloud Netflix Eureka**: Service discovery tool for microservices.
+2. **Spring Cloud Kubernetes**: Kubernetes integration with Spring Cloud.
+3. **Redis**: In-memory data store used as a database, cache, and message broker.
+4. **Docker**: Platform for developing, shipping, and running applications.
+5. **Docker Compose**: Tool for defining and running multi-container Docker applications.
+
+### Resilience and Circuit Breakers
+
+1. **Resilience4j**: Fault tolerance library designed for Java8 and functional programming.
+
+### Data Serialization and Web Clients
+
+1. **Jackson Databind**: JSON parser and generator for converting Java objects to/from JSON.
+
+### Testing Tools
+
+1. **JUnit Jupiter**: The new programming model and extension model for JUnit 5.
+2. **Mockito**: Mocking framework for unit tests in Java.
+3. **Rest Assured**: Java DSL for simplifying testing of REST services.
+4. **Testcontainers**: Provides lightweight, throwaway instances of common databases, Selenium web browsers, or anything else that can run in a Docker container for JUnit tests.
+5. **Spring Boot Starter Test**: Starter for testing Spring Boot applications with libraries including JUnit, Hamcrest, and Mockito.
+
+### Build and Deployment
+
+1. **Jib**: Containerization tool for Java applications.
+2. **Maven**: Software project management and comprehension tool.
+
+### Additional Tools and Libraries
+
+1. **Lombok**: Library to reduce boilerplate code in Java with annotations.
+2. **MapStruct**: Code generator for Java bean mappings.
+3. **Passay**: Password security library for enforcing password policies.
+4. **Feign**: Declarative web service client for simplifying HTTP API clients.
+5. **Liquibase**: Source control for database schema changes.
+6. **JWT (JSON Web Token)**: Library for creating and decoding JSON Web Tokens.
