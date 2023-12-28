@@ -3,6 +3,7 @@ package com.drew.accountservice.dto;
 import com.drew.accountservice.entity.Account;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.drew.commonlibrary.types.AccountType;
+import jakarta.persistence.Column;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -23,6 +24,9 @@ public class AccountOutputDto {
 
     @JsonProperty("credit_limit")
     private BigDecimal creditLimit;
+
+    @JsonProperty("current_balance")
+    private BigDecimal currentBalance;
 
     @JsonProperty("percentage_ownership")
     private Long percentageOwnership;
@@ -153,4 +157,11 @@ public class AccountOutputDto {
         this.notes = notes;
     }
 
+    public BigDecimal getCurrentBalance() {
+        return currentBalance;
+    }
+
+    public void setCurrentBalance(BigDecimal currentBalance) {
+        this.currentBalance = currentBalance;
+    }
 }

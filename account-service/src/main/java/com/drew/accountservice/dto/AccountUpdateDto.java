@@ -2,6 +2,7 @@ package com.drew.accountservice.dto;
 
 import com.drew.accountservice.entity.Account;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Column;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -13,6 +14,9 @@ public class AccountUpdateDto {
 
     @JsonProperty("credit_limit")
     private BigDecimal creditLimit;
+
+    @Column(name = "current_balance")
+    private BigDecimal currentBalance;
 
     @JsonProperty("date_opened")
     private LocalDateTime dateOpened;
@@ -63,4 +67,11 @@ public class AccountUpdateDto {
         this.notes = notes;
     }
 
+    public BigDecimal getCurrentBalance() {
+        return currentBalance;
+    }
+
+    public void setCurrentBalance(BigDecimal currentBalance) {
+        this.currentBalance = currentBalance;
+    }
 }

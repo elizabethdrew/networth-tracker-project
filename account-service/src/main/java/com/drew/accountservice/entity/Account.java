@@ -41,7 +41,10 @@ public class Account {
     private String currency;
 
     @Column(name = "credit_limit")
-    private BigDecimal creditLimit;
+    private BigDecimal creditLimit = BigDecimal.ZERO;
+
+    @Column(name = "current_balance")
+    private BigDecimal currentBalance = BigDecimal.ZERO;
 
     @Column(name = "percentage_ownership")
     private Long percentageOwnership;
@@ -197,6 +200,14 @@ public class Account {
 
     public void setBalances(List<Balance> balances) {
         this.balances = balances;
+    }
+
+    public BigDecimal getCurrentBalance() {
+        return currentBalance;
+    }
+
+    public void setCurrentBalance(BigDecimal currentBalance) {
+        this.currentBalance = currentBalance;
     }
 
     public enum AccountStatus {
