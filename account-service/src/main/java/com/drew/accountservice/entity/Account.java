@@ -37,9 +37,6 @@ public class Account {
     @Column(name = "credit_limit")
     private BigDecimal creditLimit = BigDecimal.ZERO;
 
-    @Column(name = "current_balance")
-    private BigDecimal currentBalance = BigDecimal.ZERO;
-
     @Column(name = "percentage_ownership")
     private Long percentageOwnership;
 
@@ -175,14 +172,6 @@ public class Account {
 
     public void setNotes(String notes) {
         this.notes = notes;
-    }
-
-    public BigDecimal getCurrentBalance() {
-        return currentBalance;
-    }
-
-    public void setCurrentBalance(BigDecimal currentBalance) {
-        this.currentBalance = currentBalance;
     }
 
     public enum AccountStatus {
