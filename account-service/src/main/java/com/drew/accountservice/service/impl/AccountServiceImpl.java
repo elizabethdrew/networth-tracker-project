@@ -2,7 +2,9 @@ package com.drew.accountservice.service.impl;
 
 import com.drew.accountservice.dto.AccountInputDto;
 import com.drew.accountservice.dto.AccountOutputDto;
+import com.drew.accountservice.dto.AccountUpdateDto;
 import com.drew.accountservice.entity.Account;
+import com.drew.accountservice.kafka.KafkaService;
 import com.drew.accountservice.mapper.AccountMapper;
 import com.drew.accountservice.repository.AccountRepository;
 import com.drew.accountservice.service.AccountService;
@@ -21,11 +23,14 @@ public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
     private final AccountMapper accountMapper;
+    private final KafkaService kafkaService;
+
 
     @Autowired
-    public AccountServiceImpl(AccountRepository accountRepository, AccountMapper accountMapper) {
+    public AccountServiceImpl(AccountRepository accountRepository, AccountMapper accountMapper, KafkaService kafkaService) {
         this.accountRepository = accountRepository;
         this.accountMapper = accountMapper;
+        this.kafkaService = kafkaService;
     }
 
     @Override
@@ -33,20 +38,25 @@ public class AccountServiceImpl implements AccountService {
 
         log.info("Keycloak User ID: " + keycloakUserId);
 
-        Account newAccount = accountMapper.toEntity(accountInputDto);
+        Account newAccount = accountMapper.toEntity(keycloakUserId, accountInputDto);
 
         newAccount.setDateCreated(LocalDateTime.now());
         newAccount.setDateUpdated(LocalDateTime.now());
-        newAccount.setKeycloakId(keycloakUserId);
 
         Account savedAccount = accountRepository.save(newAccount);
 
-        if (savedAccount.getIsa()) {
-            // Tell ISA Service If New ISA Account
+        // If ISA account, tell ISA Service
+        if (savedAccount.getType().toString().contains("ISA")) {
+            log.info("New account is an ISA");
+            kafkaService.newAccountKafka("sendNewIsaAccount-out-0", savedAccount);
+        } else {
+            log.info("New account is not an ISA");
         }
 
         return accountMapper.toOutputDto(savedAccount);
     }
+
+
 
     @Override
     public List<AccountOutputDto> getUserAccounts(String keycloakUserId) {
@@ -63,19 +73,17 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Optional<AccountOutputDto> updateAccountByIdAndKeycloakId(Long accountId, String keycloakUserId, AccountInputDto accountInputDto) {
+    public Optional<AccountOutputDto> updateAccountByIdAndKeycloakId(Long accountId, String keycloakUserId, AccountUpdateDto accountUpdateDto) {
         return accountRepository.findByAccountIdAndKeycloakId(accountId, keycloakUserId)
                 .map(account -> {
-                    accountMapper.updateAccountFromInput(accountInputDto, account);
+                    accountMapper.updateAccount(accountUpdateDto, account);
                     account.setDateUpdated(LocalDateTime.now());
                     Account updatedAccount = accountRepository.save(account);
 
-                    if (updatedAccount.getIsa()) {
-                        // Tell ISA Service If New ISA Account
-                    }
                     return accountMapper.toOutputDto(updatedAccount);
                 });
     }
+
 
     @Override
     public boolean softDeleteAccount(Long accountId, String keycloakUserId) {
@@ -87,4 +95,5 @@ public class AccountServiceImpl implements AccountService {
                     return true;
                 }).orElse(false);
     }
+
 }

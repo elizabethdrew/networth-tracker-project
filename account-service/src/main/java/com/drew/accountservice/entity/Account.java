@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import com.drew.commonlibrary.types.AccountType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -34,10 +35,7 @@ public class Account {
     private String currency;
 
     @Column(name = "credit_limit")
-    private BigDecimal creditLimit;
-
-    @Column(name = "isa")
-    private Boolean isa = false;
+    private BigDecimal creditLimit = BigDecimal.ZERO;
 
     @Column(name = "percentage_ownership")
     private Long percentageOwnership;
@@ -176,33 +174,9 @@ public class Account {
         this.notes = notes;
     }
 
-    public Boolean getIsa() {
-        return isa;
-    }
-
-    public void setIsa(Boolean isa) {
-        this.isa = isa;
-    }
-
     public enum AccountStatus {
         IN_USE,
         ARCHIVED,
         DORMANT
-    }
-
-    public enum AccountType {
-        CASH_ISA,
-        STOCKS_AND_SHARES_ISA,
-        INNOVATIVE_FINANCE_ISA,
-        LIFETIME_ISA,
-        CURRENT_ACCOUNT,
-        SAVINGS_ACCOUNT,
-        CREDIT_CARD,
-        LOAN,
-        PROPERTY,
-        MORTGAGE,
-        INVESTMENTS,
-        PENSION,
-        OTHER
     }
 }

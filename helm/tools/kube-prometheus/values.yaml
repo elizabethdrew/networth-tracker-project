@@ -1172,6 +1172,14 @@ prometheus:
             }
           ]
         },
+        { "job_name": "isa-service",
+          "metrics_path": "/actuator/prometheus",
+          "static_configs": [
+            {
+              "targets": [ "isa-service:8083" ]
+            }
+          ]
+        },
         { "job_name": "gatewayserver",
           "metrics_path": "/actuator/prometheus",
           "static_configs": [
@@ -1193,6 +1201,14 @@ prometheus:
           "static_configs": [
             {
               "targets": [ "keycloak:80" ]
+            }
+          ]
+        },
+        { "job_name": "kafka",
+          "metrics_path": "/actuator/prometheus",
+          "static_configs": [
+            {
+              "targets": [ "kafka:9092" ]
             }
           ]
         },

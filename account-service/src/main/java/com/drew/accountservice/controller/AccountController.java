@@ -2,6 +2,7 @@ package com.drew.accountservice.controller;
 
 import com.drew.accountservice.dto.AccountInputDto;
 import com.drew.accountservice.dto.AccountOutputDto;
+import com.drew.accountservice.dto.AccountUpdateDto;
 import com.drew.accountservice.service.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -53,7 +54,7 @@ public class AccountController {
 
         URI location = uriBuilder
                 .path("/{id}")
-                .buildAndExpand(accountOutputDto.getAccountId())
+                .buildAndExpand(accountOutputDto.accountId())
                 .toUri();
 
         return ResponseEntity.created(location).body(accountOutputDto);
@@ -106,8 +107,8 @@ public class AccountController {
     })
     public ResponseEntity<AccountOutputDto> updateAccountById(@RequestHeader("X-User-ID") String keycloakUserId,
                                                               @PathVariable Long accountId,
-                                                              @RequestBody AccountInputDto accountInputDto) {
-        Optional<AccountOutputDto> updatedAccount = accountService.updateAccountByIdAndKeycloakId(accountId, keycloakUserId, accountInputDto);
+                                                              @RequestBody AccountUpdateDto accountUpdateDto) {
+        Optional<AccountOutputDto> updatedAccount = accountService.updateAccountByIdAndKeycloakId(accountId, keycloakUserId, accountUpdateDto);
 
         return updatedAccount.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());

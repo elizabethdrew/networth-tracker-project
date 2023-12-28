@@ -15,6 +15,16 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: create
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: kafka:9092
+      bindings:
+        sendNewIsaAccount-out-0:
+          destination: new-isa-account-topic
+        sendNewBalance-out-0:
+          destination: new-balance-topic
 
 feign:
   client:
@@ -34,7 +44,7 @@ server:
 
 logging:
   level:
-    root: DEBUG
+    root: INFO
   pattern:
     level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
 
