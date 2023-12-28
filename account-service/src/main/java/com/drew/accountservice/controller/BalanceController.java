@@ -48,7 +48,7 @@ public class BalanceController {
                                            @PathVariable Long accountId,
                                            @RequestBody BalanceAllocationDto balanceAllocationDto) {
         try {
-            Balance newBalance = balanceService.addNewBalance(accountId, keycloakUserId, balanceAllocationDto);
+            BalanceDto newBalance = balanceService.addNewBalance(accountId, keycloakUserId, balanceAllocationDto);
             return ResponseEntity.ok(newBalance);
         } catch (AccountNotFoundException | InvalidAllocationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
