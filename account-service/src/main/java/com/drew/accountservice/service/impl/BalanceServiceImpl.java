@@ -6,6 +6,7 @@ import com.drew.accountservice.dto.BalanceHistoryDto;
 import com.drew.accountservice.entity.Account;
 import com.drew.accountservice.entity.Balance;
 import com.drew.accountservice.exception.AccountNotFoundException;
+import com.drew.accountservice.exception.BalanceNotFoundException;
 import com.drew.accountservice.exception.InvalidAllocationException;
 import com.drew.accountservice.kafka.KafkaService;
 import com.drew.accountservice.mapper.BalanceMapper;
@@ -21,6 +22,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -53,7 +55,10 @@ public class BalanceServiceImpl implements BalanceService {
 
         log.info("Account: " + String.valueOf(account));
 
-        BigDecimal lastBalance = account.getCurrentBalance();
+        // Fetch the most recent balance
+        BigDecimal lastBalance = balanceRepository.findTopByAccountIdOrderByReconcileDateDesc(accountId)
+                .map(Balance::getBalance)
+                .orElse(BigDecimal.ZERO);
 
         log.info("Last Balance: " + String.valueOf(lastBalance));
 
@@ -68,9 +73,6 @@ public class BalanceServiceImpl implements BalanceService {
         newBalance.setReconcileDate(LocalDate.now());
         newBalance.setAccountId(accountId);
         balanceRepository.save(newBalance);
-
-        account.setCurrentBalance(newBalance.getBalance());
-        accountRepository.save(account);
 
         log.info("Saved Balance: " + String.valueOf(newBalance));
 
@@ -87,7 +89,14 @@ public class BalanceServiceImpl implements BalanceService {
 
     @Override
     public BalanceDto getBalanceById(String keycloakUserId, Long accountId, Long balanceId) {
-        return null;
+
+        Account account = accountRepository.findByAccountIdAndKeycloakId(accountId, keycloakUserId)
+                .orElseThrow(() -> new AccountNotFoundException("Account not found or does not belong to user"));
+
+        Balance balance = balanceRepository.findById(balanceId)
+                .orElseThrow(() -> new BalanceNotFoundException("Balance entry not found"));
+
+        return balanceMapper.toBalanceDto(balance);
     }
 
     private BigDecimal calculateDifference(BigDecimal lastBalance, BigDecimal currentBalance) {
@@ -129,26 +138,15 @@ public class BalanceServiceImpl implements BalanceService {
 
     @Override
     public BalanceHistoryDto getBalanceHistory(String keycloakUserId, Long accountId) {
-
         Account account = accountRepository.findByAccountIdAndKeycloakId(accountId, keycloakUserId)
                 .orElseThrow(() -> new AccountNotFoundException("Account not found or does not belong to user"));
 
-        log.info("Account: " + account);
-
         List<Balance> balanceHistory = balanceRepository.findAllByAccountId(accountId);
+        List<BalanceDto> balanceDtoList = balanceHistory.stream()
+                .map(balanceMapper::toBalanceDto)
+                .collect(Collectors.toList());
 
-        log.info("Balance History: " + balanceHistory);
-
-        BalanceHistoryDto history = new BalanceHistoryDto();
-
-        if (balanceHistory.isEmpty()) {
-            history.setBalances(null);
-            return history;
-        }
-
-        balanceHistory.sort((b1, b2) -> b2.getReconcileDate().compareTo(b1.getReconcileDate()));
-
-        history.setBalances(balanceHistory);
+        BalanceHistoryDto history = new BalanceHistoryDto(balanceDtoList);
         return history;
     }
 }

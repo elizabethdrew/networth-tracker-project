@@ -89,12 +89,12 @@ public class BalanceController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error - an unexpected error occurred while processing the request")
     })
     public ResponseEntity<?> getBalanceById(@RequestHeader("X-User-ID") String keycloakUserId,
-                                               @PathVariable Long accountId,
-                                               @PathVariable Long balanceId) {
+                                            @PathVariable Long accountId,
+                                            @PathVariable Long balanceId) {
         try {
             BalanceDto balance = balanceService.getBalanceById(keycloakUserId, accountId, balanceId);
             return ResponseEntity.ok(balance);
-        } catch (AccountNotFoundException e) {
+        } catch (AccountNotFoundException | BalanceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }

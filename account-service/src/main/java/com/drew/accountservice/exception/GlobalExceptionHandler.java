@@ -25,6 +25,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(BalanceNotFoundException.class)
+    public ResponseEntity<Object> handleBalanceNotFoundException(BalanceNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(FeignException.class)
     public ResponseEntity<String> handleFeignStatusException(FeignException e) {
         switch (e.status()) {
