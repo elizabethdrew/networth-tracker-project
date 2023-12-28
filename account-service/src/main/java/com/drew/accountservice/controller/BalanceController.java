@@ -75,4 +75,26 @@ public class BalanceController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
+    @GetMapping("/balanceId")
+    @Operation(
+            summary = "Get Balance By ID",
+            description = "Retrieves the specified balance entry for a given account."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Balance entry retrieved successfully"),
+            @ApiResponse(responseCode = "403", description = "Insufficient Permissions - the requester does not have permission to view this account's balance history"),
+            @ApiResponse(responseCode = "404", description = "Not Found - the account or balance entry does not exist or does not belong to the user"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error - an unexpected error occurred while processing the request")
+    })
+    public ResponseEntity<?> getBalanceById(@RequestHeader("X-User-ID") String keycloakUserId,
+                                               @PathVariable Long accountId,
+                                               @PathVariable Long balanceId) {
+        try {
+            BalanceDto balance = balanceService.getBalanceById(keycloakUserId, accountId, balanceId);
+            return ResponseEntity.ok(balance);
+        } catch (AccountNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
 }
