@@ -34,7 +34,15 @@ Each service plays a vital role in ensuring the application's functionality and 
       - The service integrates closely with Keycloak for identity and access management. It handles tasks like obtaining admin and user access tokens, creating and logging out users in Keycloak, updating Keycloak user details, and revoking access tokens.
     - **Error Handling and Logging**:
       - The service is equipped with comprehensive error handling and logging mechanisms. It gracefully handles exceptions related to authentication, user management, and communication with Keycloak.
-- **ISA Service**: Manages ISA contributions and calculates taxable savings interest.
+- **ISA Service**: The ISA Service in the Networth Tracker application is dedicated to managing various aspects of Individual Savings Accounts (ISAs). Its core functionalities include:
+    - **ISA Account Management**:
+      - **Add ISA Account**: This function allows for the addition of new ISA accounts to the system. It handles different types of ISA accounts, such as Cash ISA, Stocks & Shares ISA, Innovative Finance ISA, and Lifetime ISA. For each account type, it updates the ISA tracker with the relevant account ID.
+    - **ISA Balance Management**:
+      - **Add ISA Balance**: Responsible for updating the balance of ISA accounts. It accommodates the balance changes for different types of ISA accounts by calculating deposits, withdrawals, and the current balance. The service ensures that the total deposits for a tax year do not exceed the maximum ISA allowance, throwing exceptions if limits are breached.
+    - **Tax Year and Allowance Handling**: The service operates with a focus on the current tax year, using predefined values for maximum ISA and Lifetime ISA (LISA) allowances. It ensures that all transactions and balance updates are consistent with the limits set for the current tax year.
+    - **Calculation of Total ISA Balance**: It calculates the total ISA balance across all account types, considering the current balances of Cash ISA, Stocks & Shares ISA, Innovative Finance ISA, and Lifetime ISA.
+    - **Error Handling and Logging**: The service is equipped with robust error handling for scenarios like exceeding ISA allowances and attempting to add multiple accounts of the same type in a tax year. It also maintains detailed logs for all operations, ensuring traceability and aiding in debugging.
+    - **Integration with Kafka**: The ISA Service integrates with Kafka for handling balance data, indicating a robust, event-driven architecture that ensures real-time data processing and updates.
 - **Common Library**: Holds common DTO's and Enums for use across services.
 
 **Core Services**
