@@ -1,6 +1,5 @@
 package com.drew.accountservice.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -15,10 +14,8 @@ public class Balance {
     @Column(name = "balance_id")
     private Long balanceId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id", referencedColumnName = "accountId", insertable = false, updatable = false)
-    @JsonBackReference
-    private Account account;
+    @Column(name = "account_id")
+    private Long accountId;
 
     @Column(name = "reconcile_date")
     private LocalDate reconcileDate;
@@ -127,11 +124,11 @@ public class Balance {
         this.differenceFromLast = differenceFromLast;
     }
 
-    public Account getAccount() {
-        return account;
+    public Long getAccountId() {
+        return accountId;
     }
 
-    public void setAccount(Account account) {
-        this.account = account;
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
     }
 }
