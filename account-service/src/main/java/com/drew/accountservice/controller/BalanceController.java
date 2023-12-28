@@ -5,6 +5,7 @@ import com.drew.accountservice.dto.BalanceDto;
 import com.drew.accountservice.dto.BalanceHistoryDto;
 import com.drew.accountservice.entity.Balance;
 import com.drew.accountservice.exception.AccountNotFoundException;
+import com.drew.accountservice.exception.BalanceNotFoundException;
 import com.drew.accountservice.exception.InvalidAllocationException;
 import com.drew.accountservice.service.BalanceService;
 import com.drew.commonlibrary.dto.KafkaBalanceDto;
