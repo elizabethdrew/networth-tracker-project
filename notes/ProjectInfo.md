@@ -21,8 +21,21 @@ Each service plays a vital role in ensuring the application's functionality and 
     - **Account Update**: Offers the functionality to update account details.
     - **Soft Deletion of Account**: Enables users to archive (soft delete) an account, thereby marking it as inactive.
     - **Balance Management**: Includes adding new balances to accounts, retrieving balance history, and accessing specific balance entries.
-- **User Service**: Handles user account functionality including registration, authentication, and profile management.
+- **User Service**: The User Service in the Networth Tracker application plays a pivotal role in managing user-related functionalities. Key features include:
+    - **User Authentication (Login/Logout)**:
+      - **Login**: Users can authenticate themselves by providing their username and password. Upon successful authentication, an access token is returned for subsequent API calls. This process involves checking username existence, validating passwords, and obtaining access tokens from Keycloak.
+      - **Logout**: Enables users to log out, effectively invalidating their current access token and ending their session. The logout process includes revoking the access token and logging out the user from Keycloak.
+    - **User Registration and Management**:
+      - **User Registration**: New users can create an account by providing necessary details. The service then registers the user with Keycloak and returns a unique identifier for the user.
+      - **Get User by Keycloak ID**: Retrieves user details based on the Keycloak ID.
+      - **Update User**: Allows updating user information, such as email or other personal details. This also involves updating user details in Keycloak.
+      - **Delete User**: Facilitates the deletion of a user account, removing their details from the application and Keycloak.
+    - **Keycloak Integration**:
+      - The service integrates closely with Keycloak for identity and access management. It handles tasks like obtaining admin and user access tokens, creating and logging out users in Keycloak, updating Keycloak user details, and revoking access tokens.
+    - **Error Handling and Logging**:
+      - The service is equipped with comprehensive error handling and logging mechanisms. It gracefully handles exceptions related to authentication, user management, and communication with Keycloak.
 - **ISA Service**: Manages ISA contributions and calculates taxable savings interest.
+- **Common Library**: Holds common DTO's and Enums for use across services.
 
 **Core Services**
 - **Config Server**: Centralizes configuration properties for other services.
