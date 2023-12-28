@@ -71,17 +71,6 @@ public class Account {
     @Column(name = "notes")
     private String notes;
 
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Balance> balances = new ArrayList<>();
-
-    @Transient
-    public BigDecimal getLatestBalance() {
-        return balances.stream()
-                .max(Comparator.comparing(Balance::getReconcileDate))
-                .map(Balance::getBalance)
-                .orElse(BigDecimal.ZERO);
-    }
-
     public Long getAccountId() {
         return accountId;
     }
@@ -192,14 +181,6 @@ public class Account {
 
     public void setNotes(String notes) {
         this.notes = notes;
-    }
-
-    public List<Balance> getBalances() {
-        return balances;
-    }
-
-    public void setBalances(List<Balance> balances) {
-        this.balances = balances;
     }
 
     public BigDecimal getCurrentBalance() {

@@ -1,6 +1,7 @@
 package com.drew.accountservice.service.impl;
 
 import com.drew.accountservice.dto.BalanceAllocationDto;
+import com.drew.accountservice.dto.BalanceDto;
 import com.drew.accountservice.dto.BalanceHistoryDto;
 import com.drew.accountservice.entity.Account;
 import com.drew.accountservice.entity.Balance;
@@ -37,34 +38,11 @@ public class BalanceServiceImpl implements BalanceService {
         this.accountRepository = accountRepository;
     }
 
-    @Override
-    public BalanceHistoryDto getBalanceHistory(String keycloakUserId, Long accountId) {
 
-        Account account = accountRepository.findByAccountIdAndKeycloakId(accountId, keycloakUserId)
-                .orElseThrow(() -> new AccountNotFoundException("Account not found or does not belong to user"));
-
-        log.info("Account: " + account);
-
-        List<Balance> balanceHistory = balanceRepository.findByAccount(account);
-
-        log.info("Balance History: " + balanceHistory);
-
-        BalanceHistoryDto history = new BalanceHistoryDto();
-
-        if (balanceHistory.isEmpty()) {
-            history.setBalances(null);
-            return history;
-        }
-
-        balanceHistory.sort((b1, b2) -> b2.getReconcileDate().compareTo(b1.getReconcileDate()));
-
-        history.setBalances(balanceHistory);
-        return history;
-    }
 
     @Override
     @Transactional
-    public Balance addNewBalance(Long accountId, String keycloakUserId, BalanceAllocationDto newAllocation) {
+    public BalanceDto addNewBalance(Long accountId, String keycloakUserId, BalanceAllocationDto newAllocation) {
 
         log.info("Allocation: " + newAllocation.toString());
 
@@ -77,7 +55,7 @@ public class BalanceServiceImpl implements BalanceService {
 
         log.info("Account: " + String.valueOf(account));
 
-        BigDecimal lastBalance = account.getLatestBalance();
+        BigDecimal lastBalance = account.getCurrentBalance();
 
         log.info("Last Balance: " + String.valueOf(lastBalance));
 
@@ -93,7 +71,7 @@ public class BalanceServiceImpl implements BalanceService {
         newBalance.setAccount(account);
         Balance savedBalance = balanceRepository.save(newBalance);
 
-        account.getBalances().add(savedBalance);
+        account.setCurrentBalance(savedBalance.getBalance());
         accountRepository.save(account);
 
         log.info("Saved Balance: " + String.valueOf(savedBalance));
@@ -146,5 +124,29 @@ public class BalanceServiceImpl implements BalanceService {
         }
     }
 
+    @Override
+    public BalanceHistoryDto getBalanceHistory(String keycloakUserId, Long accountId) {
+
+        Account account = accountRepository.findByAccountIdAndKeycloakId(accountId, keycloakUserId)
+                .orElseThrow(() -> new AccountNotFoundException("Account not found or does not belong to user"));
+
+        log.info("Account: " + account);
+
+        List<Balance> balanceHistory = balanceRepository.findByAccount(account);
+
+        log.info("Balance History: " + balanceHistory);
+
+        BalanceHistoryDto history = new BalanceHistoryDto();
+
+        if (balanceHistory.isEmpty()) {
+            history.setBalances(null);
+            return history;
+        }
+
+        balanceHistory.sort((b1, b2) -> b2.getReconcileDate().compareTo(b1.getReconcileDate()));
+
+        history.setBalances(balanceHistory);
+        return history;
+    }
 }
 

@@ -1,6 +1,7 @@
 package com.drew.accountservice.controller;
 
 import com.drew.accountservice.dto.BalanceAllocationDto;
+import com.drew.accountservice.dto.BalanceDto;
 import com.drew.accountservice.dto.BalanceHistoryDto;
 import com.drew.accountservice.entity.Balance;
 import com.drew.accountservice.exception.AccountNotFoundException;

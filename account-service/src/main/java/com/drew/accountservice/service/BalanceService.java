@@ -1,6 +1,7 @@
 package com.drew.accountservice.service;
 
 import com.drew.accountservice.dto.BalanceAllocationDto;
+import com.drew.accountservice.dto.BalanceDto;
 import com.drew.accountservice.dto.BalanceHistoryDto;
 
 public interface BalanceService {
