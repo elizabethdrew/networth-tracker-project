@@ -38,8 +38,6 @@ public class BalanceServiceImpl implements BalanceService {
         this.accountRepository = accountRepository;
     }
 
-
-
     @Override
     @Transactional
     public BalanceDto addNewBalance(Long accountId, String keycloakUserId, BalanceAllocationDto newAllocation) {
@@ -84,8 +82,12 @@ public class BalanceServiceImpl implements BalanceService {
             log.info("New balance is not ISA");
         }
 
-        BalanceDto savedBalance = balanceMapper.toBalanceDto(newBalance);
-        return savedBalance;
+        return balanceMapper.toBalanceDto(newBalance);
+    }
+
+    @Override
+    public BalanceDto getBalanceById(String keycloakUserId, Long accountId, Long balanceId) {
+        return null;
     }
 
     private BigDecimal calculateDifference(BigDecimal lastBalance, BigDecimal currentBalance) {
@@ -133,7 +135,7 @@ public class BalanceServiceImpl implements BalanceService {
 
         log.info("Account: " + account);
 
-        List<Balance> balanceHistory = balanceRepository.findByAccount(account);
+        List<Balance> balanceHistory = balanceRepository.findAllByAccountId(accountId);
 
         log.info("Balance History: " + balanceHistory);
 

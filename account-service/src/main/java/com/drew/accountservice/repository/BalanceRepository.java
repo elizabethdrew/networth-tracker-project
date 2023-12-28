@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface BalanceRepository extends JpaRepository<Balance, Long>, JpaSpecificationExecutor<Balance> {
 
-    List<Balance> findByAccount(Account account);
+    List<Balance> findAllByAccountId(Long accountId);
 }
